@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import styles from '../styles/trancking.module.css';
 
 const BlobTracker = () => {
   const containerRef = useRef(null);
@@ -10,6 +9,11 @@ const BlobTracker = () => {
   const paneRef = useRef(null);
   const [blobs, setBlobs] = useState([]);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
+  const [exportTimeRemaining, setExportTimeRemaining] = useState(0);
+  const [exportStatus, setExportStatus] = useState('');
+  const ffmpegRef = useRef(null);
 
   // Paramètres de tracking
   const params = useRef({
@@ -20,7 +24,181 @@ const BlobTracker = () => {
     showOriginal: false,
     strokeStyle: '#ff0000ff',
     fillStyle: '#ffffffff',
+    videoBitrate: 5000, // kbps
+    audioBitrate: 128, // kbps
+    exportFPS: 30,
   });
+
+  const exportPresets = {
+    low: { videoBitrate: 2000, audioBitrate: 96, exportFPS: 25 },
+    medium: { videoBitrate: 5000, audioBitrate: 128, exportFPS: 30 },
+    high: { videoBitrate: 10000, audioBitrate: 192, exportFPS: 30 }
+  };
+
+  const loadFFmpeg = useCallback(async () => {
+    // Simplified version - just export as WebM with MP4-like quality
+    return null;
+  }, []);
+
+  const handleExportVideo = useCallback(async () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    
+    if (!video || !canvas || !videoLoaded) {
+      alert('Veuillez d\'abord charger une vidéo');
+      return;
+    }
+
+    setExporting(true);
+    setExportProgress(0);
+    setExportStatus('Capture de la vidéo...');
+
+    try {
+      // Capturer le flux vidéo du canvas avec le FPS configuré
+      const fps = params.current.exportFPS;
+      const videoStream = canvas.captureStream(fps);
+      const videoTrack = videoStream.getVideoTracks()[0];
+      
+      // Créer un contexte audio pour capturer l'audio de la vidéo
+      const audioContext = new AudioContext();
+      const sourceNode = audioContext.createMediaElementSource(video);
+      const destinationNode = audioContext.createMediaStreamDestination();
+      sourceNode.connect(destinationNode);
+      sourceNode.connect(audioContext.destination); // Pour continuer à entendre l'audio
+      
+      // Combiner les flux vidéo et audio
+      const combinedStream = new MediaStream([
+        videoTrack,
+        ...destinationNode.stream.getAudioTracks()
+      ]);
+      
+      // Utiliser le meilleur codec WebM disponible
+      let mimeType = 'video/webm;codecs=vp9,opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/webm;codecs=vp8,opus';
+      }
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/webm';
+      }
+      
+      // Récupérer les bitrates configurés
+      const videoBitrate = params.current.videoBitrate * 1000; // Conversion en bps
+      const audioBitrate = params.current.audioBitrate * 1000; // Conversion en bps
+      
+      const mediaRecorder = new MediaRecorder(combinedStream, {
+        mimeType: mimeType,
+        videoBitsPerSecond: videoBitrate,
+        audioBitsPerSecond: audioBitrate
+      });
+
+      const chunks = [];
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.push(e.data);
+        }
+      };
+
+      const recordingPromise = new Promise((resolve) => {
+        mediaRecorder.onstop = () => resolve(chunks);
+      });
+
+      // Sauvegarder l'état actuel de la vidéo
+      const wasPlaying = !video.paused;
+      const originalTime = video.currentTime;
+      const duration = video.duration;
+      const wasMuted = video.muted;
+
+      // Désactiver le loop et recommencer depuis le début
+      video.loop = false;
+      video.currentTime = 0;
+      video.muted = false; // Important : ne pas muter pour capturer l'audio
+      
+      await video.play();
+      mediaRecorder.start();
+
+      const startTime = Date.now();
+
+      // Mise à jour de la progression
+      const updateProgress = () => {
+        const currentTime = video.currentTime;
+        const progress = (currentTime / duration) * 100;
+        setExportProgress(progress);
+
+        const elapsed = (Date.now() - startTime) / 1000;
+        const estimatedTotal = currentTime > 0 ? (elapsed / currentTime) * duration : duration;
+        const remaining = Math.max(0, estimatedTotal - elapsed);
+        setExportTimeRemaining(remaining);
+
+        // Vérifier si on a atteint la fin
+        if (currentTime >= duration - 0.1) {
+          mediaRecorder.stop();
+          return;
+        }
+
+        if (!video.paused && !video.ended) {
+          requestAnimationFrame(updateProgress);
+        }
+      };
+
+      updateProgress();
+
+      // Arrêter l'enregistrement à la fin de la vidéo
+      video.onended = () => {
+        mediaRecorder.stop();
+      };
+
+      // Attendre que l'enregistrement soit terminé
+      const recordedChunks = await recordingPromise;
+      
+      setExportStatus('Finalisation...');
+      setExportProgress(95);
+
+      // Nettoyer le contexte audio
+      sourceNode.disconnect();
+      audioContext.close();
+
+      // Créer le blob WebM
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      
+      // Calculer la taille du fichier
+      const sizeInMB = (blob.size / (1024 * 1024)).toFixed(1);
+      console.log(`Taille du fichier exporté: ${sizeInMB} MB`);
+      
+      // Télécharger le fichier
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `blob-tracking-${Date.now()}.webm`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      // Restaurer l'état de la vidéo
+      video.loop = true;
+      video.currentTime = originalTime;
+      video.muted = wasMuted;
+      if (wasPlaying) {
+        video.play().catch(() => {});
+      }
+      
+      setExportProgress(100);
+      setExportStatus(`Export terminé ! (${sizeInMB} MB)`);
+      
+      setTimeout(() => {
+        setExporting(false);
+      }, 2000);
+
+    } catch (error) {
+      console.error('Erreur lors de l\'export:', error);
+      alert('Erreur lors de l\'export de la vidéo: ' + error.message);
+      setExporting(false);
+      
+      // Restaurer la vidéo en cas d'erreur
+      const video = videoRef.current;
+      if (video) {
+        video.loop = true;
+      }
+    }
+  }, [videoLoaded, loadFFmpeg]);
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -43,7 +221,6 @@ const BlobTracker = () => {
           const PaneCtor = mod?.Pane ?? mod?.default?.Pane ?? mod?.default ?? null;
 
           if (!PaneCtor) {
-            // eslint-disable-next-line no-console
             console.warn('Tweakpane Pane constructor not found:', mod);
             return;
           }
@@ -52,15 +229,12 @@ const BlobTracker = () => {
             const pane = new PaneCtor({ title: 'Blob Tracking Controls', expanded: true });
             paneRef.current = pane;
 
-            // eslint-disable-next-line no-console
             console.info('tweakpane module loaded', mod);
-            // eslint-disable-next-line no-console
             console.info('created pane', pane);
 
             const addInput = (...args) => {
               if (typeof pane.addInput === 'function') return pane.addInput(...args);
               if (typeof pane.addBinding === 'function') return pane.addBinding(...args);
-              // eslint-disable-next-line no-console
               console.warn('No addInput/addBinding available on Pane. Skipping control creation.');
               return null;
             };
@@ -68,7 +242,6 @@ const BlobTracker = () => {
             const addButton = (...args) => {
               if (typeof pane.addButton === 'function') return pane.addButton(...args);
               if (typeof pane.addBlade === 'function') return pane.addBlade({ view: 'button', ...(args[0] || {}) });
-              // eslint-disable-next-line no-console
               console.warn('No addButton/addBlade available on Pane. Skipping button creation.');
               return { on: () => {} };
             };
@@ -107,6 +280,35 @@ const BlobTracker = () => {
             addInput(params.current, 'showOriginal', { label: 'Show Original' });
             addInput(params.current, 'showBlobs', { label: 'Show Blobs' });
 
+            // Séparateur pour les options d'export
+            try {
+              if (typeof pane.addBlade === 'function') {
+                pane.addBlade({ view: 'separator' });
+              }
+            } catch (e) {}
+
+            // Options d'export
+            addInput(params.current, 'videoBitrate', {
+              min: 1000,
+              max: 20000,
+              step: 500,
+              label: 'Video Bitrate (kbps)',
+            });
+
+            addInput(params.current, 'audioBitrate', {
+              min: 64,
+              max: 320,
+              step: 32,
+              label: 'Audio Bitrate (kbps)',
+            });
+
+            addInput(params.current, 'exportFPS', {
+              min: 15,
+              max: 60,
+              step: 5,
+              label: 'Export FPS',
+            });
+
             const playBtn = addButton({ title: 'Play' });
             try {
               playBtn.on?.('click', () => {
@@ -134,13 +336,17 @@ const BlobTracker = () => {
                 document.getElementById('videoInput')?.click();
               });
             } catch (e) {}
+
+            // Bouton Export MP4
+            const exportBtn = addButton({ title: 'Export MP4' });
+            try {
+              exportBtn.on?.('click', handleExportVideo);
+            } catch (e) {}
           } catch (err) {
-            // eslint-disable-next-line no-console
             console.error('Failed to initialize Tweakpane', err);
           }
         })
         .catch((err) => {
-          // eslint-disable-next-line no-console
           console.error('Failed to load tweakpane module', err);
         });
     }
@@ -151,11 +357,10 @@ const BlobTracker = () => {
       if (paneRef.current) {
         try {
           paneRef.current.dispose();
-        } catch (e) {
-        }
+        } catch (e) {}
       }
     };
-  }, []);
+  }, [handleExportVideo]);
 
   const handleVideoUpload = (e) => {
     const file = e.target.files?.[0];
@@ -174,17 +379,14 @@ const BlobTracker = () => {
           if (canvas) {
             canvas.width = vw;
             canvas.height = vh;
-            // make the canvas element match the video's displayed size
             canvas.style.width = `${vw}px`;
             canvas.style.height = `auto`;
           }
           setVideoLoaded(true);
-          // try to play; if autoplay is blocked, mute and retry
           try {
             const playPromise = video.play();
             if (playPromise !== undefined && typeof playPromise.then === 'function') {
               playPromise.catch((err) => {
-                // eslint-disable-next-line no-console
                 console.warn('Video play prevented by browser autoplay policy:', err);
                 try {
                   video.muted = true;
@@ -215,7 +417,6 @@ const BlobTracker = () => {
 
     const processFrame = () => {
       if (video.paused || video.ended) {
-        // keep polling so that when the video is resumed we continue processing frames
         requestAnimationFrame(processFrame);
         return;
       }
@@ -224,7 +425,6 @@ const BlobTracker = () => {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
-      // Conversion en niveaux de gris et seuillage
       const binaryData = new Uint8Array(canvas.width * canvas.height);
 
       for (let i = 0; i < data.length; i += 4) {
@@ -233,11 +433,9 @@ const BlobTracker = () => {
         binaryData[idx] = gray > params.current.threshold ? 255 : 0;
       }
 
-      // Détection des blobs (algorithme simple de connected components)
       const detectedBlobs = detectBlobs(binaryData, canvas.width, canvas.height);
       setBlobs(detectedBlobs);
 
-      // Visualisation
       if (!params.current.showOriginal) {
         for (let i = 0; i < binaryData.length; i++) {
           const val = binaryData[i];
@@ -326,34 +524,136 @@ const BlobTracker = () => {
     return blobs.sort((a, b) => b.size - a.size).slice(0, params.current.maxBlobs);
   };
 
-  return (
-    <div className={styles.page}>
-      <input id="videoInput" type="file" accept="video/*" onChange={handleVideoUpload} className={styles.hidden} />
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
-      <div ref={containerRef} className={styles.container}>
-        <video ref={videoRef} className={styles.hidden} loop playsInline />
+  return (
+    <div style={{ 
+      width: '100vw', 
+      height: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      backgroundColor: '#1a1a1a',
+      position: 'relative'
+    }}>
+      <input 
+        id="videoInput" 
+        type="file" 
+        accept="video/*" 
+        onChange={handleVideoUpload} 
+        style={{ display: 'none' }} 
+      />
+
+      <div ref={containerRef} style={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}>
+        <video 
+          ref={videoRef} 
+          style={{ display: 'none' }} 
+          loop 
+          playsInline 
+        />
         
-        <canvas ref={canvasRef} className={styles.canvas} style={{ imageRendering: 'crisp-edges' }} />
+        <canvas 
+          ref={canvasRef} 
+          style={{ 
+            imageRendering: 'crisp-edges',
+            maxWidth: '100%',
+            height: 'auto',
+            display: 'block'
+          }} 
+        />
 
         {!videoLoaded && (
-          <div className={styles.importOverlay}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.8)'
+          }}>
             <button
               onClick={() => document.getElementById('videoInput')?.click()}
-              className={styles.importButton}
+              style={{
+                padding: '20px 40px',
+                fontSize: '18px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
             >
               Import Video
             </button>
           </div>
         )}
-      </div>
 
-      {/* {videoLoaded && (
-        <div className={styles.statusPanel}>
-          <div>Blobs détectés: {blobs.length}</div>
-          <div>Max blobs: {params.current.maxBlobs}</div>
-          <div>Threshold: {params.current.threshold}</div>
-        </div>
-      )} */}
+        {exporting && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            color: 'white',
+            zIndex: 1000
+          }}>
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold', 
+              marginBottom: '20px',
+              fontFamily: 'monospace'
+            }}>
+              {exportStatus}
+            </div>
+            
+            <div style={{ 
+              width: '300px', 
+              height: '30px', 
+              backgroundColor: '#333',
+              borderRadius: '15px',
+              overflow: 'hidden',
+              marginBottom: '15px'
+            }}>
+              <div style={{
+                width: `${exportProgress}%`,
+                height: '100%',
+                backgroundColor: '#4CAF50',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+            
+            <div style={{ 
+              fontSize: '18px',
+              fontFamily: 'monospace'
+            }}>
+              {exportProgress.toFixed(1)}%
+            </div>
+            
+            <div style={{ 
+              fontSize: '16px', 
+              marginTop: '10px',
+              color: '#aaa',
+              fontFamily: 'monospace'
+            }}>
+              Temps restant: {formatTime(exportTimeRemaining)}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

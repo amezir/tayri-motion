@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
+
+:root {
+  --font-mono: "JetBrains Mono", monospace;
+  --font-serif: "Source Serif 4", serif;
+}
+
+.main {
+  min-height: 100vh;
+  padding: 30px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(0, 0, 0);
+}
+
+.contentHome {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.containerHome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background-color: black;
+  width: 100%;
+  height: 95vh;
+
+  .contentBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    text-align: center;
+    height: 85%;
+    padding: 20px;
+  }
+
+  .topContent {
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+
+  .centerContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .title {
+      font-size: 96px;
+      font-family: var(--font-serif);
+      font-weight: 100;
+      color: #dde000;
+    }
+    .description {
+      font-size: 24px;
+      font-family: var(--font-mono);
+    }
+  }
+
+  .bottomContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+}
+
+.infoBox {
+  background-color: #000000;
+  display: flex;
+  flex-direction: row;
+  height: 15%;
+  padding: 20px;
+  align-items: center;
+  justify-content: space-between;
+
+  .infoText {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #ffffff;
+    line-height: 1.5;
+    width: 40%;
+  }
+
+  .infoUse {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    width: 20%;
+  }
+
+  .startButton {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    width: 40%;
+  }
+}
+
+.videoBG {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  opacity: 0.3;
+}

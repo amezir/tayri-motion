@@ -1,5 +1,6 @@
 import Head from "next/head";
 import styles from "@/styles/index.module.css";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -10,9 +11,54 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
-        <h1>Welcome to Blob Tracking App</h1>
-      </div>
+      <main className={styles.main}>
+        <section className={styles.containerHome}>
+          <video
+            src="./blob-tracking-1765113968031.mp4"
+            autoPlay
+            loop
+            muted
+            className={styles.videoBG}/>
+          <div className={styles.contentHome}>
+            <div className={styles.contentBox}>
+              <div className={styles.topContent}>
+                <p>Copyright © 2025 Trinity Garden</p>
+              </div>
+              <div className={styles.centerContent}>
+                <img src="./logo.png" alt="logo" draggable="false" />
+                <h1 className={styles.title}>Trinity Garden</h1>
+                <p className={styles.description}>Welcome To Trinity Garden</p>
+              </div>
+              <div className={styles.bottomContent}>
+                <img src="./codebar.png" alt="codebar logo" draggable="false" />
+                <p>
+                  Made by
+                  <a href="https://amezirmessaoud.fr">Amézir Messaoud</a>
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.infoBox}>
+              <div className={styles.infoText}>
+                Isolated pixels connect,<br />Bright zones become blobs.<br />Threshold applied, contours detected,<br />Each frame tells its trajectory.
+              </div>
+              <div className={styles.infoUse}>
+                ️<p>How to use</p> 
+                <ul>
+                  <li>qsdq</li>
+                  <li>qsdf</li>
+                  <li>qsdf</li>
+                </ul>
+              </div>
+              <div className={styles.startButton}>
+                <Link href="/tracking">
+                  <button className={styles.buttonStart}>Get Started</button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </>
   );
 }
