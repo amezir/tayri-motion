@@ -16,11 +16,10 @@ const BlobTracker = () => {
     threshold: 128,
     minBlobSize: 100,
     maxBlobs: 10,
-    blur: 1,
+    showBlobs: true,
     showOriginal: false,
-    sensitivity: 1.0,
     strokeStyle: '#ff0000ff',
-    fillStyle: '#ff0000ff',
+    fillStyle: '#ffffffff',
   });
 
   useEffect(() => {
@@ -95,20 +94,6 @@ const BlobTracker = () => {
               label: 'Max Blobs',
             });
 
-            addInput(params.current, 'blur', {
-              min: 0,
-              max: 10,
-              step: 0.1,
-              label: 'Blur',
-            });
-
-            addInput(params.current, 'sensitivity', {
-              min: 0.1,
-              max: 3,
-              step: 0.1,
-              label: 'Sensitivity',
-            });
-
             addInput(params.current, 'strokeStyle', {
               label: 'Stroke Style',
               view: 'color',
@@ -120,14 +105,35 @@ const BlobTracker = () => {
             });
 
             addInput(params.current, 'showOriginal', { label: 'Show Original' });
+            addInput(params.current, 'showBlobs', { label: 'Show Blobs' });
+
+            const playBtn = addButton({ title: 'Play' });
+            try {
+              playBtn.on?.('click', () => {
+                const v = videoRef.current;
+                if (v) {
+                  try {
+                    const p = v.play();
+                    if (p && typeof p.then === 'function') p.catch(() => {});
+                  } catch (err) {}
+                }
+              });
+            } catch (e) {}
+
+            const pauseBtn = addButton({ title: 'Pause' });
+            try {
+              pauseBtn.on?.('click', () => {
+                const v = videoRef.current;
+                if (v) v.pause();
+              });
+            } catch (e) {}
 
             const btn = addButton({ title: 'Import Video' });
             try {
               btn.on?.('click', () => {
                 document.getElementById('videoInput')?.click();
               });
-            } catch (e) {
-            }
+            } catch (e) {}
           } catch (err) {
             // eslint-disable-next-line no-console
             console.error('Failed to initialize Tweakpane', err);
@@ -157,10 +163,41 @@ const BlobTracker = () => {
       const url = URL.createObjectURL(file);
       const video = videoRef.current;
       if (video) {
+        const canvas = canvasRef.current;
+        setVideoLoaded(false);
         video.src = url;
         video.load();
-        video.play();
-        setVideoLoaded(true);
+
+        const onLoaded = () => {
+          const vw = video.videoWidth || 1280;
+          const vh = video.videoHeight || 720;
+          if (canvas) {
+            canvas.width = vw;
+            canvas.height = vh;
+            // make the canvas element match the video's displayed size
+            canvas.style.width = `${vw}px`;
+            canvas.style.height = `auto`;
+          }
+          setVideoLoaded(true);
+          // try to play; if autoplay is blocked, mute and retry
+          try {
+            const playPromise = video.play();
+            if (playPromise !== undefined && typeof playPromise.then === 'function') {
+              playPromise.catch((err) => {
+                // eslint-disable-next-line no-console
+                console.warn('Video play prevented by browser autoplay policy:', err);
+                try {
+                  video.muted = true;
+                  video.play().catch(() => {});
+                } catch (e) {}
+              });
+            }
+          } catch (e) {}
+
+          video.removeEventListener('loadedmetadata', onLoaded);
+        };
+
+        video.addEventListener('loadedmetadata', onLoaded);
       }
     }
   };
@@ -177,7 +214,11 @@ const BlobTracker = () => {
     canvas.height = video.videoHeight || 720;
 
     const processFrame = () => {
-      if (video.paused || video.ended) return;
+      if (video.paused || video.ended) {
+        // keep polling so that when the video is resumed we continue processing frames
+        requestAnimationFrame(processFrame);
+        return;
+      }
 
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -207,16 +248,17 @@ const BlobTracker = () => {
         ctx.putImageData(imageData, 0, 0);
       }
 
-      // Dessiner les bounding boxes
-      ctx.strokeStyle = params.current.strokeStyle;
-      ctx.lineWidth = 2;
-      ctx.font = '14px monospace';
-      ctx.fillStyle = params.current.fillStyle;
+      if (params.current.showBlobs) {
+        ctx.strokeStyle = params.current.strokeStyle;
+        ctx.lineWidth = 2;
+        ctx.font = '14px monospace';
+        ctx.fillStyle = params.current.fillStyle;
 
-      detectedBlobs.forEach((blob) => {
-        ctx.strokeRect(blob.x, blob.y, blob.width, blob.height);
-        ctx.fillText(`x:${blob.centerX.toFixed(0)}, y:${blob.centerY.toFixed(0)}`, blob.x, blob.y - 5);
-      });
+        detectedBlobs.forEach((blob) => {
+          ctx.strokeRect(blob.x, blob.y, blob.width, blob.height);
+          ctx.fillText(`x:${blob.centerX.toFixed(0)}, y:${blob.centerY.toFixed(0)}`, blob.x, blob.y - 5);
+        });
+      }
 
       requestAnimationFrame(processFrame);
     };
@@ -290,7 +332,7 @@ const BlobTracker = () => {
 
       <div ref={containerRef} className={styles.container}>
         <video ref={videoRef} className={styles.hidden} loop playsInline />
-
+        
         <canvas ref={canvasRef} className={styles.canvas} style={{ imageRendering: 'crisp-edges' }} />
 
         {!videoLoaded && (
