@@ -50,8 +50,8 @@ export default function Home() {
                 </ul>
               </div>
               <div className={styles.startButton}>
-                <Link href="/tracking">
-                  <button className={styles.buttonStart}>Get Started</button>
+                <Link href="/">
+                  <button className={styles.buttonStart}>SOON</button>
                 </Link>
               </div>
             </div>
