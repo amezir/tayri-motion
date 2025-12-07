@@ -32,8 +32,7 @@ export default function Home() {
               <div className={styles.bottomContent}>
                 <img src="./codebar.png" alt="codebar logo" draggable="false" />
                 <p>
-                  Made by
-                  <a href="https://amezirmessaoud.fr">Amézir Messaoud</a>
+                  Made by <a href="https://amezirmessaoud.fr" className={styles.link}>Amézir Messaoud</a>
                 </p>
               </div>
             </div>
@@ -43,11 +42,11 @@ export default function Home() {
                 Isolated pixels connect,<br />Bright zones become blobs.<br />Threshold applied, contours detected,<br />Each frame tells its trajectory.
               </div>
               <div className={styles.infoUse}>
-                ️<p>How to use</p> 
-                <ul>
-                  <li>qsdq</li>
-                  <li>qsdf</li>
-                  <li>qsdf</li>
+                ️<p className={styles.useTitle}>How to use</p> 
+                <ul className={styles.useList}>
+                  <li>01. Upload file</li>
+                  <li>02. Edit</li>
+                  <li>03. Download</li>
                 </ul>
               </div>
               <div className={styles.startButton}>

@@ -1,4 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 :root {
   --font-mono: "JetBrains Mono", monospace;
@@ -13,7 +15,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(255, 0, 0);
 }
 
 .contentHome {
@@ -74,6 +76,15 @@
     gap: 10px;
     font-size: 11px;
     font-family: var(--font-mono);
+
+    .link {
+      color: #dde000;
+      text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
   }
 }
 
@@ -101,6 +112,22 @@
     font-family: var(--font-mono);
     font-size: 11px;
     width: 20%;
+
+    .useTitle {
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .useList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+
+        li {
+          margin-bottom: 5px;
+        }
+    }
   }
 
   .startButton {
@@ -109,6 +136,20 @@
     justify-content: center;
     align-items: flex-end;
     width: 40%;
+
+    .buttonStart {
+      padding: 10px 50px;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: var(--font-mono);
+      border: none;
+      cursor: pointer;
+
+        &:hover {
+            background-color: #dde000;
+            transform: translateY(-1px);
+        }
+    }
   }
 }
 
