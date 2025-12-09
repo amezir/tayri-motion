@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
+import styles from '../styles/trancking.module.css';
 
 const BlobTracker = () => {
   const containerRef = useRef(null);
@@ -531,65 +532,33 @@ const BlobTracker = () => {
   };
 
   return (
-    <div style={{ 
-      width: '100vw', 
-      height: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      backgroundColor: '#1a1a1a',
-      position: 'relative'
-    }}>
+    <div className={styles.page}>
       <input 
         id="videoInput" 
         type="file" 
         accept="video/*" 
         onChange={handleVideoUpload} 
-        style={{ display: 'none' }} 
+        className={styles.videoInput}
       />
 
-      <div ref={containerRef} style={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}>
+      <div ref={containerRef} className={styles.container}>
         <video 
           ref={videoRef} 
-          style={{ display: 'none' }} 
+          className={styles.video}
           loop 
           playsInline 
         />
         
         <canvas 
           ref={canvasRef} 
-          style={{ 
-            imageRendering: 'crisp-edges',
-            maxWidth: '100%',
-            height: 'auto',
-            display: 'block'
-          }} 
+          className={styles.canvas}
         />
 
         {!videoLoaded && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.8)'
-          }}>
+          <div className={styles.importOverlay}>
             <button
               onClick={() => document.getElementById('videoInput')?.click()}
-              style={{
-                padding: '20px 40px',
-                fontSize: '18px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
+              className={styles.importButton}
             >
               Import Video
             </button>
@@ -597,58 +566,23 @@ const BlobTracker = () => {
         )}
 
         {exporting && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.9)',
-            color: 'white',
-            zIndex: 1000
-          }}>
-            <div style={{ 
-              fontSize: '24px', 
-              fontWeight: 'bold', 
-              marginBottom: '20px',
-              fontFamily: 'monospace'
-            }}>
+          <div className={styles.exportOverlay}>
+            <div className={styles.exportStatus}>
               {exportStatus}
             </div>
             
-            <div style={{ 
-              width: '300px', 
-              height: '30px', 
-              backgroundColor: '#333',
-              borderRadius: '15px',
-              overflow: 'hidden',
-              marginBottom: '15px'
-            }}>
-              <div style={{
-                width: `${exportProgress}%`,
-                height: '100%',
-                backgroundColor: '#4CAF50',
-                transition: 'width 0.3s ease'
-              }} />
+            <div className={styles.progressBarContainer}>
+              <div 
+                className={styles.progressBar}
+                style={{ width: `${exportProgress}%` }}
+              />
             </div>
             
-            <div style={{ 
-              fontSize: '18px',
-              fontFamily: 'monospace'
-            }}>
+            <div className={styles.progressPercent}>
               {exportProgress.toFixed(1)}%
             </div>
             
-            <div style={{ 
-              fontSize: '16px', 
-              marginTop: '10px',
-              color: '#aaa',
-              fontFamily: 'monospace'
-            }}>
+            <div className={styles.timeRemaining}>
               Temps restant: {formatTime(exportTimeRemaining)}
             </div>
           </div>

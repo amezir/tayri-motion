@@ -1,8 +1,65 @@
+import { useEffect, useRef } from "react";
 import Head from "next/head";
 import styles from "@/styles/index.module.css";
 import Link from "next/link";
+import { gsap } from "gsap/dist/gsap";
 
 export default function Home() {
+  const titleRef = useRef(null);
+  const videoRef = useRef(null);
+  const contentRef = useRef(null);
+  const infoRef = useRef(null);
+
+  useEffect(() => {
+    if (!videoRef.current || !contentRef.current || !infoRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set([contentRef.current, infoRef.current], { opacity: 0, y: 16 });
+
+      const tl = gsap.timeline();
+
+      tl.fromTo(
+        videoRef.current,
+        { scale: 0.35, filter: "blur(8px)" },
+        {
+          scale: 1,
+          filter: "blur(8px)",
+          duration: 1.8,
+          ease: "expoScale(0.5,7,none)",
+        }
+      );
+
+      tl.to(
+        [contentRef.current, infoRef.current],
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power2.out",
+          stagger: 0.15,
+        },
+        "-=0.1"
+      );
+
+      if (titleRef.current) {
+        tl.fromTo(
+          titleRef.current,
+          { opacity: 0, y: 24, letterSpacing: "0.5em" },
+          {
+            opacity: 1,
+            y: 0,
+            letterSpacing: "0.05em",
+            duration: 3.2,
+            ease: "power3.out",
+          },
+          "<"
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <>
       <Head>
@@ -25,16 +82,19 @@ export default function Home() {
             loop
             muted
             className={styles.videoBG}
+            ref={videoRef}
           />
           <div className={styles.contentHome}>
-            <div className={styles.contentBox}>
+            <div className={styles.contentBox} ref={contentRef}>
               <div className={styles.topContent}>
-                <p>Copyright © 2025 Trinity Garden</p>
+                <p>Copyright © 2025 Tayri Garden</p>
               </div>
               <div className={styles.centerContent}>
                 <img src="./logo.png" alt="logo" draggable="false" />
-                <h1 className={styles.title}>Trinity Garden</h1>
-                <p className={styles.description}>Welcome To Trinity Garden</p>
+                <h1 className={styles.title} ref={titleRef}>
+                  Tayri Garden
+                </h1>
+                <p className={styles.description}>Welcome To Tayri Garden</p>
               </div>
               <div className={styles.bottomContent}>
                 <img src="./codebar.png" alt="codebar logo" draggable="false" />
@@ -47,7 +107,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className={styles.infoBox}>
+            <div className={styles.infoBox} ref={infoRef}>
               <div className={styles.infoText}>
                 Isolated pixels connect,
                 <br />
