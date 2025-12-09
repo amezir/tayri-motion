@@ -20,7 +20,7 @@ export default function Home() {
 
       tl.fromTo(
         videoRef.current,
-        { scale: 0.35, filter: "blur(8px)" },
+        { scale: 0, filter: "blur(8px)" },
         {
           scale: 1,
           filter: "blur(8px)",
@@ -69,7 +69,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.png" />
         <link
           rel="preload"
-          href="https://pub-d8ee72e371f24aa596721d8d40a1acdc.r2.dev/blob-tracking-1765113968031.mp4"
+          href="./bg_video.mp4"
           as="video"
           type="video/mp4"
         />
@@ -77,7 +77,7 @@ export default function Home() {
       <main className={styles.main}>
         <section className={styles.containerHome}>
           <video
-            src="https://pub-d8ee72e371f24aa596721d8d40a1acdc.r2.dev/blob-tracking-1765113968031.mp4"
+            src="./bg_video.mp4"
             autoPlay
             loop
             muted
