@@ -20,7 +20,7 @@ export default function Home() {
 
       tl.fromTo(
         videoRef.current,
-        { scale: 0, filter: "blur(8px)" },
+        { scale: 0.1, filter: "blur(0.1px)" },
         {
           scale: 1,
           filter: "blur(8px)",
