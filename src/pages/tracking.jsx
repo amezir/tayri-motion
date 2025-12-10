@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import styles from '../styles/trancking.module.css';
+import styles from '../styles/trancking.module.scss';
 
 const BlobTracker = () => {
   const containerRef = useRef(null);

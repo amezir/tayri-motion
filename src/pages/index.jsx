@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import Head from "next/head";
-import styles from "@/styles/index.module.css";
+import styles from "@/styles/index.module.scss";
 import Link from "next/link";
 import { gsap } from "gsap/dist/gsap";
 
@@ -66,13 +66,14 @@ export default function Home() {
         <title>Trinity Garden</title>
         <meta name="description" content="Welcome To Trinity Garden" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
         <link
-          rel="preload"
-          href="./bg_video.mp4"
-          as="video"
-          type="video/mp4"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap"
+          rel="stylesheet"
         />
+        <link rel="icon" href="/favicon.png" />
+        <link rel="preload" href="./bg_video.mp4" as="video" type="video/mp4" />
       </Head>
       <main className={styles.main}>
         <section className={styles.containerHome}>
