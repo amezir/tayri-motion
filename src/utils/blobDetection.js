@@ -57,15 +57,11 @@ export const detectBlobs = (binaryData, width, height, params) => {
     }
   }
 
-  // Trier par taille puis limiter le nombre
   const sortedBlobs = blobs.sort((a, b) => b.size - a.size).slice(0, params.maxBlobs);
   
-  // Trier par position (de gauche à droite, puis de haut en bas) pour connexions stables
   return sortedBlobs.sort((a, b) => {
-    // Priorité à la position horizontale
     const xDiff = a.centerX - b.centerX;
-    if (Math.abs(xDiff) > 50) return xDiff; // Si différence significative en X
-    // Sinon trier par Y
+    if (Math.abs(xDiff) > 50) return xDiff; 
     return a.centerY - b.centerY;
   });
 };

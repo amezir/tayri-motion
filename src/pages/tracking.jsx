@@ -29,7 +29,7 @@ const BlobTracker = () => {
     showConnections: false,
     connectionStyle: 'normal',
     connectionCurvature: 0,
-    connectionColor: '#00ff00ff',
+    connectionColor: '#ffffffff',
     connectionWidth: 2,
     connectionFromEdge: true,
     dashLength: 10,
@@ -69,7 +69,6 @@ const BlobTracker = () => {
 
     import('tweakpane')
       .then((mod) => {
-        // Récupération du constructeur Pane quelle que soit la version exportée
         const PaneCtor = mod?.Pane ?? mod?.default?.Pane ?? mod?.default ?? null;
         if (!PaneCtor) {
           console.warn('Tweakpane module loaded but Pane constructor not found.');
@@ -80,35 +79,28 @@ const BlobTracker = () => {
           paneInstance = new PaneCtor({ title: 'Blob Tracking Controls', expanded: true });
           paneRef.current = paneInstance;
 
-          // Helper universel pour ajouter un input à un "container" (pane ou folder)
           const addInputTo = (parent, targetObj, key, options = {}) => {
-            // Si parent a addInput -> use it
             if (parent && typeof parent.addInput === 'function') {
               try {
                 return parent.addInput(targetObj, key, options);
               } catch (e) {
-                // fallback to other methods below
               }
             }
 
-            // Some older/newer versions may use addBinding
             if (parent && typeof parent.addBinding === 'function') {
               try {
                 return parent.addBinding(targetObj, key, options);
               } catch (e) {}
             }
 
-            // If there's no suitable method on parent, fallback to root pane
             if (paneInstance && typeof paneInstance.addInput === 'function') {
               try {
                 return paneInstance.addInput(targetObj, key, options);
               } catch (e) {}
             }
 
-            // Last resort: try to create a blade (best-effort)
             if (paneInstance && typeof paneInstance.addBlade === 'function') {
               try {
-                // build a generic blade for booleans / numbers / strings / color
                 const view = options.view
                   ? options.view
                   : typeof targetObj[key] === 'boolean'
@@ -118,7 +110,6 @@ const BlobTracker = () => {
                   : 'text';
 
                 const bladeCfg = { view, label: options.label ?? key };
-                // For color, some versions expect { view: 'color' } and a params object
                 if (view === 'color') {
                   return paneInstance.addBlade({
                     view: 'color',
@@ -127,18 +118,15 @@ const BlobTracker = () => {
                   });
                 }
 
-                // generic text/number/checkbox blade
                 return paneInstance.addBlade({
                   view: view === 'checkbox' ? 'boolean' : 'input',
                   label: options.label ?? key,
                   params: { value: targetObj[key] },
                 });
               } catch (e) {
-                // nothing else we can do
               }
             }
 
-            // nothing added
             return null;
           };
 
@@ -167,30 +155,21 @@ const BlobTracker = () => {
               } catch (e) {}
             }
 
-            // no-op fallback
             return { on: () => {} };
           };
 
-          // Create folder helper that returns either the folder or null
           const createFolder = (title, expanded = false) => {
             try {
               const folder = paneInstance.addFolder?.({ title, expanded });
               if (folder) return folder;
             } catch (e) {}
-            // If addFolder not available, try addBlade('folder') (some variations)
             try {
               const blade = paneInstance.addBlade?.({ view: 'folder', title, expanded });
               if (blade) return blade;
             } catch (e) {}
-            // fallback: return null so addInputTo will attach to root pane
             return null;
           };
 
-          //
-          // Build folders + inputs (utilise addInputTo et addButtonTo pour compatibilité)
-          //
-
-          // Blob Detection folder
           const blobFolder = createFolder('Blob Detection', true);
           addInputTo(blobFolder ?? paneInstance, params.current, 'threshold', {
             min: 0,
@@ -213,12 +192,10 @@ const BlobTracker = () => {
           addInputTo(blobFolder ?? paneInstance, params.current, 'showBlobs', { label: 'Show Blobs' });
           addInputTo(blobFolder ?? paneInstance, params.current, 'showOriginal', { label: 'Show Original' });
 
-          // Colors folder
           const colorsFolder = createFolder('Blob Colors', false);
           addInputTo(colorsFolder ?? paneInstance, params.current, 'strokeStyle', { label: 'Stroke Style', view: 'color' });
           addInputTo(colorsFolder ?? paneInstance, params.current, 'fillStyle', { label: 'Fill Style', view: 'color' });
 
-          // Connections folder
           const connectionsFolder = createFolder('Connections (Beta)', false);
           addInputTo(connectionsFolder ?? paneInstance, params.current, 'showConnections', { label: 'Show Connections' });
           addInputTo(connectionsFolder ?? paneInstance, params.current, 'connectionStyle', {
@@ -241,7 +218,6 @@ const BlobTracker = () => {
           addInputTo(connectionsFolder ?? paneInstance, params.current, 'dashLength', { min: 1, max: 50, step: 1, label: 'Dash Length' });
           addInputTo(connectionsFolder ?? paneInstance, params.current, 'dashGap', { min: 1, max: 50, step: 1, label: 'Dash Gap' });
 
-          // Export folder
           const exportFolder = createFolder('Export Settings', false);
           addInputTo(exportFolder ?? paneInstance, params.current, 'videoBitrate', {
             min: 1000,
@@ -262,7 +238,6 @@ const BlobTracker = () => {
             label: 'Export FPS',
           });
 
-          // Actions folder (buttons)
           const actionsFolder = createFolder('Actions', true);
           const playBtn = addButtonTo(actionsFolder ?? paneInstance, { title: 'Play' });
           try {
