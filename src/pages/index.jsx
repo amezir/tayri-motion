@@ -119,11 +119,11 @@ export default function Home() {
                   {isAltTheme ? "🌙" : "☀️"}
                 </button>
               <div className={styles.startButton}>
-                <Link href="/tracking">
+                <Link href="/">
                   <button
                     className={`${styles.buttonStart} ${isAltTheme ? styles.buttonStartAlt : ""}`}
                   >
-                    Get started
+                    Soon
                   </button>
                 </Link>
               </div>
