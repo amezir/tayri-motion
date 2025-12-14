@@ -63,9 +63,23 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Tayri Garden</title>
+        <title>Tayri Garden - by Amézir Messaoud</title>
+        <meta charSet="UTF-8" />
         <meta name="description" content="Welcome To Tayri Garden" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <meta name="keywords" content="Tayri,Garden,Amézir,Messaoud,Tracking,Blob,Detection,Video,Processing,WebGL,JavaScript,Open Source" />
+        <meta name="description" content="Explore Tayri Garden, an innovative web app by Amézir Messaoud that utilizes blob detection and video processing techniques for dynamic visual experiences." />
+        <meta name="author" content="Amézir Messaoud" />
+        <meta name="robots" content="index, follow" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Tayri Garden" />
+        <meta property="og:description" content="Explore Tayri Garden, an innovative web app by Amézir Messaoud that utilizes blob detection and video processing techniques for dynamic visual experiences." />
+        <meta property="og:image" content="/og_image.png" />
+        <meta property="og:url" content="https://tayrigarden.vercel.app" />
+
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
         <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
