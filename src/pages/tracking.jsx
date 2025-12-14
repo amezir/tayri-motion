@@ -17,6 +17,7 @@ const BlobTracker = () => {
   const [exportProgress, setExportProgress] = useState(0);
   const [exportTimeRemaining, setExportTimeRemaining] = useState(0);
   const [exportStatus, setExportStatus] = useState('');
+  const exportAbortControllerRef = useRef(null);
 
   const params = useRef({
     threshold: 128,
@@ -44,26 +45,51 @@ const BlobTracker = () => {
     const canvas = canvasRef.current;
 
     if (!video || !canvas || !videoLoaded) {
-      alert("Veuillez d'abord charger une vidéo");
+      alert("Please load a video first");
       return;
     }
 
     setExporting(true);
     setExportProgress(0);
+    setExportStatus('Preparing export...');
 
-    await exportVideo(video, canvas, params.current, {
-      onProgress: setExportProgress,
-      onStatus: setExportStatus,
-      onTimeRemaining: setExportTimeRemaining,
-      onComplete: () => {
-        setTimeout(() => setExporting(false), 2000);
+    const abortController = new AbortController();
+    exportAbortControllerRef.current = abortController;
+
+    await exportVideo(
+      video,
+      canvas,
+      params.current,
+      {
+        onProgress: setExportProgress,
+        onStatus: setExportStatus,
+        onTimeRemaining: setExportTimeRemaining,
+        onCanceled: () => {
+          setExportStatus('Export canceled');
+          setExporting(false);
+          exportAbortControllerRef.current = null;
+          setExportProgress(0);
+        },
+        onComplete: () => {
+          exportAbortControllerRef.current = null;
+          setTimeout(() => setExporting(false), 2000);
+        },
+        onError: (error) => {
+          exportAbortControllerRef.current = null;
+          alert("Error while exporting the video: " + (error?.message || String(error)));
+          setExporting(false);
+        },
       },
-      onError: (error) => {
-        alert("Erreur lors de l'export de la vidéo: " + (error?.message || String(error)));
-        setExporting(false);
-      },
-    });
+      abortController.signal,
+    );
   }, [videoLoaded]);
+
+  const handleCancelExport = useCallback(() => {
+    if (exportAbortControllerRef.current) {
+      setExportStatus('Cancelling export...');
+      exportAbortControllerRef.current.abort();
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -257,7 +283,7 @@ const BlobTracker = () => {
             importBtn.on?.('click', () => document.getElementById('videoInput')?.click());
           } catch (e) {}
 
-          const exportBtn = addButtonTo(actionsFolder ?? paneInstance, { title: 'Export MP4' });
+          const exportBtn = addButtonTo(actionsFolder ?? paneInstance, { title: 'Export WEBM' });
           try {
             exportBtn.on?.('click', handleExportVideo);
           } catch (e) {}
@@ -403,6 +429,7 @@ const BlobTracker = () => {
 
         {exporting && (
           <div className={styles.exportOverlay}>
+            <img src="./logo.png" alt="logo" draggable="false" />
             <div className={styles.exportStatus}>{exportStatus}</div>
 
             <div className={styles.progressBarContainer}>
@@ -411,7 +438,15 @@ const BlobTracker = () => {
 
             <div className={styles.progressPercent}>{exportProgress.toFixed(1)}%</div>
 
-            <div className={styles.timeRemaining}>Temps restant: {formatTime(exportTimeRemaining)}</div>
+            <div className={styles.timeRemaining}>Time remaining: {formatTime(exportTimeRemaining)}</div>
+
+            <button
+              type="button"
+              className={styles.exportCancelButton}
+              onClick={handleCancelExport}
+            >
+              Cancel export
+            </button>
           </div>
         )}
       </div>

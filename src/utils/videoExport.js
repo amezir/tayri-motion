@@ -4,22 +4,95 @@ export const formatTime = (seconds) => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-export const exportVideo = async (video, canvas, params, callbacks) => {
-  const { onProgress, onStatus, onTimeRemaining, onComplete, onError } = callbacks;
+const videoAudioMap = new WeakMap();
+const SOURCE_KEY = Symbol('blobTrackingAudio');
+
+const getAudioContextForVideo = (video) => {
+  if (!video) throw new Error('No video element provided');
+
+  const existing = video[SOURCE_KEY] || videoAudioMap.get(video);
+  if (existing) {
+    return existing;
+  }
 
   try {
-    onStatus('Capture de la vidéo...');
+    const audioContext = new AudioContext();
+    const sourceNode = audioContext.createMediaElementSource(video);
+    const entry = { audioContext, sourceNode, connectedToOutput: false };
+    videoAudioMap.set(video, entry);
+    video[SOURCE_KEY] = entry;
+    return entry;
+  } catch (err) {
+    // If a source already exists elsewhere, reuse it if we can find it.
+    const fallback = videoAudioMap.get(video) || video[SOURCE_KEY];
+    if (fallback) {
+      return fallback;
+    }
+    throw err;
+  }
+};
+
+const ensureOutputConnection = (entry) => {
+  if (!entry) return;
+  const { sourceNode, audioContext, connectedToOutput } = entry;
+  if (!connectedToOutput) {
+    try {
+      sourceNode.connect(audioContext.destination);
+      entry.connectedToOutput = true;
+    } catch (e) {}
+  }
+};
+
+const disconnectOutput = (entry) => {
+  if (!entry) return;
+  const { sourceNode, audioContext, connectedToOutput } = entry;
+  if (connectedToOutput) {
+    try {
+      sourceNode.disconnect(audioContext.destination);
+    } catch (e) {}
+    entry.connectedToOutput = false;
+  }
+};
+
+const reconnectOutput = (entry) => {
+  if (!entry) return;
+  try {
+    entry.sourceNode?.connect(entry.audioContext.destination);
+    entry.connectedToOutput = true;
+  } catch (e) {}
+};
+
+export const exportVideo = async (video, canvas, params, callbacks = {}, abortSignal) => {
+  const {
+    onProgress = () => {},
+    onStatus = () => {},
+    onTimeRemaining = () => {},
+    onComplete = () => {},
+    onCanceled = () => {},
+    onError = () => {},
+  } = callbacks;
+
+  let audioContext = null;
+  let sourceNode = null;
+  let destinationNode = null;
+  let audioEntry = null;
+  let canceled = false;
+
+  try {
+    onStatus('Capturing video...');
 
     const fps = params.exportFPS;
     const videoStream = canvas.captureStream(fps);
     const videoTrack = videoStream.getVideoTracks()[0];
     
-    const audioContext = new AudioContext();
-    const sourceNode = audioContext.createMediaElementSource(video);
-    const destinationNode = audioContext.createMediaStreamDestination();
+    audioEntry = getAudioContextForVideo(video);
+    ({ audioContext, sourceNode } = audioEntry);
+    ensureOutputConnection(audioEntry);
+    disconnectOutput(audioEntry); // mute playback during export
+    await audioContext.resume();
+
+    destinationNode = audioContext.createMediaStreamDestination();
     sourceNode.connect(destinationNode);
-    sourceNode.connect(audioContext.destination);
-    
     const combinedStream = new MediaStream([
       videoTrack,
       ...destinationNode.stream.getAudioTracks()
@@ -53,6 +126,31 @@ export const exportVideo = async (video, canvas, params, callbacks) => {
       mediaRecorder.onstop = () => resolve(chunks);
     });
 
+    const handleAbort = () => {
+      canceled = true;
+      try {
+        mediaRecorder.stop();
+      } catch (e) {}
+      try {
+        video.pause();
+      } catch (e) {}
+      onStatus('Export canceled');
+    };
+
+    const removeAbortListener = () => {
+      try {
+        abortSignal?.removeEventListener('abort', handleAbort);
+      } catch (e) {}
+    };
+
+    if (abortSignal) {
+      if (abortSignal.aborted) {
+        handleAbort();
+      } else {
+        abortSignal.addEventListener('abort', handleAbort, { once: true });
+      }
+    }
+
     const wasPlaying = !video.paused;
     const originalTime = video.currentTime;
     const duration = video.duration;
@@ -62,7 +160,12 @@ export const exportVideo = async (video, canvas, params, callbacks) => {
     video.currentTime = 0;
     video.muted = false;
     
-    await video.play();
+    await Promise.resolve(video.play()).catch((err) => {
+      if (err?.name === 'AbortError' || err?.name === 'NotAllowedError') {
+        return;
+      }
+      throw err;
+    });
     mediaRecorder.start();
 
     const startTime = Date.now();
@@ -77,7 +180,7 @@ export const exportVideo = async (video, canvas, params, callbacks) => {
       const remaining = Math.max(0, estimatedTotal - elapsed);
       onTimeRemaining(remaining);
 
-      if (currentTime >= duration - 0.1) {
+      if (currentTime >= duration - 0.1 || canceled) {
         mediaRecorder.stop();
         return;
       }
@@ -94,12 +197,38 @@ export const exportVideo = async (video, canvas, params, callbacks) => {
     };
 
     const recordedChunks = await recordingPromise;
-    
+    removeAbortListener();
+
+    if (canceled) {
+      try {
+        if (sourceNode && destinationNode) {
+          sourceNode.disconnect(destinationNode);
+        }
+      } catch (e) {}
+
+      reconnectOutput(audioEntry); // restore playback audio
+
+      video.loop = true;
+      video.currentTime = originalTime;
+      video.muted = wasMuted;
+      if (wasPlaying) {
+        video.play().catch(() => {});
+      }
+
+      onCanceled();
+      return;
+    }
+
     onStatus('Finalisation...');
     onProgress(95);
 
-    sourceNode.disconnect();
-    audioContext.close();
+    try {
+      if (sourceNode && destinationNode) {
+        sourceNode.disconnect(destinationNode);
+      }
+    } catch (e) {}
+
+    reconnectOutput(audioEntry); // restore playback audio
 
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
     const sizeInMB = (blob.size / (1024 * 1024)).toFixed(1);
@@ -119,12 +248,21 @@ export const exportVideo = async (video, canvas, params, callbacks) => {
     }
     
     onProgress(100);
-    onStatus(`Export terminé ! (${sizeInMB} MB)`);
+    onStatus(`Export complete ! (${sizeInMB} MB)`);
     onComplete();
 
   } catch (error) {
     console.error('Erreur lors de l\'export:', error);
     onError(error);
+    try {
+      removeAbortListener?.();
+    } catch (e) {}
+    try {
+      if (sourceNode && destinationNode) {
+        sourceNode.disconnect(destinationNode);
+      }
+    } catch (e) {}
+    reconnectOutput(audioEntry); // restore playback audio
     
     if (video) {
       video.loop = true;

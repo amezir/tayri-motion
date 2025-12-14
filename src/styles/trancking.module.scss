@@ -112,29 +112,30 @@
 
 .exportOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: black;
   color: white;
   z-index: 1000;
+  width: 100vw;
+  height: 100vh;
 }
 
 .exportStatus {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 16px;
   margin-bottom: 20px;
-  font-family: monospace;
+  margin-top: 20px;
+  font-family: var(--font-mono);
 }
 
 .progressBarContainer {
   width: 300px;
-  height: 30px;
+  height: 3px;
   background-color: #333;
   border-radius: 15px;
   overflow: hidden;
@@ -143,20 +144,38 @@
 
 .progressBar {
   height: 100%;
-  background-color: #4caf50;
+  background-color: #dde000;
   transition: width 0.3s ease;
 }
 
 .progressPercent {
   font-size: 18px;
-  font-family: monospace;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
 }
 
 .timeRemaining {
   font-size: 16px;
   margin-top: 10px;
-  color: #aaa;
-  font-family: monospace;
+  color: #ffffff;
+  font-family: var(--font-mono);
+}
+
+.exportCancelButton {
+  margin-top: 20px;
+  padding: 10px 24px;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: #dde000;
+    color: #000000;
+    transform: translateY(-1px);
+  }
 }
 
 .statusPanel {
