@@ -40,23 +40,25 @@
 }
 
 .importOverlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
+  background-color: black;
   flex-direction: column;
   gap: 20px;
   transition: background-color 0.4s ease;
+  z-index: 100;
 }
 
 .importOverlayAlt {
-  background-color: rgba(247, 247, 242, 0.95);
+  background-color: white;
   color: #000000;
 }
 
@@ -213,5 +215,179 @@
         li {
           margin-bottom: 5px;
         }
+    }
+  }
+
+  .containerTracking {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000000;
+    transition: background-color 0.4s ease;
+  }
+
+  .pannelContainer {
+    background: white;
+    color: #000000;
+    padding: 10px 12px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    width: 35%;
+    height: 100%;
+  }
+
+  .videoControls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: black;
+    padding: 12px 20px;
+
+    button {
+      background: #000000;
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .videoTime {
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .videoSeeker {
+      width: 200px;
+      height: 1px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgb(255, 255, 255);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        background: #ffffff;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+
+      &::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        background: #ffffff;
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .volumeControl {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+
+    .volumeIcon {
+      font-size: 14px;
+      min-width: 14px;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    .volumeSlider {
+      width: 60px;
+      height: 1px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgb(255, 255, 255);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 10px;
+        height: 10px;
+        background: rgb(255, 255, 255);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #ffffff;
+          width: 12px;
+          height: 12px;
+        }
+      }
+
+      &::-moz-range-thumb {
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #ffffff;
+          width: 12px;
+          height: 12px;
+        }
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
     }
   }

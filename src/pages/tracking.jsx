@@ -18,13 +18,17 @@ const BlobTracker = () => {
   const [exportTimeRemaining, setExportTimeRemaining] = useState(0);
   const [exportStatus, setExportStatus] = useState('');
   const exportAbortControllerRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
 
   const params = useRef({
     threshold: 128,
     minBlobSize: 100,
     maxBlobs: 10,
     showBlobs: true,
-    showOriginal: false,
+    showOriginal: true,
     strokeStyle: '#ff0000ff',
     fillStyle: '#ffffffff',
     videoBitrate: 5000,
@@ -268,15 +272,6 @@ const BlobTracker = () => {
           });
 
           const actionsFolder = createFolder('Actions', true);
-          const playBtn = addButtonTo(actionsFolder ?? paneInstance, { title: 'Play' });
-          try {
-            playBtn.on?.('click', () => videoRef.current?.play());
-          } catch (e) {}
-
-          const pauseBtn = addButtonTo(actionsFolder ?? paneInstance, { title: 'Pause' });
-          try {
-            pauseBtn.on?.('click', () => videoRef.current?.pause());
-          } catch (e) {}
 
           const importBtn = addButtonTo(actionsFolder ?? paneInstance, { title: 'Import Video' });
           try {
@@ -305,6 +300,30 @@ const BlobTracker = () => {
     };
   }, [handleExportVideo]);
 
+  const handlePlay = useCallback(() => {
+    videoRef.current?.play();
+  }, []);
+
+  const handlePause = useCallback(() => {
+    videoRef.current?.pause();
+  }, []);
+
+  const handleSeek = useCallback((e) => {
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = parseFloat(e.target.value);
+      setCurrentTime(video.currentTime);
+    }
+  }, []);
+
+  const handleVolumeChange = useCallback((e) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume;
+    }
+  }, []);
+
   const handleVideoUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -325,14 +344,19 @@ const BlobTracker = () => {
             canvas.style.width = `${vw}px`;
             canvas.style.height = `auto`;
           }
+          setDuration(video.duration || 0);
           setVideoLoaded(true);
           try {
             const playPromise = video.play();
             if (playPromise !== undefined && typeof playPromise.then === 'function') {
-              playPromise.catch((err) => {
+              playPromise.then(() => {
+                setIsPlaying(true);
+              }).catch((err) => {
                 try {
                   video.muted = true;
-                  video.play().catch(() => {});
+                  video.play().then(() => {
+                    setIsPlaying(true);
+                  }).catch(() => {});
                 } catch (e) {}
               });
             }
@@ -366,14 +390,31 @@ const BlobTracker = () => {
       }
     };
 
-    video.addEventListener('play', processFrame);
+    const handlePlayEvent = () => {
+      setIsPlaying(true);
+      processFrame();
+    };
 
-    video.addEventListener('pause', () => {
+    const handlePauseEvent = () => {
+      setIsPlaying(false);
       if (animationId) {
         cancelAnimationFrame(animationId);
         animationId = null;
       }
-    });
+    };
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(video.currentTime);
+    };
+
+    const handleDurationChange = () => {
+      setDuration(video.duration);
+    };
+
+    video.addEventListener('play', handlePlayEvent);
+    video.addEventListener('pause', handlePauseEvent);
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('durationchange', handleDurationChange);
 
     if (!video.paused) {
       processFrame();
@@ -383,13 +424,17 @@ const BlobTracker = () => {
       if (animationId) {
         cancelAnimationFrame(animationId);
       }
-      video.removeEventListener('play', processFrame);
+      video.removeEventListener('play', handlePlayEvent);
+      video.removeEventListener('pause', handlePauseEvent);
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('durationchange', handleDurationChange);
     };
   }, [videoLoaded]);
 
   return (
     <>
       <SEO title="Blob Tracking - Tayri Garden" description="Track and visualize blobs in your videos with ease." />
+      <section className={`${styles.containerTracking} ${isAltTheme ? styles.containerTrackingAlt : ""}`}>
       <div className={`${styles.page} ${isAltTheme ? styles.pageAlt : ""}`}>
         <input
           id="videoInput"
@@ -403,7 +448,39 @@ const BlobTracker = () => {
         <video ref={videoRef} className={styles.video} loop playsInline />
 
         <canvas ref={canvasRef} className={styles.canvas} />
-
+        {videoLoaded && (
+          <div className={styles.videoControls}>
+            <button onClick={isPlaying ? handlePause : handlePlay}>
+              {isPlaying ? '⏸' : '▶'}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max={duration || 0}
+              value={currentTime}
+              onChange={handleSeek}
+              step="0.1"
+              className={styles.videoSeeker}
+            />
+            <div className={styles.videoTime}>
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </div>
+            <div className={styles.volumeControl}>
+              <span className={styles.volumeIcon}>
+                {volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}
+              </span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={volume}
+                onChange={handleVolumeChange}
+                className={styles.volumeSlider}
+              />
+            </div>
+          </div>
+        )}
         {!videoLoaded && (
           <div className={`${styles.importOverlay} ${isAltTheme ? styles.importOverlayAlt : ""}`}>
             <div className={styles.infoUse}>
@@ -451,6 +528,10 @@ const BlobTracker = () => {
         )}
       </div>
     </div>
+    <div className={styles.pannelContainer}>
+      <p>Blob count: {blobs.length}</p>
+    </div>
+    </section>
     </>
   );
 };
