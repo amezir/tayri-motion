@@ -97,7 +97,7 @@ export default function Home() {
                 <h1 className={styles.title} ref={titleRef}>
                   Tayri Garden
                 </h1>
-                <p className={styles.description}>Welcome To Tayri Garden</p>
+                <p className={styles.description}> Track and export blobs from your videos with ease.</p>
               </div>
               <div className={styles.bottomContent}>
                 <img src="./codebar.png" alt="codebar logo" draggable="false" />
@@ -123,7 +123,6 @@ export default function Home() {
                 <br />
                 Each frame tells its trajectory.
               </div>
-              <div className={styles.changeTheme}>
                 <button
                   type="button"
                   className={`${styles.toggleButton}`}
@@ -131,7 +130,6 @@ export default function Home() {
                 >
                   {isAltTheme ? "🌙" : "☀️"}
                 </button>
-              </div>
               <div className={styles.startButton}>
                 <Link href="/tracking">
                   <button
