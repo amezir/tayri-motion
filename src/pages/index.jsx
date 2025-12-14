@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/index.module.scss";
 import Link from "next/link";
 import { gsap } from "gsap/dist/gsap";
@@ -9,6 +9,20 @@ export default function Home() {
   const videoRef = useRef(null);
   const contentRef = useRef(null);
   const infoRef = useRef(null);
+  const [isAltTheme, setIsAltTheme] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem("isAltTheme");
+    if (stored === "1") {
+      setIsAltTheme(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem("isAltTheme", isAltTheme ? "1" : "0");
+  }, [isAltTheme]);
 
   useEffect(() => {
     if (!videoRef.current || !contentRef.current || !infoRef.current) return;
@@ -63,8 +77,8 @@ export default function Home() {
   return (
     <>
       <SEO />
-      <main className={styles.main}>
-        <section className={styles.containerHome}>
+      <main className={`${styles.main} ${isAltTheme ? styles.mainAlt : ""}`}>
+        <section className={`${styles.containerHome} ${isAltTheme ? styles.containerHomeAlt : ""}`}>
           <video
             src="./bg_video.mp4"
             autoPlay
@@ -96,7 +110,10 @@ export default function Home() {
               </div>
             </div>
 
-            <div className={styles.infoBox} ref={infoRef}>
+            <div
+              className={`${styles.infoBox} ${isAltTheme ? styles.infoBoxAlt : ""}`}
+              ref={infoRef}
+            >
               <div className={styles.infoText}>
                 Isolated pixels connect,
                 <br />
@@ -106,9 +123,22 @@ export default function Home() {
                 <br />
                 Each frame tells its trajectory.
               </div>
+              <div className={styles.changeTheme}>
+                <button
+                  type="button"
+                  className={`${styles.toggleButton}`}
+                  onClick={() => setIsAltTheme((prev) => !prev)}
+                >
+                  {isAltTheme ? "🌙" : "☀️"}
+                </button>
+              </div>
               <div className={styles.startButton}>
                 <Link href="/tracking">
-                  <button className={styles.buttonStart}>Get started</button>
+                  <button
+                    className={`${styles.buttonStart} ${isAltTheme ? styles.buttonStartAlt : ""}`}
+                  >
+                    Get started
+                  </button>
                 </Link>
               </div>
             </div>

@@ -7,6 +7,11 @@
   justify-content: center;
   align-items: center;
   background-color: black;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.mainAlt {
+  background-color: #f7f7f2;
 }
 
 .contentHome {
@@ -26,6 +31,11 @@
   background-color: black;
   width: 100%;
   height: 95vh;
+  transition: background-color 0.4s ease;
+
+  &.containerHomeAlt {
+    background-color: #f7f7f2;
+  }
 
   .contentBox {
     display: flex;
@@ -87,6 +97,7 @@
   padding: 20px;
   align-items: center;
   justify-content: space-between;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 
   .infoText {
     font-family: var(--font-mono);
@@ -94,6 +105,7 @@
     color: #ffffff;
     line-height: 1.5;
     width: 40%;
+    transition: color 0.4s ease;
   }
 
   .startButton {
@@ -110,12 +122,40 @@
       font-family: var(--font-mono);
       border: none;
       cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 
         &:hover {
             background-color: #dde000;
             transform: translateY(-2px);
         }
     }
+    .buttonStartAlt {
+      background-color: #000000;
+      color: #ffffff;
+
+        &:hover {
+            background-color: #dde000;
+            color: #ffffff;
+        }
+    }
+  }
+}
+
+.infoBoxAlt {
+  background-color: #f7f7f2;
+
+  .infoText {
+    color: #000000;
+  }
+
+  .buttonStart {
+    background-color: #000000;
+    color: #ffffff;
+
+      &:hover {
+          background-color: #dde000;
+          color: #000000;
+      }
   }
 }
 
@@ -128,5 +168,15 @@
   object-fit: cover;
   transform: translate(-50%, -50%);
   z-index: 1;
-  /* filter: blur(8px); */
 }
+
+.toggleButton {
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+
+  &:hover {
+    background-color: transparent;
+    border: 0;
+  }
+  }
