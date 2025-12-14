@@ -3,26 +3,14 @@ import styles from "@/styles/index.module.scss";
 import Link from "next/link";
 import { gsap } from "gsap/dist/gsap";
 import SEO from "@/components/SEO";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Home() {
   const titleRef = useRef(null);
   const videoRef = useRef(null);
   const contentRef = useRef(null);
   const infoRef = useRef(null);
-  const [isAltTheme, setIsAltTheme] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem("isAltTheme");
-    if (stored === "1") {
-      setIsAltTheme(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem("isAltTheme", isAltTheme ? "1" : "0");
-  }, [isAltTheme]);
+  const { isAltTheme, setIsAltTheme } = useTheme();
 
   useEffect(() => {
     if (!videoRef.current || !contentRef.current || !infoRef.current) return;

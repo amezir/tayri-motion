@@ -7,6 +7,11 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  transition: background-color 0.4s ease;
+}
+
+.pageAlt {
+  background-color: #f7f7f2;
 }
 
 .hidden {
@@ -47,6 +52,12 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  transition: background-color 0.4s ease;
+}
+
+.importOverlayAlt {
+  background-color: rgba(247, 247, 242, 0.95);
+  color: #000000;
 }
 
 .importButton {
@@ -56,10 +67,46 @@
   font-family: var(--font-mono);
   border: none;
   cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 
   &:hover {
     background-color: #dde000;
     transform: translateY(-1px);
+  }
+}
+
+.importButtonAlt {
+  background-color: #000000;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #dde000;
+    color: #000000;
+  }
+}
+
+.toggleThemeBtn {
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background-color: #dde000;
+    color: #000000;
+  }
+}
+
+.toggleThemeBtnAlt {
+  border-color: #000000;
+  color: #000000;
+
+  &:hover {
+    background-color: #dde000;
+    color: #000000;
   }
 }
 

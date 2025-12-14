@@ -3,8 +3,10 @@ import { processVideoFrame } from '../utils/videoProcessing';
 import { exportVideo, formatTime } from '../utils/videoExport';
 import styles from '../styles/trancking.module.scss';
 import SEO from "@/components/SEO";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const BlobTracker = () => {
+  const { isAltTheme, setIsAltTheme } = useTheme();
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -362,7 +364,7 @@ const BlobTracker = () => {
   return (
     <>
       <SEO title="Blob Tracking - Tayri Garden" description="Track and visualize blobs in your videos with ease." />
-      <div className={styles.page}>
+      <div className={`${styles.page} ${isAltTheme ? styles.pageAlt : ""}`}>
         <input
           id="videoInput"
           type="file"
@@ -377,7 +379,7 @@ const BlobTracker = () => {
         <canvas ref={canvasRef} className={styles.canvas} />
 
         {!videoLoaded && (
-          <div className={styles.importOverlay}>
+          <div className={`${styles.importOverlay} ${isAltTheme ? styles.importOverlayAlt : ""}`}>
             <div className={styles.infoUse}>
                 ️<p className={styles.useTitle}>How to use</p>
                 <ul className={styles.useList}>
@@ -386,8 +388,15 @@ const BlobTracker = () => {
                   <li>03. Download</li>
                 </ul>
               </div>
-            <button onClick={() => document.getElementById('videoInput')?.click()} className={styles.importButton}>
+            <button onClick={() => document.getElementById('videoInput')?.click()} className={`${styles.importButton} ${isAltTheme ? styles.importButtonAlt : ""}`}>
               Import Video
+            </button>
+            <button
+              type="button"
+              className={`${styles.toggleThemeBtn} ${isAltTheme ? styles.toggleThemeBtnAlt : ""}`}
+              onClick={() => setIsAltTheme((prev) => !prev)}
+            >
+              {isAltTheme ? "🌙" : "☀️"}
             </button>
           </div>
         )}
