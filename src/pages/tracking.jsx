@@ -375,6 +375,14 @@ const BlobTracker = () => {
 
         {!videoLoaded && (
           <div className={styles.importOverlay}>
+            <div className={styles.infoUse}>
+                ️<p className={styles.useTitle}>How to use</p>
+                <ul className={styles.useList}>
+                  <li>01. Upload file</li>
+                  <li>02. Edit</li>
+                  <li>03. Download</li>
+                </ul>
+              </div>
             <button onClick={() => document.getElementById('videoInput')?.click()} className={styles.importButton}>
               Import Video
             </button>

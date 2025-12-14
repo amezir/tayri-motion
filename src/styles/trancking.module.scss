@@ -44,6 +44,9 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .importButton {
@@ -121,3 +124,28 @@
   font-size: 0.9rem;
   line-height: 1.2;
 }
+
+
+.infoUse {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+
+    .useTitle {
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .useList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+
+        li {
+          margin-bottom: 5px;
+        }
+    }
+  }

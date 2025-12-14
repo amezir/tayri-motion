@@ -96,31 +96,6 @@
     width: 40%;
   }
 
-  .infoUse {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    width: 20%;
-
-    .useTitle {
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-
-    .useList {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      text-align: center;
-
-        li {
-          margin-bottom: 5px;
-        }
-    }
-  }
-
   .startButton {
     display: flex;
     flex-direction: column;

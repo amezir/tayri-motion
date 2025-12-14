@@ -115,17 +115,9 @@ export default function Home() {
                 <br />
                 Each frame tells its trajectory.
               </div>
-              <div className={styles.infoUse}>
-                ️<p className={styles.useTitle}>How to use</p>
-                <ul className={styles.useList}>
-                  <li>01. Upload file</li>
-                  <li>02. Edit</li>
-                  <li>03. Download</li>
-                </ul>
-              </div>
               <div className={styles.startButton}>
-                <Link href="/">
-                  <button className={styles.buttonStart}>Soon</button>
+                <Link href="/tracking">
+                  <button className={styles.buttonStart}>Get started</button>
                 </Link>
               </div>
             </div>
