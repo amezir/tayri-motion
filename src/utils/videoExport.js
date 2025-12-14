@@ -23,7 +23,6 @@ const getAudioContextForVideo = (video) => {
     video[SOURCE_KEY] = entry;
     return entry;
   } catch (err) {
-    // If a source already exists elsewhere, reuse it if we can find it.
     const fallback = videoAudioMap.get(video) || video[SOURCE_KEY];
     if (fallback) {
       return fallback;
@@ -88,7 +87,7 @@ export const exportVideo = async (video, canvas, params, callbacks = {}, abortSi
     audioEntry = getAudioContextForVideo(video);
     ({ audioContext, sourceNode } = audioEntry);
     ensureOutputConnection(audioEntry);
-    disconnectOutput(audioEntry); // mute playback during export
+    disconnectOutput(audioEntry);
     await audioContext.resume();
 
     destinationNode = audioContext.createMediaStreamDestination();
@@ -206,7 +205,7 @@ export const exportVideo = async (video, canvas, params, callbacks = {}, abortSi
         }
       } catch (e) {}
 
-      reconnectOutput(audioEntry); // restore playback audio
+      reconnectOutput(audioEntry);
 
       video.loop = true;
       video.currentTime = originalTime;
@@ -228,7 +227,7 @@ export const exportVideo = async (video, canvas, params, callbacks = {}, abortSi
       }
     } catch (e) {}
 
-    reconnectOutput(audioEntry); // restore playback audio
+    reconnectOutput(audioEntry);
 
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
     const sizeInMB = (blob.size / (1024 * 1024)).toFixed(1);
@@ -262,7 +261,7 @@ export const exportVideo = async (video, canvas, params, callbacks = {}, abortSi
         sourceNode.disconnect(destinationNode);
       }
     } catch (e) {}
-    reconnectOutput(audioEntry); // restore playback audio
+    reconnectOutput(audioEntry);
     
     if (video) {
       video.loop = true;
