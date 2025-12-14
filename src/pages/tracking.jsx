@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { processVideoFrame } from '../utils/videoProcessing';
 import { exportVideo, formatTime } from '../utils/videoExport';
 import styles from '../styles/trancking.module.scss';
+import SEO from "@/components/SEO";
 
 const BlobTracker = () => {
   const containerRef = useRef(null);
@@ -359,11 +360,13 @@ const BlobTracker = () => {
   }, [videoLoaded]);
 
   return (
-    <div className={styles.page}>
-      <input
-        id="videoInput"
-        type="file"
-        accept="video/*"
+    <>
+      <SEO title="Blob Tracking - Tayri Garden" description="Track and visualize blobs in your videos with ease." />
+      <div className={styles.page}>
+        <input
+          id="videoInput"
+          type="file"
+          accept="video/*"
         onChange={handleVideoUpload}
         className={styles.videoInput}
       />
@@ -404,6 +407,7 @@ const BlobTracker = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
