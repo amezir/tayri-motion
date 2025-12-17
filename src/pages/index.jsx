@@ -14,11 +14,11 @@ export default function Home() {
   const { isAltTheme, setIsAltTheme } = useTheme();
 
   const stages = [
-    { id: 1, name: 'Load base algorithms', status: 'OK' },
-    { id: 2, name: 'Load base algorithms', status: 'OK' },
-    { id: 3, name: 'Load base algorithms', status: 'OK' },
-    { id: 4, name: 'Load base algorithms', status: 'OK' },
-    { id: 5, name: 'Load base algorithms', status: 'OK' },
+    { id: 1, name: 'Initialize video pipeline', status: 'OK' },
+    { id: 2, name: 'Detect blobs in frames', status: 'Stable' },
+    { id: 3, name: 'Track blobs over time', status: 'Stable' },
+    { id: 4, name: 'Compute blob metrics', status: 'Size / Count / Color' },
+    { id: 5, name: 'Prepare export formats', status: 'WebM' },
   ];
 
   useEffect(() => {
@@ -141,7 +141,6 @@ export default function Home() {
                 <p className={styles.description}> Track and export blobs from your videos with ease.</p>
               </div>
               <div className={styles.bottomContent}>
-                <div></div>
                 <img src="./codebar.png" alt="codebar logo" draggable="false" />
                 <p>
                   Made by{" "}
@@ -149,7 +148,9 @@ export default function Home() {
                     Amézir Messaoud
                   </a>
                 </p>
-                <div></div>
+                <div className={styles.poem}>
+                  <p>Isolated pixels connect,<br />Bright zones become blobs.<br />Threshold applied, contours detected,<br />Each frame tells its trajectory.</p>
+                </div>
               </div>
             </div>
 
