@@ -1,6 +1,57 @@
 import { detectBlobs } from './blobDetection';
 import { drawConnections } from './blobConnections';
 
+const resolveColor = (value, fallback) => {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (value && typeof value === 'object') {
+    let r = value.r ?? 0;
+    let g = value.g ?? 0;
+    let b = value.b ?? 0;
+    let a = value.a ?? 1;
+
+    if (r <= 1 && g <= 1 && b <= 1) {
+      r = Math.round(r * 255);
+      g = Math.round(g * 255);
+      b = Math.round(b * 255);
+    }
+
+    if (a > 1) {
+      a = a / 255;
+    }
+
+    a = Math.min(Math.max(a, 0), 1);
+
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
+
+  return fallback;
+};
+
+const randomFromCharset = (length, charset) => {
+  let out = '';
+  const n = charset.length;
+  for (let i = 0; i < length; i++) {
+    out += charset[Math.floor(Math.random() * n)];
+  }
+  return out;
+};
+
+const getRandomLabelForMode = (mode) => {
+  switch (mode) {
+    case 'randomNumbers':
+      return randomFromCharset(6, '0123456789');
+    case 'randomLetters':
+      return randomFromCharset(6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    case 'randomSymbols':
+      return randomFromCharset(6, '!@#$%^&*()[]{}<>?/|~-=+');
+    default:
+      return '';
+  }
+};
+
 export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -29,16 +80,96 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
     ctx.putImageData(imageData, 0, 0);
   }
 
+  let blurSourceCanvas = null;
+  let blurSourceCtx = null;
+  const wantsBlurFill =
+    params.showBlobs &&
+    (params.blobFillMode === 'blur' || params.blobFillMode === 'both');
+
+  if (wantsBlurFill && typeof document !== 'undefined') {
+    blurSourceCanvas = document.createElement('canvas');
+    blurSourceCanvas.width = canvas.width;
+    blurSourceCanvas.height = canvas.height;
+    blurSourceCtx = blurSourceCanvas.getContext('2d');
+    if (blurSourceCtx) {
+      blurSourceCtx.drawImage(canvas, 0, 0);
+    }
+  }
+
   if (params.showBlobs) {
-    ctx.strokeStyle = params.strokeStyle;
-    ctx.lineWidth = 2;
-    ctx.font = '14px monospace';
-    ctx.fillStyle = params.fillStyle;
+    const borderWidth = typeof params.blobBorderWidth === 'number'
+      ? params.blobBorderWidth
+      : 2;
+    const fillOpacity = typeof params.blobFillOpacity === 'number'
+      ? Math.min(Math.max(params.blobFillOpacity, 0), 1)
+      : 0.35;
+    const blurAmount = typeof params.blobBlurAmount === 'number'
+      ? Math.max(params.blobBlurAmount, 0)
+      : 6;
+
+    const labelFontFamily = params.blobLabelFontFamily || 'monospace';
+    const labelColor = resolveColor(params.blobLabelColor, '#ffffff');
+
+    const labelMode = params.blobLabelMode || 'coords';
+
+    const previousCache = canvas._blobLabelCache || new Map();
+    const nextCache = new Map();
+
+    ctx.font = `14px ${labelFontFamily}`;
+    ctx.textBaseline = 'top';
 
     detectedBlobs.forEach((blob) => {
+      let labelText;
+      if (labelMode === 'coords') {
+        labelText = `x:${blob.centerX.toFixed(0)}, y:${blob.centerY.toFixed(0)}`;
+      } else {
+        const keyX = Math.round(blob.centerX / 20);
+        const keyY = Math.round(blob.centerY / 20);
+        const key = `${keyX}_${keyY}_${labelMode}`;
+
+        if (previousCache.has(key)) {
+          labelText = previousCache.get(key);
+        } else {
+          labelText = getRandomLabelForMode(labelMode) || '?';
+        }
+        nextCache.set(key, labelText);
+      }
+
+      // Blur and color fill order: for "both" we blur first, then tint
+      if (
+        (params.blobFillMode === 'blur' || params.blobFillMode === 'both') &&
+        blurSourceCanvas && blurSourceCtx && blurAmount > 0
+      ) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(blob.x, blob.y, blob.width, blob.height);
+        ctx.clip();
+        ctx.filter = `blur(${blurAmount}px)`;
+        ctx.drawImage(blurSourceCanvas, 0, 0);
+        ctx.restore();
+      }
+
+      if (params.blobFillMode === 'color' || params.blobFillMode === 'both') {
+        ctx.save();
+        ctx.globalAlpha = fillOpacity;
+        ctx.fillStyle = resolveColor(params.fillStyle, '#ffffff');
+        ctx.fillRect(blob.x, blob.y, blob.width, blob.height);
+        ctx.restore();
+      }
+
+      ctx.strokeStyle = resolveColor(params.strokeStyle, '#ff0000');
+      ctx.lineWidth = borderWidth;
       ctx.strokeRect(blob.x, blob.y, blob.width, blob.height);
-      ctx.fillText(`x:${blob.centerX.toFixed(0)}, y:${blob.centerY.toFixed(0)}`, blob.x, blob.y - 5);
+
+      ctx.fillStyle = labelColor;
+      ctx.fillText(
+        labelText,
+        blob.x,
+        Math.max(blob.y - 16, 0)
+      );
     });
+
+    canvas._blobLabelCache = nextCache;
   }
 
   if (params.showConnections && detectedBlobs.length > 1) {

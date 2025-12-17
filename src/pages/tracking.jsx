@@ -30,15 +30,22 @@ const BlobTracker = () => {
     maxBlobs: 10,
     showBlobs: true,
     showOriginal: true,
-    strokeStyle: "#ff0000ff",
-    fillStyle: "#ffffffff",
+    strokeStyle: "#ff0000",
+    fillStyle: "#ffffff",
+    blobBorderWidth: 2,
+    blobFillMode: "none",
+    blobBlurAmount: 6,
+    blobFillOpacity: 0.35,
+    blobLabelColor: "#ffffff",
+    blobLabelFontFamily: "monospace",
+    blobLabelMode: "coords",
     videoBitrate: 5000,
     audioBitrate: 128,
     exportFPS: 30,
     showConnections: false,
     connectionStyle: "normal",
     connectionCurvature: 0,
-    connectionColor: "#ffffffff",
+    connectionColor: "#ffffff",
     connectionWidth: 2,
     connectionFromEdge: true,
     dashLength: 10,
@@ -265,6 +272,92 @@ const BlobTracker = () => {
             params.current,
             "fillStyle",
             { label: "Fill Style", view: "color" }
+          );
+
+          addInputTo(
+            colorsFolder ?? paneInstance,
+            params.current,
+            "blobBorderWidth",
+            {
+              min: 1,
+              max: 20,
+              step: 1,
+              label: "Border Width",
+            }
+          );
+
+          const fillFolder = createFolder("Blob Fill", false);
+          addInputTo(
+            fillFolder ?? paneInstance,
+            params.current,
+            "blobFillMode",
+            {
+              label: "Fill Mode",
+              options: {
+                None: "none",
+                Color: "color",
+                Blur: "blur",
+                "Color + Blur": "both",
+              },
+            }
+          );
+          addInputTo(
+            fillFolder ?? paneInstance,
+            params.current,
+            "blobBlurAmount",
+            {
+              min: 1,
+              max: 30,
+              step: 1,
+              label: "Blur Amount",
+            }
+          );
+          addInputTo(
+            fillFolder ?? paneInstance,
+            params.current,
+            "blobFillOpacity",
+            {
+              min: 0,
+              max: 1,
+              step: 0.05,
+              label: "Fill Opacity",
+            }
+          );
+
+          const labelFolder = createFolder("Blob Labels", false);
+          addInputTo(
+            labelFolder ?? paneInstance,
+            params.current,
+            "blobLabelColor",
+            { label: "Label Color", view: "color" }
+          );
+          addInputTo(
+            labelFolder ?? paneInstance,
+            params.current,
+            "blobLabelFontFamily",
+            {
+              label: "Font Family",
+              options: {
+                Monospace: "monospace",
+                Cursive: "cursive",
+                SansSerif: "sans-serif",
+                Serif: "serif",
+              },
+            }
+          );
+          addInputTo(
+            labelFolder ?? paneInstance,
+            params.current,
+            "blobLabelMode",
+            {
+              label: "Label Content",
+              options: {
+                Coordinates: "coords",
+                "Random Numbers": "randomNumbers",
+                "Random Letters": "randomLetters",
+                "Random Symbols": "randomSymbols",
+              },
+            }
           );
 
           const connectionsFolder = createFolder("Connections (Beta)", false);
