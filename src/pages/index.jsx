@@ -202,14 +202,14 @@ export default function Home() {
                 </span>
               </div>
               <div className={styles.startButton}>
-                <Link href="/tracking">
+                <Link href="/">
                   <button
                     className={clsx(
                       styles.buttonStart,
                       isAltTheme && styles.buttonStartAlt
                     )}
                   >
-                    Get Started
+                    Soon
                   </button>
                 </Link>
               </div>
