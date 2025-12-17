@@ -45,52 +45,56 @@ const BlobTracker = () => {
     dashGap: 5,
   });
 
-  const handleExportVideo = useCallback(async () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
+  const handleExportVideo = useCallback(
+    async (preferredFormat = "webm") => {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
 
-    if (!video || !canvas || !videoLoaded) {
-      alert("Please load a video first");
-      return;
-    }
+      if (!video || !canvas || !videoLoaded) {
+        alert("Please load a video first");
+        return;
+      }
 
-    setExporting(true);
-    setExportProgress(0);
-    setExportStatus("Preparing export...");
+      setExporting(true);
+      setExportProgress(0);
+      setExportStatus("Preparing export...");
 
-    const abortController = new AbortController();
-    exportAbortControllerRef.current = abortController;
+      const abortController = new AbortController();
+      exportAbortControllerRef.current = abortController;
 
-    await exportVideo(
-      video,
-      canvas,
-      params.current,
-      {
-        onProgress: setExportProgress,
-        onStatus: setExportStatus,
-        onTimeRemaining: setExportTimeRemaining,
-        onCanceled: () => {
-          setExportStatus("Export canceled");
-          setExporting(false);
-          exportAbortControllerRef.current = null;
-          setExportProgress(0);
+      await exportVideo(
+        video,
+        canvas,
+        params.current,
+        {
+          onProgress: setExportProgress,
+          onStatus: setExportStatus,
+          onTimeRemaining: setExportTimeRemaining,
+          onCanceled: () => {
+            setExportStatus("Export canceled");
+            setExporting(false);
+            exportAbortControllerRef.current = null;
+            setExportProgress(0);
+          },
+          onComplete: () => {
+            exportAbortControllerRef.current = null;
+            setTimeout(() => setExporting(false), 2000);
+          },
+          onError: (error) => {
+            exportAbortControllerRef.current = null;
+            alert(
+              "Error while exporting the video: " +
+                (error?.message || String(error))
+            );
+            setExporting(false);
+          },
         },
-        onComplete: () => {
-          exportAbortControllerRef.current = null;
-          setTimeout(() => setExporting(false), 2000);
-        },
-        onError: (error) => {
-          exportAbortControllerRef.current = null;
-          alert(
-            "Error while exporting the video: " +
-              (error?.message || String(error))
-          );
-          setExporting(false);
-        },
-      },
-      abortController.signal
-    );
-  }, [videoLoaded]);
+        abortController.signal,
+        preferredFormat
+      );
+    },
+    [videoLoaded]
+  );
 
   const handleCancelExport = useCallback(() => {
     if (exportAbortControllerRef.current) {
@@ -366,11 +370,18 @@ const BlobTracker = () => {
             );
           } catch (e) {}
 
-          const exportBtn = addButtonTo(actionsFolder ?? paneInstance, {
+          const exportWebmBtn = addButtonTo(actionsFolder ?? paneInstance, {
             title: "Export WEBM",
           });
           try {
-            exportBtn.on?.("click", handleExportVideo);
+            exportWebmBtn.on?.("click", () => handleExportVideo("webm"));
+          } catch (e) {}
+
+          const exportMp4Btn = addButtonTo(actionsFolder ?? paneInstance, {
+            title: "Export MP4",
+          });
+          try {
+            exportMp4Btn.on?.("click", () => handleExportVideo("mp4"));
           } catch (e) {}
         } catch (err) {
           console.error("Failed to initialize Tweakpane", err);
@@ -431,7 +442,7 @@ const BlobTracker = () => {
           if (canvas) {
             canvas.width = vw;
             canvas.height = vh;
-            canvas.style.width = `${vw}px`;
+            canvas.style.width = `1150px`;
             canvas.style.height = `auto`;
           }
           setDuration(video.duration || 0);
@@ -475,8 +486,7 @@ const BlobTracker = () => {
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    canvas.width = video.videoWidth || 1280;
+    canvas.width = video.videoWidth || 1150;
     canvas.height = video.videoHeight || 720;
 
     let animationId = null;

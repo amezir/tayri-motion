@@ -61,7 +61,14 @@ const reconnectOutput = (entry) => {
   } catch (e) {}
 };
 
-export const exportVideo = async (video, canvas, params, callbacks = {}, abortSignal) => {
+export const exportVideo = async (
+  video,
+  canvas,
+  params,
+  callbacks = {},
+  abortSignal,
+  preferredFormat = "webm"
+) => {
   const {
     onProgress = () => {},
     onStatus = () => {},
@@ -97,13 +104,33 @@ export const exportVideo = async (video, canvas, params, callbacks = {}, abortSi
       ...destinationNode.stream.getAudioTracks()
     ]);
     
-    let mimeType = 'video/webm;codecs=vp9,opus';
-    if (!MediaRecorder.isTypeSupported(mimeType)) {
-      mimeType = 'video/webm;codecs=vp8,opus';
+    const mimeCandidates = [];
+
+    if (preferredFormat === "mp4") {
+      mimeCandidates.push(
+        "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+        "video/mp4"
+      );
     }
-    if (!MediaRecorder.isTypeSupported(mimeType)) {
-      mimeType = 'video/webm';
+
+    mimeCandidates.push(
+      "video/webm;codecs=vp9,opus",
+      "video/webm;codecs=vp8,opus",
+      "video/webm"
+    );
+
+    let mimeType = mimeCandidates.find((type) =>
+      typeof MediaRecorder !== "undefined" &&
+      typeof MediaRecorder.isTypeSupported === "function"
+        ? MediaRecorder.isTypeSupported(type)
+        : true
+    );
+
+    if (!mimeType) {
+      mimeType = mimeCandidates[mimeCandidates.length - 1];
     }
+
+    const fileExtension = mimeType.includes("mp4") ? "mp4" : "webm";
     
     const videoBitrate = params.videoBitrate * 1000;
     const audioBitrate = params.audioBitrate * 1000;
@@ -229,13 +256,13 @@ export const exportVideo = async (video, canvas, params, callbacks = {}, abortSi
 
     reconnectOutput(audioEntry);
 
-    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const blob = new Blob(recordedChunks, { type: mimeType });
     const sizeInMB = (blob.size / (1024 * 1024)).toFixed(1);
     
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `blob-tracking-${Date.now()}.webm`;
+    a.download = `blob-tracking-${Date.now()}.${fileExtension}`;
     a.click();
     URL.revokeObjectURL(url);
     
