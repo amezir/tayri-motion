@@ -7,20 +7,15 @@ export const LoaderProvider = ({ children }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Vérifier si le loader a déjà été affiché
     const hasLoaded = localStorage.getItem("loaderCompleted");
-    
+
     if (hasLoaded) {
       setIsLoading(false);
       return;
     }
 
     const preloadAssets = async () => {
-      const assets = [
-        "./bg_video.mp4",
-        "./logo.png",
-        "./codebar.png",
-      ];
+      const assets = ["./bg_video.mp4", "./logo.png", "./codebar.png"];
 
       let loaded = 0;
 
@@ -57,7 +52,7 @@ export const LoaderProvider = ({ children }) => {
       };
 
       await Promise.all(assets.map(loadAsset));
-      
+
       setTimeout(() => {
         setIsLoading(false);
         localStorage.setItem("loaderCompleted", "true");

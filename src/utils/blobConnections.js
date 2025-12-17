@@ -119,7 +119,6 @@ export const drawConnections = (ctx, blobs, params) => {
 
   const curvature = params.connectionCurvature;
 
-  // Connecter chaque blob au suivant dans l'ordre
   for (let i = 0; i < blobs.length - 1; i++) {
     const blob1 = blobs[i];
     const blob2 = blobs[i + 1];
