@@ -14,6 +14,18 @@
   background-color: #f7f7f2;
 }
 
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .contentHome {
   width: 100%;
   height: 100%;
@@ -67,6 +79,21 @@
       font-family: var(--font-serif);
       font-weight: 400;
       color: #dde000;
+    }
+    .titleSvg {
+      width: 100%;
+      height: 150px;
+      overflow: visible;
+    }
+    .titleText {
+      font-size: 150px;
+      font-family: var(--font-serif);
+      font-weight: 400;
+      fill: transparent;
+      stroke: #dde000;
+      stroke-width: 2px;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
     .description {
       font-size: 24px;

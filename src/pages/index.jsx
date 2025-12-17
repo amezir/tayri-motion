@@ -53,17 +53,36 @@ export default function Home() {
       );
 
       if (titleRef.current) {
-        tl.fromTo(
-          titleRef.current,
-          { opacity: 0, y: 24, letterSpacing: "0.5em" },
-          {
-            opacity: 1,
-            y: 0,
-            letterSpacing: "0.05em",
-            duration: 3.2,
-            ease: "power3.out",
+        const textEl = titleRef.current;
+        const bbox = textEl.getBBox();
+        const dash = Math.max(800, bbox.width * 2.4);
+
+        gsap.set(textEl, {
+          attr: {
+            'stroke-dasharray': dash,
+            'stroke-dashoffset': dash,
           },
-          "<"
+          opacity: 1,
+        });
+
+        tl.to(
+          textEl,
+          {
+            attr: { 'stroke-dashoffset': 0 },
+            duration: 2.8,
+            ease: 'power2.inOut',
+          },
+          '<'
+        );
+
+        tl.to(
+          textEl,
+          {
+            fill: '#dde000',
+            duration: 0.8,
+            ease: 'power1.out',
+          },
+          '-=0.6'
         );
       }
     });
@@ -99,9 +118,24 @@ export default function Home() {
               </div>
               <div className={styles.centerContent}>
                 <img src="./logo.png" alt="logo" draggable="false" />
-                <h1 className={styles.title} ref={titleRef}>
-                  Tayri Garden
-                </h1>
+                <h1 className={styles.visuallyHidden}>Tayri Garden</h1>
+                <svg
+                  className={styles.titleSvg}
+                  viewBox="0 0 1000 200"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-label="Tayri Garden"
+                >
+                  <text
+                    ref={titleRef}
+                    className={styles.titleText}
+                    x="50%"
+                    y="60%"
+                    dominantBaseline="middle"
+                    textAnchor="middle"
+                  >
+                    Tayri Garden
+                  </text>
+                </svg>
                 <p className={styles.description}> Track and export blobs from your videos with ease.</p>
               </div>
               <div className={styles.bottomContent}>
