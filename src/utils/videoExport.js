@@ -262,7 +262,7 @@ export const exportVideo = async (
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `blob-tracking-${Date.now()}.${fileExtension}`;
+    a.download = `tayri-garden-${Date.now()}.${fileExtension}`;
     a.click();
     URL.revokeObjectURL(url);
     
