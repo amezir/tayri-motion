@@ -14,11 +14,11 @@ export default function Home() {
   const { isAltTheme, setIsAltTheme } = useTheme();
 
   const stages = [
-    { id: 1, name: 'Initialize video pipeline', status: 'OK' },
-    { id: 2, name: 'Detect blobs in frames', status: 'Stable' },
-    { id: 3, name: 'Track blobs over time', status: 'Stable' },
-    { id: 4, name: 'Compute blob metrics', status: 'Size / Count / Color' },
-    { id: 5, name: 'Prepare export formats', status: 'WebM' },
+    { id: 1, name: "Initialize video pipeline", status: "OK" },
+    { id: 2, name: "Detect blobs in frames", status: "Stable" },
+    { id: 3, name: "Track blobs over time", status: "Stable" },
+    { id: 4, name: "Compute blob metrics", status: "Size / Count / Color" },
+    { id: 5, name: "Prepare export formats", status: "WebM" },
   ];
 
   useEffect(() => {
@@ -59,8 +59,8 @@ export default function Home() {
 
         gsap.set(textEl, {
           attr: {
-            'stroke-dasharray': dash,
-            'stroke-dashoffset': dash,
+            "stroke-dasharray": dash,
+            "stroke-dashoffset": dash,
           },
           opacity: 1,
         });
@@ -68,21 +68,21 @@ export default function Home() {
         tl.to(
           textEl,
           {
-            attr: { 'stroke-dashoffset': 0 },
+            attr: { "stroke-dashoffset": 0 },
             duration: 2.8,
-            ease: 'power2.inOut',
+            ease: "power2.inOut",
           },
-          '<'
+          "<"
         );
 
         tl.to(
           textEl,
           {
-            fill: '#dde000',
+            fill: "#dde000",
             duration: 0.8,
-            ease: 'power1.out',
+            ease: "power1.out",
           },
-          '-=0.6'
+          "-=0.6"
         );
       }
     });
@@ -94,7 +94,12 @@ export default function Home() {
     <>
       <SEO />
       <main className={clsx(styles.main, isAltTheme && styles.mainAlt)}>
-        <section className={clsx(styles.containerHome, isAltTheme && styles.containerHomeAlt)}>
+        <section
+          className={clsx(
+            styles.containerHome,
+            isAltTheme && styles.containerHomeAlt
+          )}
+        >
           <video
             src="./bg_video.mp4"
             autoPlay
@@ -138,7 +143,10 @@ export default function Home() {
                     Tayri Garden
                   </text>
                 </svg>
-                <p className={styles.description}> Track and export blobs from your videos with ease.</p>
+                <p className={styles.description}>
+                  {" "}
+                  Track and export blobs from your videos with ease.
+                </p>
               </div>
               <div className={styles.bottomContent}>
                 <img src="./codebar.png" alt="codebar logo" draggable="false" />
@@ -149,7 +157,15 @@ export default function Home() {
                   </a>
                 </p>
                 <div className={styles.poem}>
-                  <p>Isolated pixels connect,<br />Bright zones become blobs.<br />Threshold applied, contours detected,<br />Each frame tells its trajectory.</p>
+                  <p>
+                    Isolated pixels connect,
+                    <br />
+                    Bright zones become blobs.
+                    <br />
+                    Threshold applied, contours detected,
+                    <br />
+                    Each frame tells its trajectory.
+                  </p>
                 </div>
               </div>
             </div>
@@ -159,29 +175,41 @@ export default function Home() {
               ref={infoRef}
             >
               <div className={styles.infoText}>
-                <span className={clsx(styles.infoTextVersion, isAltTheme && styles.infoTextVersionAlt)}>
+                <span
+                  className={clsx(
+                    styles.infoTextVersion,
+                    isAltTheme && styles.infoTextVersionAlt
+                  )}
+                >
                   [last version - <a href="">more infos</a>]
                 </span>
-                
+
                 {stages.map((stage) => (
-                  <p 
+                  <p
                     key={stage.id}
-                    className={clsx(styles.infoTextStage, isAltTheme && styles.infoTextStageAlt)}
+                    className={clsx(
+                      styles.infoTextStage,
+                      isAltTheme && styles.infoTextStageAlt
+                    )}
                   >
-                    {'>'} Stage {String(stage.id).padStart(2, '0')} / {stage.name} ........ {stage.status}
+                    {">"} Stage {String(stage.id).padStart(2, "0")} /{" "}
+                    {stage.name} ........ {stage.status}
                   </p>
                 ))}
-                
+
                 <span className={styles.infoTextDate}>
-                  {'>>>'}&nbsp; RELEASE 2025.09 COMPLETED
+                  {">>>"}&nbsp; RELEASE 2025.12 COMPLETED
                 </span>
               </div>
               <div className={styles.startButton}>
-                <Link href="/">
+                <Link href="/tracking">
                   <button
-                    className={clsx(styles.buttonStart, isAltTheme && styles.buttonStartAlt)}
+                    className={clsx(
+                      styles.buttonStart,
+                      isAltTheme && styles.buttonStartAlt
+                    )}
                   >
-                    Soon
+                    Get Started
                   </button>
                 </Link>
               </div>

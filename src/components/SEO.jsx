@@ -24,12 +24,7 @@ export default function SEO({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:url" content={ogUrl} />
-
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
-      <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
       <link rel="icon" href="/favicon.png" />
-      <link rel="preload" href="./bg_video.mp4" as="video" type="video/mp4" />
     </Head>
   );
 }
