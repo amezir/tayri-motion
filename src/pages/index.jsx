@@ -18,7 +18,7 @@ export default function Home() {
     { id: 2, name: "Detect blobs in frames", status: "Stable" },
     { id: 3, name: "Track blobs over time", status: "Stable" },
     { id: 4, name: "Compute blob metrics", status: "Size / Count / Color" },
-    { id: 5, name: "Prepare export formats", status: "WebM" },
+    { id: 5, name: "Prepare export formats", status: "WebM / MP4" },
   ];
 
   useEffect(() => {
