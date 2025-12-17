@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { processVideoFrame } from '../utils/videoProcessing';
 import { exportVideo, formatTime } from '../utils/videoExport';
 import styles from '../styles/trancking.module.scss';
+import clsx from 'clsx';
 import SEO from "@/components/SEO";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -434,8 +435,8 @@ const BlobTracker = () => {
   return (
     <>
       <SEO title="Blob Tracking - Tayri Garden" description="Track and visualize blobs in your videos with ease." />
-      <section className={`${styles.containerTracking} ${isAltTheme ? styles.containerTrackingAlt : ""}`}>
-      <div className={`${styles.page} ${isAltTheme ? styles.pageAlt : ""}`}>
+      <section className={clsx(styles.containerTracking, isAltTheme && styles.containerTrackingAlt)}>
+      <div className={clsx(styles.page, isAltTheme && styles.pageAlt)}>
         <input
           id="videoInput"
           type="file"
@@ -482,7 +483,7 @@ const BlobTracker = () => {
           </div>
         )}
         {!videoLoaded && (
-          <div className={`${styles.importOverlay} ${isAltTheme ? styles.importOverlayAlt : ""}`}>
+          <div className={clsx(styles.importOverlay, isAltTheme && styles.importOverlayAlt)}>
             <div className={styles.infoUse}>
                 ️<p className={styles.useTitle}>How to use</p>
                 <ul className={styles.useList}>
@@ -491,12 +492,12 @@ const BlobTracker = () => {
                   <li>03. Download</li>
                 </ul>
               </div>
-            <button onClick={() => document.getElementById('videoInput')?.click()} className={`${styles.importButton} ${isAltTheme ? styles.importButtonAlt : ""}`}>
+            <button onClick={() => document.getElementById('videoInput')?.click()} className={clsx(styles.importButton, isAltTheme && styles.importButtonAlt)}>
               Import Video
             </button>
             <button
               type="button"
-              className={`${styles.toggleThemeBtn} ${isAltTheme ? styles.toggleThemeBtnAlt : ""}`}
+              className={clsx(styles.toggleThemeBtn, isAltTheme && styles.toggleThemeBtnAlt)}
               onClick={() => setIsAltTheme((prev) => !prev)}
             >
               {isAltTheme ? "🌙" : "☀️"}

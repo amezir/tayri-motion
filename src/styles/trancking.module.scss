@@ -232,7 +232,9 @@
     padding: 10px 12px;
     font-family: var(--font-mono);
     font-size: 0.9rem;
-    width: 35%;
+    width: 380px;
+    min-width: 380px;
+    max-width: 380px;
     height: 100%;
   }
 

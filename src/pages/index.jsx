@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/index.module.scss";
 import Link from "next/link";
 import { gsap } from "gsap/dist/gsap";
+import clsx from "clsx";
 import SEO from "@/components/SEO";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -11,6 +12,14 @@ export default function Home() {
   const contentRef = useRef(null);
   const infoRef = useRef(null);
   const { isAltTheme, setIsAltTheme } = useTheme();
+
+  const stages = [
+    { id: 1, name: 'Load base algorithms', status: 'OK' },
+    { id: 2, name: 'Load base algorithms', status: 'OK' },
+    { id: 3, name: 'Load base algorithms', status: 'OK' },
+    { id: 4, name: 'Load base algorithms', status: 'OK' },
+    { id: 5, name: 'Load base algorithms', status: 'OK' },
+  ];
 
   useEffect(() => {
     if (!videoRef.current || !contentRef.current || !infoRef.current) return;
@@ -65,8 +74,8 @@ export default function Home() {
   return (
     <>
       <SEO />
-      <main className={`${styles.main} ${isAltTheme ? styles.mainAlt : ""}`}>
-        <section className={`${styles.containerHome} ${isAltTheme ? styles.containerHomeAlt : ""}`}>
+      <main className={clsx(styles.main, isAltTheme && styles.mainAlt)}>
+        <section className={clsx(styles.containerHome, isAltTheme && styles.containerHomeAlt)}>
           <video
             src="./bg_video.mp4"
             autoPlay
@@ -78,7 +87,15 @@ export default function Home() {
           <div className={styles.contentHome}>
             <div className={styles.contentBox} ref={contentRef}>
               <div className={styles.topContent}>
+                <div></div>
                 <p>Copyright © 2025 Tayri Garden</p>
+                <button
+                  type="button"
+                  className={`${styles.toggleButton}`}
+                  onClick={() => setIsAltTheme((prev) => !prev)}
+                >
+                  {isAltTheme ? "dark" : "light"}
+                </button>
               </div>
               <div className={styles.centerContent}>
                 <img src="./logo.png" alt="logo" draggable="false" />
@@ -99,29 +116,31 @@ export default function Home() {
             </div>
 
             <div
-              className={`${styles.infoBox} ${isAltTheme ? styles.infoBoxAlt : ""}`}
+              className={clsx(styles.infoBox, isAltTheme && styles.infoBoxAlt)}
               ref={infoRef}
             >
               <div className={styles.infoText}>
-                Isolated pixels connect,
-                <br />
-                Bright zones become blobs.
-                <br />
-                Threshold applied, contours detected,
-                <br />
-                Each frame tells its trajectory.
+                <span className={clsx(styles.infoTextVersion, isAltTheme && styles.infoTextVersionAlt)}>
+                  [last version - <a href="">more infos</a>]
+                </span>
+                
+                {stages.map((stage) => (
+                  <p 
+                    key={stage.id}
+                    className={clsx(styles.infoTextStage, isAltTheme && styles.infoTextStageAlt)}
+                  >
+                    {'>'} Stage {String(stage.id).padStart(2, '0')} / {stage.name} ........ {stage.status}
+                  </p>
+                ))}
+                
+                <span className={styles.infoTextDate}>
+                  {'>>>'}&nbsp; RELEASE 2025.09 COMPLETED
+                </span>
               </div>
-                <button
-                  type="button"
-                  className={`${styles.toggleButton}`}
-                  onClick={() => setIsAltTheme((prev) => !prev)}
-                >
-                  {isAltTheme ? "🌙" : "☀️"}
-                </button>
               <div className={styles.startButton}>
                 <Link href="/">
                   <button
-                    className={`${styles.buttonStart} ${isAltTheme ? styles.buttonStartAlt : ""}`}
+                    className={clsx(styles.buttonStart, isAltTheme && styles.buttonStartAlt)}
                   >
                     Soon
                   </button>
