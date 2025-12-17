@@ -106,7 +106,6 @@ export default function Home() {
           <div className={styles.contentHome}>
             <div className={styles.contentBox} ref={contentRef}>
               <div className={styles.topContent}>
-                <div></div>
                 <p>Copyright © 2025 Tayri Garden</p>
                 <button
                   type="button"
@@ -124,6 +123,9 @@ export default function Home() {
                   viewBox="0 0 1000 200"
                   xmlns="http://www.w3.org/2000/svg"
                   aria-label="Tayri Garden"
+                  draggable="false"
+                  role="heading"
+                  aria-level="1"
                 >
                   <text
                     ref={titleRef}
@@ -139,6 +141,7 @@ export default function Home() {
                 <p className={styles.description}> Track and export blobs from your videos with ease.</p>
               </div>
               <div className={styles.bottomContent}>
+                <div></div>
                 <img src="./codebar.png" alt="codebar logo" draggable="false" />
                 <p>
                   Made by{" "}
@@ -146,6 +149,7 @@ export default function Home() {
                     Amézir Messaoud
                   </a>
                 </p>
+                <div></div>
               </div>
             </div>
 

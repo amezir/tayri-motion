@@ -63,10 +63,6 @@
   .topContent {
     font-size: 11px;
     font-family: var(--font-mono);
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
   }
 
   .centerContent {
@@ -75,7 +71,7 @@
     align-items: center;
     justify-content: center;
     .title {
-      font-size: 96px;
+      font-size: 9.375rem;
       font-family: var(--font-serif);
       font-weight: 400;
       color: #dde000;
@@ -86,18 +82,19 @@
       overflow: visible;
     }
     .titleText {
-      font-size: 150px;
+      font-size: 9.375rem;
       font-family: var(--font-serif);
       font-weight: 400;
       fill: transparent;
       stroke: #dde000;
-      stroke-width: 2px;
+      stroke-width: 1px;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
     .description {
       font-size: 24px;
       font-family: var(--font-mono);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
   }
 
@@ -135,7 +132,6 @@
     font-size: 11px;
     color: #ffffff;
     line-height: 1.5;
-    width: 40%;
     transition: color 0.4s ease;
 
     .infoTextVersion {
@@ -178,7 +174,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-end;
-    width: 40%;
 
     .buttonStart {
       padding: 10px 50px;
@@ -236,9 +231,15 @@
 }
 
 .toggleButton {
+  font-family: var(--font-mono);
+  font-size: 11px;
   background-color: transparent;
   border: 0;
   cursor: pointer;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
 
   &:hover {
     background-color: transparent;
