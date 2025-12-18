@@ -23,12 +23,10 @@ export default function Home() {
 
     // Restore persisted animation state so it doesn't restart on navigation
     try {
-      const stored =
-        typeof window !== "undefined" && sessionStorage.getItem("homeAnimated");
+      // const stored =
+      //   typeof window !== "undefined" && sessionStorage.getItem("homeAnimated");
       if (stored === "true") hasAnimated.current = true;
-    } catch (e) {
-      // ignore storage errors
-    }
+    } catch (e) {}
 
     if (hasAnimated.current) {
       gsap.set(videoRef.current, { scale: 1, filter: "blur(8px)" });
