@@ -222,7 +222,7 @@ export default function Home() {
                       isAltTheme && styles.buttonStartAlt
                     )}
                   >
-                    Soon
+                    Get Started
                   </button>
                 </Link>
               </div>
