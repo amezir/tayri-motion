@@ -12,14 +12,6 @@ export default function Changelog() {
     <>
       <SEO title="Changelog - Blob Tracking" />
       <main className={clsx(styles.main, isAltTheme && styles.mainAlt)}>
-        <button
-          className={styles.toggleButton}
-          onClick={() => setIsAltTheme(!isAltTheme)}
-          aria-label="Toggle theme"
-        >
-          {isAltTheme ? "dark" : "light"}
-        </button>
-
         <div
           className={clsx(
             styles.changelogContainer,
@@ -30,6 +22,15 @@ export default function Changelog() {
             <h1 className={clsx(styles.title, isAltTheme && styles.titleAlt)}>
               Changelog
             </h1>
+            <Link
+              href="/"
+              className={clsx(
+                styles.backLink,
+                isAltTheme && styles.backLinkAlt
+              )}
+            >
+              Back to Home
+            </Link>
           </div>
 
           <div className={styles.releases}>
@@ -50,9 +51,6 @@ export default function Changelog() {
                   >
                     [last version - {release.release}]
                   </span>
-                  <Link href="/" className={styles.backLink}>
-                    ← Back to Home
-                  </Link>
                 </div>
 
                 <div className={styles.stagesList}>
