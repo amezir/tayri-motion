@@ -4,10 +4,11 @@ import { exportVideo, formatTime } from "../utils/videoExport";
 import styles from "../styles/trancking.module.scss";
 import clsx from "clsx";
 import SEO from "@/components/SEO";
+import ControlPanel from "@/components/ControlPanel";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const BlobTracker = () => {
-  const { isAltTheme, setIsAltTheme } = useTheme();
+  const { isAltTheme } = useTheme();
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -110,389 +111,7 @@ const BlobTracker = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    let paneInstance = null;
-
-    import("tweakpane")
-      .then((mod) => {
-        const PaneCtor =
-          mod?.Pane ?? mod?.default?.Pane ?? mod?.default ?? null;
-        if (!PaneCtor) {
-          console.warn(
-            "Tweakpane module loaded but Pane constructor not found."
-          );
-          return;
-        }
-
-        try {
-          paneInstance = new PaneCtor({
-            title: "Blob Tracking Controls",
-            expanded: true,
-          });
-          paneRef.current = paneInstance;
-
-          const addInputTo = (parent, targetObj, key, options = {}) => {
-            if (parent && typeof parent.addInput === "function") {
-              try {
-                return parent.addInput(targetObj, key, options);
-              } catch (e) {}
-            }
-
-            if (parent && typeof parent.addBinding === "function") {
-              try {
-                return parent.addBinding(targetObj, key, options);
-              } catch (e) {}
-            }
-
-            if (paneInstance && typeof paneInstance.addInput === "function") {
-              try {
-                return paneInstance.addInput(targetObj, key, options);
-              } catch (e) {}
-            }
-
-            if (paneInstance && typeof paneInstance.addBlade === "function") {
-              try {
-                const view = options.view
-                  ? options.view
-                  : typeof targetObj[key] === "boolean"
-                  ? "checkbox"
-                  : typeof targetObj[key] === "number"
-                  ? "number"
-                  : "text";
-
-                const bladeCfg = { view, label: options.label ?? key };
-                if (view === "color") {
-                  return paneInstance.addBlade({
-                    view: "color",
-                    label: options.label ?? key,
-                    params: { value: targetObj[key] },
-                  });
-                }
-
-                return paneInstance.addBlade({
-                  view: view === "checkbox" ? "boolean" : "input",
-                  label: options.label ?? key,
-                  params: { value: targetObj[key] },
-                });
-              } catch (e) {}
-            }
-
-            return null;
-          };
-
-          const addButtonTo = (parent, cfg) => {
-            if (parent && typeof parent.addButton === "function") {
-              try {
-                return parent.addButton(cfg);
-              } catch (e) {}
-            }
-
-            if (parent && typeof parent.addBlade === "function") {
-              try {
-                return parent.addBlade({ view: "button", ...cfg });
-              } catch (e) {}
-            }
-
-            if (paneInstance && typeof paneInstance.addButton === "function") {
-              try {
-                return paneInstance.addButton(cfg);
-              } catch (e) {}
-            }
-
-            if (paneInstance && typeof paneInstance.addBlade === "function") {
-              try {
-                return paneInstance.addBlade({ view: "button", ...cfg });
-              } catch (e) {}
-            }
-
-            return { on: () => {} };
-          };
-
-          const createFolder = (title, expanded = false) => {
-            try {
-              const folder = paneInstance.addFolder?.({ title, expanded });
-              if (folder) return folder;
-            } catch (e) {}
-            try {
-              const blade = paneInstance.addBlade?.({
-                view: "folder",
-                title,
-                expanded,
-              });
-              if (blade) return blade;
-            } catch (e) {}
-            return null;
-          };
-
-          const blobFolder = createFolder("Blob Detection", true);
-          addInputTo(blobFolder ?? paneInstance, params.current, "threshold", {
-            min: 0,
-            max: 255,
-            step: 1,
-            label: "Threshold",
-          });
-          addInputTo(
-            blobFolder ?? paneInstance,
-            params.current,
-            "minBlobSize",
-            {
-              min: 10,
-              max: 1000,
-              step: 10,
-              label: "Min Size",
-            }
-          );
-          addInputTo(blobFolder ?? paneInstance, params.current, "maxBlobs", {
-            min: 1,
-            max: 50,
-            step: 1,
-            label: "Max Blobs",
-          });
-          addInputTo(blobFolder ?? paneInstance, params.current, "showBlobs", {
-            label: "Show Blobs",
-          });
-          addInputTo(
-            blobFolder ?? paneInstance,
-            params.current,
-            "showOriginal",
-            { label: "Show Original" }
-          );
-
-          const colorsFolder = createFolder("Blob Colors", false);
-          addInputTo(
-            colorsFolder ?? paneInstance,
-            params.current,
-            "strokeStyle",
-            { label: "Stroke Style", view: "color" }
-          );
-          addInputTo(
-            colorsFolder ?? paneInstance,
-            params.current,
-            "fillStyle",
-            { label: "Fill Style", view: "color" }
-          );
-
-          addInputTo(
-            colorsFolder ?? paneInstance,
-            params.current,
-            "blobBorderWidth",
-            {
-              min: 1,
-              max: 20,
-              step: 1,
-              label: "Border Width",
-            }
-          );
-
-          const fillFolder = createFolder("Blob Fill", false);
-          addInputTo(
-            fillFolder ?? paneInstance,
-            params.current,
-            "blobFillMode",
-            {
-              label: "Fill Mode",
-              options: {
-                None: "none",
-                Color: "color",
-                Blur: "blur",
-                "Color + Blur": "both",
-              },
-            }
-          );
-          addInputTo(
-            fillFolder ?? paneInstance,
-            params.current,
-            "blobBlurAmount",
-            {
-              min: 1,
-              max: 30,
-              step: 1,
-              label: "Blur Amount",
-            }
-          );
-          addInputTo(
-            fillFolder ?? paneInstance,
-            params.current,
-            "blobFillOpacity",
-            {
-              min: 0,
-              max: 1,
-              step: 0.05,
-              label: "Fill Opacity",
-            }
-          );
-
-          const labelFolder = createFolder("Blob Labels", false);
-          addInputTo(
-            labelFolder ?? paneInstance,
-            params.current,
-            "blobLabelColor",
-            { label: "Label Color", view: "color" }
-          );
-          addInputTo(
-            labelFolder ?? paneInstance,
-            params.current,
-            "blobLabelFontFamily",
-            {
-              label: "Font Family",
-              options: {
-                Monospace: "monospace",
-                Cursive: "cursive",
-                SansSerif: "sans-serif",
-                Serif: "serif",
-              },
-            }
-          );
-          addInputTo(
-            labelFolder ?? paneInstance,
-            params.current,
-            "blobLabelMode",
-            {
-              label: "Label Content",
-              options: {
-                Coordinates: "coords",
-                "Random Numbers": "randomNumbers",
-                "Random Letters": "randomLetters",
-                "Random Symbols": "randomSymbols",
-              },
-            }
-          );
-
-          const connectionsFolder = createFolder("Connections (Beta)", false);
-          addInputTo(
-            connectionsFolder ?? paneInstance,
-            params.current,
-            "showConnections",
-            { label: "Show Connections" }
-          );
-          addInputTo(
-            connectionsFolder ?? paneInstance,
-            params.current,
-            "connectionStyle",
-            {
-              label: "Style",
-              options: { Normal: "normal", Dashed: "dashed", Arrow: "arrow" },
-            }
-          );
-          addInputTo(
-            connectionsFolder ?? paneInstance,
-            params.current,
-            "connectionCurvature",
-            {
-              min: 0,
-              max: 200,
-              step: 5,
-              label: "Curvature",
-            }
-          );
-          addInputTo(
-            connectionsFolder ?? paneInstance,
-            params.current,
-            "connectionColor",
-            { label: "Color", view: "color" }
-          );
-          addInputTo(
-            connectionsFolder ?? paneInstance,
-            params.current,
-            "connectionWidth",
-            {
-              min: 1,
-              max: 10,
-              step: 0.5,
-              label: "Width",
-            }
-          );
-          addInputTo(
-            connectionsFolder ?? paneInstance,
-            params.current,
-            "dashLength",
-            { min: 1, max: 50, step: 1, label: "Dash Length" }
-          );
-          addInputTo(
-            connectionsFolder ?? paneInstance,
-            params.current,
-            "dashGap",
-            { min: 1, max: 50, step: 1, label: "Dash Gap" }
-          );
-
-          const exportFolder = createFolder("Export Settings", false);
-          addInputTo(
-            exportFolder ?? paneInstance,
-            params.current,
-            "videoBitrate",
-            {
-              min: 1000,
-              max: 20000,
-              step: 500,
-              label: "Video Bitrate (kbps)",
-            }
-          );
-          addInputTo(
-            exportFolder ?? paneInstance,
-            params.current,
-            "audioBitrate",
-            {
-              min: 64,
-              max: 320,
-              step: 32,
-              label: "Audio Bitrate (kbps)",
-            }
-          );
-          addInputTo(
-            exportFolder ?? paneInstance,
-            params.current,
-            "exportFPS",
-            {
-              min: 15,
-              max: 60,
-              step: 5,
-              label: "Export FPS",
-            }
-          );
-
-          const actionsFolder = createFolder("Actions", true);
-
-          const importBtn = addButtonTo(actionsFolder ?? paneInstance, {
-            title: "Import Video",
-          });
-          try {
-            importBtn.on?.("click", () =>
-              document.getElementById("videoInput")?.click()
-            );
-          } catch (e) {}
-
-          const exportWebmBtn = addButtonTo(actionsFolder ?? paneInstance, {
-            title: "Export WEBM",
-          });
-          try {
-            exportWebmBtn.on?.("click", () => handleExportVideo("webm"));
-          } catch (e) {}
-
-          const exportMp4Btn = addButtonTo(actionsFolder ?? paneInstance, {
-            title: "Export MP4",
-          });
-          try {
-            exportMp4Btn.on?.("click", () => handleExportVideo("mp4"));
-          } catch (e) {}
-        } catch (err) {
-          console.error("Failed to initialize Tweakpane", err);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to load tweakpane module", err);
-      });
-
-    return () => {
-      if (paneRef.current) {
-        try {
-          paneRef.current.dispose();
-        } catch (e) {}
-        paneRef.current = null;
-      }
-    };
-  }, [handleExportVideo]);
+  // Control panel moved to standalone component
 
   const handlePlay = useCallback(() => {
     videoRef.current?.play();
@@ -683,13 +302,13 @@ const BlobTracker = () => {
                 </button>
                 <button
                   type="button"
+                  onClick={() => window.location.replace("/")}
                   className={clsx(
-                    styles.toggleThemeBtn,
-                    isAltTheme && styles.toggleThemeBtnAlt
+                    styles.importButton,
+                    isAltTheme && styles.importButtonAlt
                   )}
-                  onClick={() => setIsAltTheme((prev) => !prev)}
                 >
-                  {isAltTheme ? "🌙" : "☀️"}
+                  Back to Home
                 </button>
               </div>
             )}
@@ -759,7 +378,13 @@ const BlobTracker = () => {
           )}
         </div>
         <div className={styles.pannelContainer}>
-          <p>Blob count: {blobs.length}</p>
+          <ControlPanel
+            paramsRef={params}
+            onExport={handleExportVideo}
+            onCancel={handleCancelExport}
+            onImport={() => document.getElementById("videoInput")?.click()}
+            blobsLength={blobs.length}
+          />
         </div>
       </section>
     </>

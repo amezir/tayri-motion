@@ -1,0 +1,149 @@
+.pannelContainerInner {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+  box-shadow: 0 6px 18px rgba(11, 14, 20, 0.06);
+  border-radius: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panelTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.tabButtons {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.tabBtn {
+  padding: 6px 10px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.12s ease,
+    color 0.12s ease;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  width: 100%;
+}
+
+.active {
+  background: #dde000;
+  color: #000000;
+}
+
+.panelBody {
+  padding: 1rem;
+  overflow: auto;
+  height: calc(100% - 84px);
+}
+
+.panelBody::-webkit-scrollbar {
+  width: 10px;
+}
+
+.panelBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panelBody::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+.panelSection {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.valueDisplay {
+  min-width: 48px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.panelBody h4 {
+  margin: 8px 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.panelBody label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.panelBody input[type="range"],
+.panelBody input[type="number"],
+.panelBody select {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.panelBody input[type="color"] {
+  margin-left: 8px;
+  vertical-align: middle;
+  width: 36px;
+  height: 26px;
+  border-radius: 6px;
+}
+
+.panelBody input[type="checkbox"] {
+  transform: scale(1.05);
+  margin-right: 8px;
+}
+
+.exportActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.exportActions button {
+  padding: 8px 12px;
+  border: none;
+  background: #000000;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  transition: transform 0.12s ease, background-color 0.12s ease;
+  font-weight: 700;
+}
+
+.exportActions button:nth-child(1) {
+  background: linear-gradient(180deg, #0b0b0b, #222);
+}
+
+.exportActions button:nth-child(2) {
+  background: linear-gradient(180deg, #444, #222);
+}
+
+.exportActions button:nth-child(3) {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.8);
+}

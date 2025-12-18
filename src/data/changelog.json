@@ -82,6 +82,11 @@
           "id": 16,
           "name": "Add Changelog page",
           "status": "Completed"
+        },
+        {
+          "id": 17,
+          "name": "Panel styling ",
+          "status": "In Progress"
         }
       ],
       "releaseStatus": "COMPLETED"
