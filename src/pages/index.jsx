@@ -5,24 +5,36 @@ import { gsap } from "gsap/dist/gsap";
 import clsx from "clsx";
 import SEO from "@/components/SEO";
 import { useTheme } from "@/contexts/ThemeContext";
+import changelogData from "@/data/changelog.json";
 
 export default function Home() {
   const titleRef = useRef(null);
   const videoRef = useRef(null);
   const contentRef = useRef(null);
   const infoRef = useRef(null);
+  const hasAnimated = useRef(false);
   const { isAltTheme, setIsAltTheme } = useTheme();
 
-  const stages = [
-    { id: 1, name: "Initialize video pipeline", status: "OK" },
-    { id: 2, name: "Detect blobs in frames", status: "Stable" },
-    { id: 3, name: "Track blobs over time", status: "Stable" },
-    { id: 4, name: "Compute blob metrics", status: "Size / Count / Color" },
-    { id: 5, name: "Prepare export formats", status: "WebM / MP4" },
-  ];
+  const latestRelease = changelogData.releases[0];
+  const stages = [...latestRelease.stages].reverse().slice(0, 5);
 
   useEffect(() => {
     if (!videoRef.current || !contentRef.current || !infoRef.current) return;
+
+    if (hasAnimated.current) {
+      gsap.set(videoRef.current, { scale: 1, filter: "blur(8px)" });
+      gsap.set([contentRef.current, infoRef.current], { opacity: 1, y: 0 });
+      if (titleRef.current) {
+        gsap.set(titleRef.current, {
+          attr: { "stroke-dashoffset": 0 },
+          fill: "#dde000",
+          opacity: 1,
+        });
+      }
+      return;
+    }
+
+    hasAnimated.current = true;
 
     const ctx = gsap.context(() => {
       gsap.set([contentRef.current, infoRef.current], { opacity: 0, y: 16 });
@@ -181,7 +193,7 @@ export default function Home() {
                     isAltTheme && styles.infoTextVersionAlt
                   )}
                 >
-                  [last version - <a href="">more infos</a>]
+                  [last version - <Link href="/changelog">more infos</Link>]
                 </span>
 
                 {stages.map((stage) => (
@@ -198,7 +210,8 @@ export default function Home() {
                 ))}
 
                 <span className={styles.infoTextDate}>
-                  {">>>"}&nbsp; RELEASE 2025.12 COMPLETED
+                  {">>>"}&nbsp; RELEASE {latestRelease.release}{" "}
+                  {latestRelease.releaseStatus}
                 </span>
               </div>
               <div className={styles.startButton}>

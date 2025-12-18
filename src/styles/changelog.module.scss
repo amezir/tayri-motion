@@ -1,0 +1,182 @@
+.main {
+  min-height: 100vh;
+  height: 100vh;
+  padding: 30px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: black;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.mainAlt {
+  background-color: #f7f7f2;
+}
+
+.toggleButton {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  color: #ffffff;
+  transition: color 0.4s ease;
+
+  &:hover {
+    background-color: transparent;
+    border: 0;
+  }
+}
+
+.changelogContainer {
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px 20px;
+  font-family: var(--font-mono);
+  color: #ffffff;
+  transition: color 0.4s ease;
+}
+
+.changelogContainerAlt {
+  color: #000000;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 60px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: 700;
+  font-family: var(--font-serif);
+  color: #dde000;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.titleAlt {
+  color: #000000;
+}
+
+.backLink {
+  color: #dde000;
+  text-decoration: none;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.releases {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.releaseBlock {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.releaseBlockAlt {
+  background-color: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.releaseHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.releaseVersion {
+  display: inline-block;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.releaseVersionAlt {
+  background-color: #dde000;
+  color: #000000;
+}
+
+.stagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.stageItem {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #dde000;
+  margin: 0;
+  font-family: var(--font-mono);
+  transition: color 0.4s ease;
+}
+
+.stageItemAlt {
+  color: #000000;
+}
+
+.releaseStatus {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #ffffff;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transition: color 0.4s ease, border-color 0.4s ease;
+}
+
+.releaseStatusAlt {
+  color: #000000;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 32px;
+  }
+
+  .releaseTitle {
+    font-size: 22px;
+  }
+
+  .releaseBlock {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
