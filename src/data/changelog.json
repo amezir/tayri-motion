@@ -87,6 +87,11 @@
           "id": 17,
           "name": "Panel styling ",
           "status": "In Progress"
+        },
+        {
+          "id": 18,
+          "name": "Live editing of blob settings",
+          "status": "Fix"
         }
       ],
       "releaseStatus": "COMPLETED"
