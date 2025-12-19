@@ -74,7 +74,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               />
             </label>
             <label>
-              Min Size:
+              Min Size: {p.minBlobSize}
               <input
                 type="range"
                 min="10"
@@ -86,7 +86,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               />
             </label>
             <label>
-              Max Blobs:
+              Max Blobs: {p.maxBlobs}
               <input
                 type="range"
                 min="1"
@@ -290,7 +290,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               />
             </label>
             <label>
-              Dash Length:
+              Dash Length: {p.dashLength}
               <input
                 type="range"
                 min="1"
@@ -302,7 +302,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               />
             </label>
             <label>
-              Dash Gap:
+              Dash Gap: {p.dashGap}
               <input
                 type="range"
                 min="1"
@@ -327,7 +327,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
           <div>
             <h4>Export Settings</h4>
             <label>
-              Video Bitrate (kbps):
+              Video Bitrate (kbps): {p.videoBitrate}
               <input
                 type="range"
                 min="1000"
@@ -343,7 +343,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               />
             </label>
             <label>
-              Audio Bitrate (kbps):
+              Audio Bitrate (kbps): {p.audioBitrate}
               <input
                 type="range"
                 min="64"
