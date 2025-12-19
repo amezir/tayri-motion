@@ -35,13 +35,7 @@ export default function Changelog() {
 
           <div className={styles.releases}>
             {changelogData.releases.map((release, index) => (
-              <div
-                key={index}
-                className={clsx(
-                  styles.releaseBlock,
-                  isAltTheme && styles.releaseBlockAlt
-                )}
-              >
+              <div key={index} className={styles.releaseBlock}>
                 <div className={styles.releaseHeader}>
                   <span
                     className={clsx(

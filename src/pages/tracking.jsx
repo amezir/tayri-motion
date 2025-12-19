@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import Link from "next/link";
 import { processVideoFrame } from "../utils/videoProcessing";
 import { exportVideo, formatTime } from "../utils/videoExport";
 import styles from "../styles/trancking.module.scss";
@@ -311,16 +312,16 @@ const BlobTracker = () => {
                 >
                   Import Video
                 </button>
-                <button
+                <Link
                   type="button"
-                  onClick={() => window.location.replace("/")}
+                  href="/"
                   className={clsx(
-                    styles.importButton,
-                    isAltTheme && styles.importButtonAlt
+                    styles.leaveButton,
+                    isAltTheme && styles.leaveButtonAlt
                   )}
                 >
                   Back to Home
-                </button>
+                </Link>
               </div>
             )}
 
