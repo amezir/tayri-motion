@@ -111,7 +111,15 @@ const BlobTracker = () => {
     }
   }, []);
 
-  // Control panel moved to standalone component
+  const handleParamsChange = useCallback(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (video && canvas) {
+      try {
+        processVideoFrame(video, canvas, params.current, setBlobs);
+      } catch (e) {}
+    }
+  }, []);
 
   const handlePlay = useCallback(() => {
     videoRef.current?.play();
@@ -217,6 +225,9 @@ const BlobTracker = () => {
 
     const handlePauseEvent = () => {
       setIsPlaying(false);
+      try {
+        processVideoFrame(video, canvas, params.current, setBlobs);
+      } catch (e) {}
       if (animationId) {
         cancelAnimationFrame(animationId);
         animationId = null;
@@ -381,6 +392,7 @@ const BlobTracker = () => {
           <ControlPanel
             paramsRef={params}
             onExport={handleExportVideo}
+            onParamsChange={handleParamsChange}
             onCancel={handleCancelExport}
             onImport={() => document.getElementById("videoInput")?.click()}
             blobsLength={blobs.length}

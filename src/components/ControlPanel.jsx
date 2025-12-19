@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import styles from "./ControlPanel.module.scss";
 import clsx from "clsx";
 
-const ControlPanel = ({ paramsRef, onExport, onImport }) => {
+const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
   const [activeTab, setActiveTab] = useState("Blob");
   const [, setRerender] = useState(0);
 
@@ -11,6 +11,9 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
       if (!paramsRef || !paramsRef.current) return;
       paramsRef.current[key] = value;
       setRerender((n) => n + 1);
+      try {
+        onParamsChange?.(key, value);
+      } catch (e) {}
     },
     [paramsRef]
   );
@@ -73,7 +76,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
             <label>
               Min Size:
               <input
-                type="number"
+                type="range"
                 min="10"
                 max="1000"
                 value={p.minBlobSize}
@@ -85,7 +88,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
             <label>
               Max Blobs:
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="50"
                 value={p.maxBlobs}
@@ -215,6 +218,13 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
                 <option value="randomSymbols">Random Symbols</option>
               </select>
             </label>
+            <button
+              className={styles.importButton}
+              type="button"
+              onClick={() => onImport()}
+            >
+              Import Video
+            </button>
           </div>
         )}
 
@@ -282,7 +292,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
             <label>
               Dash Length:
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="50"
                 value={p.dashLength}
@@ -294,7 +304,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
             <label>
               Dash Gap:
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="50"
                 value={p.dashGap}
@@ -303,6 +313,13 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
                 }
               />
             </label>
+            <button
+              className={styles.importButton}
+              type="button"
+              onClick={() => onImport()}
+            >
+              Import Video
+            </button>
           </div>
         )}
 
@@ -312,7 +329,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
             <label>
               Video Bitrate (kbps):
               <input
-                type="number"
+                type="range"
                 min="1000"
                 max="20000"
                 step="100"
@@ -328,7 +345,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
             <label>
               Audio Bitrate (kbps):
               <input
-                type="number"
+                type="range"
                 min="64"
                 max="320"
                 step="8"
@@ -362,7 +379,11 @@ const ControlPanel = ({ paramsRef, onExport, onImport }) => {
               <button type="button" onClick={() => onExport("mp4")}>
                 Export MP4
               </button>
-              <button type="button" onClick={() => onImport()}>
+              <button
+                className={styles.importButton}
+                type="button"
+                onClick={() => onImport()}
+              >
                 Import Video
               </button>
             </div>

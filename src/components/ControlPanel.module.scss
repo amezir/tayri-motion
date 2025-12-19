@@ -85,9 +85,12 @@
 
 .panelBody h4 {
   margin: 8px 0;
+  padding: 5px;
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.6px;
+  color: #ffffff;
+  background-color: #000000;
 }
 
 .panelBody label {
@@ -122,6 +125,18 @@
   margin-top: 12px;
 }
 
+.importButton {
+  padding: 8px 12px;
+  border: none;
+  background: #222222;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  transition: transform 0.12s ease, background-color 0.12s ease;
+  font-weight: 700;
+}
+
 .exportActions button {
   padding: 8px 12px;
   border: none;
@@ -140,10 +155,4 @@
 
 .exportActions button:nth-child(2) {
   background: linear-gradient(180deg, #444, #222);
-}
-
-.exportActions button:nth-child(3) {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  color: rgba(0, 0, 0, 0.8);
 }
