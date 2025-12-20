@@ -135,7 +135,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Border Width: {p.blobBorderWidth}
               <input
                 type="range"
-                min="1"
+                min="0"
                 max="20"
                 value={p.blobBorderWidth}
                 onChange={(e) =>

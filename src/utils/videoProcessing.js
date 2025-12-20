@@ -189,9 +189,11 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
         ctx.restore();
       }
 
-      ctx.strokeStyle = resolveColor(params.strokeStyle, '#ff0000');
-      ctx.lineWidth = borderWidth;
-      ctx.strokeRect(blob.x, blob.y, blob.width, blob.height);
+      if (borderWidth > 0) {
+        ctx.strokeStyle = resolveColor(params.strokeStyle, '#ff0000');
+        ctx.lineWidth = borderWidth;
+        ctx.strokeRect(blob.x, blob.y, blob.width, blob.height);
+      }
 
       ctx.fillStyle = labelColor;
       ctx.fillText(
