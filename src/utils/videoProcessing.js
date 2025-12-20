@@ -52,6 +52,41 @@ const getRandomLabelForMode = (mode) => {
   }
 };
 
+// Draw corner borders instead of full rectangle border
+const drawCornerBorders = (ctx, x, y, width, height, cornerLength = 20, lineWidth = 2) => {
+  const adjustedCornerLength = Math.min(cornerLength, width / 2, height / 2);
+  
+  ctx.lineWidth = lineWidth;
+  
+  // Top-left corner
+  ctx.beginPath();
+  ctx.moveTo(x, y + adjustedCornerLength);
+  ctx.lineTo(x, y);
+  ctx.lineTo(x + adjustedCornerLength, y);
+  ctx.stroke();
+  
+  // Top-right corner
+  ctx.beginPath();
+  ctx.moveTo(x + width - adjustedCornerLength, y);
+  ctx.lineTo(x + width, y);
+  ctx.lineTo(x + width, y + adjustedCornerLength);
+  ctx.stroke();
+  
+  // Bottom-left corner
+  ctx.beginPath();
+  ctx.moveTo(x, y + height - adjustedCornerLength);
+  ctx.lineTo(x, y + height);
+  ctx.lineTo(x + adjustedCornerLength, y + height);
+  ctx.stroke();
+  
+  // Bottom-right corner
+  ctx.beginPath();
+  ctx.moveTo(x + width - adjustedCornerLength, y + height);
+  ctx.lineTo(x + width, y + height);
+  ctx.lineTo(x + width, y + height - adjustedCornerLength);
+  ctx.stroke();
+};
+
 export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -191,8 +226,13 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
 
       if (borderWidth > 0) {
         ctx.strokeStyle = resolveColor(params.strokeStyle, '#ff0000');
-        ctx.lineWidth = borderWidth;
-        ctx.strokeRect(blob.x, blob.y, blob.width, blob.height);
+        if (params.blobCornerBorder) {
+          const cornerLength = typeof params.blobCornerLength === 'number' ? params.blobCornerLength : 20;
+          drawCornerBorders(ctx, blob.x, blob.y, blob.width, blob.height, cornerLength, borderWidth);
+        } else {
+          ctx.lineWidth = borderWidth;
+          ctx.strokeRect(blob.x, blob.y, blob.width, blob.height);
+        }
       }
 
       ctx.fillStyle = labelColor;

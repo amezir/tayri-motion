@@ -143,6 +143,28 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 }
               />
             </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={!!p.blobCornerBorder}
+                onChange={(e) => updateParam("blobCornerBorder", e.target.checked)}
+              />
+              Border Corners Only
+            </label>
+            {p.blobCornerBorder && (
+              <label>
+                Corner Length: {p.blobCornerLength}
+                <input
+                  type="range"
+                  min="5"
+                  max="50"
+                  value={p.blobCornerLength}
+                  onChange={(e) =>
+                    updateParam("blobCornerLength", parseInt(e.target.value, 10))
+                  }
+                />
+              </label>
+            )}
 
             <h4>Blob Fill</h4>
             <label>

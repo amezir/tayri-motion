@@ -35,6 +35,8 @@ const BlobTracker = () => {
     strokeStyle: "#ff0000",
     fillStyle: "#ffffff",
     blobBorderWidth: 2,
+    blobCornerBorder: false,
+    blobCornerLength: 20,
     blobFillMode: "none",
     blobBlurAmount: 6,
     blobFillOpacity: 0.35,

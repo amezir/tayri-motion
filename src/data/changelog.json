@@ -97,6 +97,11 @@
           "id": 19,
           "name": "Zoom fill mode",
           "status": "Completed"
+        },
+        {
+          "id": 20,
+          "name": "Corner border style",
+          "status": "New option added"
         }
       ],
       "releaseStatus": "COMPLETED"
