@@ -92,6 +92,11 @@
           "id": 18,
           "name": "Live editing of blob settings",
           "status": "Fix"
+        },
+        {
+          "id": 19,
+          "name": "Zoom fill mode",
+          "status": "Completed"
         }
       ],
       "releaseStatus": "COMPLETED"

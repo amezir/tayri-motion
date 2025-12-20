@@ -155,6 +155,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 <option value="color">Color</option>
                 <option value="blur">Blur</option>
                 <option value="both">Color + Blur</option>
+                <option value="zoom">Zoom</option>
               </select>
             </label>
             <label>
@@ -166,6 +167,19 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 value={p.blobBlurAmount}
                 onChange={(e) =>
                   updateParam("blobBlurAmount", parseInt(e.target.value, 10))
+                }
+              />
+            </label>
+            <label>
+              Zoom Level: {p.blobZoomLevel}
+              <input
+                type="range"
+                min="1"
+                max="5"
+                step="0.5"
+                value={p.blobZoomLevel}
+                onChange={(e) =>
+                  updateParam("blobZoomLevel", parseFloat(e.target.value))
                 }
               />
             </label>

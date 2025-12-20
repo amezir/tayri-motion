@@ -38,6 +38,7 @@ const BlobTracker = () => {
     blobFillMode: "none",
     blobBlurAmount: 6,
     blobFillOpacity: 0.35,
+    blobZoomLevel: 2,
     blobLabelColor: "#ffffff",
     blobLabelFontFamily: "monospace",
     blobLabelMode: "coords",

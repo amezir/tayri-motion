@@ -84,7 +84,7 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
   let blurSourceCtx = null;
   const wantsBlurFill =
     params.showBlobs &&
-    (params.blobFillMode === 'blur' || params.blobFillMode === 'both');
+    (params.blobFillMode === 'blur' || params.blobFillMode === 'both' || params.blobFillMode === 'zoom');
 
   if (wantsBlurFill && typeof document !== 'undefined') {
     blurSourceCanvas = document.createElement('canvas');
@@ -106,6 +106,9 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
     const blurAmount = typeof params.blobBlurAmount === 'number'
       ? Math.max(params.blobBlurAmount, 0)
       : 6;
+    const zoomLevel = typeof params.blobZoomLevel === 'number'
+      ? Math.max(params.blobZoomLevel, 1)
+      : 2;
 
     const labelFontFamily = params.blobLabelFontFamily || 'monospace';
     const labelColor = resolveColor(params.blobLabelColor, '#ffffff');
@@ -135,7 +138,6 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
         nextCache.set(key, labelText);
       }
 
-      // Blur and color fill order: for "both" we blur first, then tint
       if (
         (params.blobFillMode === 'blur' || params.blobFillMode === 'both') &&
         blurSourceCanvas && blurSourceCtx && blurAmount > 0
@@ -154,6 +156,36 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
         ctx.globalAlpha = fillOpacity;
         ctx.fillStyle = resolveColor(params.fillStyle, '#ffffff');
         ctx.fillRect(blob.x, blob.y, blob.width, blob.height);
+        ctx.restore();
+      }
+
+      // Zoom fill mode
+      if (params.blobFillMode === 'zoom' && blurSourceCanvas && blurSourceCtx) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(blob.x, blob.y, blob.width, blob.height);
+        ctx.clip();
+
+        const blobCenterX = blob.centerX;
+        const blobCenterY = blob.centerY;
+        
+        const sourceWidth = blob.width / zoomLevel;
+        const sourceHeight = blob.height / zoomLevel;
+        
+        const sourceX = Math.max(0, Math.min(
+          blobCenterX - sourceWidth / 2,
+          blurSourceCanvas.width - sourceWidth
+        ));
+        const sourceY = Math.max(0, Math.min(
+          blobCenterY - sourceHeight / 2,
+          blurSourceCanvas.height - sourceHeight
+        ));
+
+        ctx.drawImage(
+          blurSourceCanvas,
+          sourceX, sourceY, sourceWidth, sourceHeight,
+          blob.x, blob.y, blob.width, blob.height
+        );
         ctx.restore();
       }
 
