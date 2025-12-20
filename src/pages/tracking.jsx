@@ -7,6 +7,12 @@ import clsx from "clsx";
 import SEO from "@/components/SEO";
 import ControlPanel from "@/components/ControlPanel";
 import { useTheme } from "@/contexts/ThemeContext";
+import ViewControls from "@/components/ViewControls";
+import VideoControls from "@/components/VideoControls";
+
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 4;
+const ZOOM_STEP = 0.2;
 
 const BlobTracker = () => {
   const { isAltTheme } = useTheme();
@@ -25,6 +31,15 @@ const BlobTracker = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const panRef = useRef({ x: 0, y: 0 });
+  const panRafRef = useRef(null);
+  const panStateRef = useRef({
+    isPanning: false,
+    lastX: 0,
+    lastY: 0,
+  });
 
   const params = useRef({
     threshold: 128,
@@ -108,10 +123,107 @@ const BlobTracker = () => {
     [videoLoaded]
   );
 
+  useEffect(() => {
+    panRef.current = pan;
+  }, [pan]);
+
+  useEffect(() => {
+    return () => {
+      if (panRafRef.current) {
+        cancelAnimationFrame(panRafRef.current);
+        panRafRef.current = null;
+      }
+    };
+  }, []);
+
+  const enqueuePanUpdate = useCallback((nextPan) => {
+    panRef.current = nextPan;
+    if (panRafRef.current) return;
+    panRafRef.current = requestAnimationFrame(() => {
+      panRafRef.current = null;
+      setPan(panRef.current);
+    });
+  }, []);
+
   const handleCancelExport = useCallback(() => {
     if (exportAbortControllerRef.current) {
       setExportStatus("Cancelling export...");
       exportAbortControllerRef.current.abort();
+    }
+  }, []);
+
+  const clampZoom = useCallback((value) => {
+    return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
+  }, []);
+
+  const handleZoomIn = useCallback(() => {
+    setZoom((prev) => clampZoom(prev + ZOOM_STEP));
+  }, [clampZoom]);
+
+  const handleZoomOut = useCallback(() => {
+    setZoom((prev) => clampZoom(prev - ZOOM_STEP));
+  }, [clampZoom]);
+
+  const handleZoomSliderChange = useCallback(
+    (e) => {
+      setZoom(clampZoom(parseFloat(e.target.value)));
+    },
+    [clampZoom]
+  );
+
+  const handleResetView = useCallback(() => {
+    setZoom(1);
+    const origin = { x: 0, y: 0 };
+    panRef.current = origin;
+    setPan(origin);
+  }, []);
+
+  const handleWheelZoom = useCallback(
+    (e) => {
+      if (!videoLoaded) return;
+      e.preventDefault();
+      const direction = e.deltaY < 0 ? 1 : -1;
+      const delta = direction * (ZOOM_STEP * 0.75);
+      setZoom((prev) => clampZoom(prev + delta));
+    },
+    [clampZoom, videoLoaded]
+  );
+
+  const handlePointerDown = useCallback(
+    (e) => {
+      if (!videoLoaded || zoom === 1) return;
+      panStateRef.current.isPanning = true;
+      panStateRef.current.lastX = e.clientX;
+      panStateRef.current.lastY = e.clientY;
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch (_) {}
+    },
+    [videoLoaded, zoom]
+  );
+
+  const handlePointerMove = useCallback(
+    (e) => {
+      if (!panStateRef.current.isPanning || zoom === 1) return;
+      e.preventDefault();
+      const dx = (e.clientX - panStateRef.current.lastX) / zoom;
+      const dy = (e.clientY - panStateRef.current.lastY) / zoom;
+      panStateRef.current.lastX = e.clientX;
+      panStateRef.current.lastY = e.clientY;
+      enqueuePanUpdate({
+        x: panRef.current.x + dx,
+        y: panRef.current.y + dy,
+      });
+    },
+    [zoom, enqueuePanUpdate]
+  );
+
+  const handlePointerUp = useCallback((e) => {
+    panStateRef.current.isPanning = false;
+    if (e?.currentTarget?.hasPointerCapture?.(e.pointerId)) {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch (_) {}
     }
   }, []);
 
@@ -157,6 +269,10 @@ const BlobTracker = () => {
       if (video) {
         const canvas = canvasRef.current;
         setVideoLoaded(false);
+        setZoom(1);
+        const origin = { x: 0, y: 0 };
+        panRef.current = origin;
+        setPan(origin);
         video.src = url;
         video.load();
 
@@ -194,7 +310,6 @@ const BlobTracker = () => {
                 });
             }
           } catch (e) {}
-
           video.removeEventListener("loadedmetadata", onLoaded);
         };
 
@@ -266,6 +381,18 @@ const BlobTracker = () => {
     };
   }, [videoLoaded]);
 
+  useEffect(() => {
+    const stopPan = () => handlePointerUp();
+    window.addEventListener("mouseup", stopPan);
+    window.addEventListener("touchend", stopPan);
+    window.addEventListener("touchcancel", stopPan);
+    return () => {
+      window.removeEventListener("mouseup", stopPan);
+      window.removeEventListener("touchend", stopPan);
+      window.removeEventListener("touchcancel", stopPan);
+    };
+  }, [handlePointerUp]);
+
   return (
     <>
       <SEO
@@ -288,9 +415,39 @@ const BlobTracker = () => {
           />
 
           <div ref={containerRef} className={styles.container}>
-            <video ref={videoRef} className={styles.video} loop playsInline />
+            <div
+              className={clsx(
+                styles.viewport,
+                isAltTheme && styles.viewportAlt
+              )}
+              onWheel={handleWheelZoom}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerLeave={handlePointerUp}
+            >
+              <div
+                className={styles.viewportInner}
+                style={{
+                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                  cursor:
+                    zoom !== 1
+                      ? panStateRef.current?.isPanning
+                        ? "grabbing"
+                        : "grab"
+                      : "default",
+                }}
+              >
+                <video
+                  ref={videoRef}
+                  className={styles.video}
+                  loop
+                  playsInline
+                />
 
-            <canvas ref={canvasRef} className={styles.canvas} />
+                <canvas ref={canvasRef} className={styles.canvas} />
+              </div>
+            </div>
             {!videoLoaded && (
               <div
                 className={clsx(
@@ -359,37 +516,29 @@ const BlobTracker = () => {
             )}
           </div>
           {videoLoaded && (
-            <div className={styles.videoControls}>
-              <button onClick={isPlaying ? handlePause : handlePlay}>
-                {isPlaying ? "⏸" : "▶"}
-              </button>
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                value={currentTime}
-                onChange={handleSeek}
-                step="0.1"
-                className={styles.videoSeeker}
-              />
-              <div className={styles.videoTime}>
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </div>
-              <div className={styles.volumeControl}>
-                <span className={styles.volumeIcon}>
-                  {volume === 0 ? "🔇" : volume < 0.5 ? "🔉" : "🔊"}
-                </span>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className={styles.volumeSlider}
-                />
-              </div>
-            </div>
+            <ViewControls
+              zoom={zoom}
+              minZoom={MIN_ZOOM}
+              maxZoom={MAX_ZOOM}
+              onZoomIn={handleZoomIn}
+              onZoomOut={handleZoomOut}
+              onZoomChange={handleZoomSliderChange}
+              onReset={handleResetView}
+              isAltTheme={isAltTheme}
+            />
+          )}
+          {videoLoaded && (
+            <VideoControls
+              isPlaying={isPlaying}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              currentTime={currentTime}
+              duration={duration}
+              onSeek={handleSeek}
+              volume={volume}
+              onVolumeChange={handleVolumeChange}
+              formatTime={formatTime}
+            />
           )}
         </div>
         <div className={styles.pannelContainer}>

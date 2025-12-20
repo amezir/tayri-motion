@@ -1,0 +1,118 @@
+.viewControls {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  padding: 10px 16px;
+  //   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: #eaeaea;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.viewControlsAlt {
+  background: transparent;
+  color: #1f1f1f;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.zoomButtons {
+  display: flex;
+  gap: 6px;
+
+  button {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.04);
+    color: #eaeaea;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.26);
+    }
+  }
+}
+
+.viewControlsAlt .zoomButtons button {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #1f1f1f;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.16);
+  }
+}
+
+.zoomSlider {
+  flex: 1;
+  height: 3px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #f5f5f5;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: none;
+  }
+
+  &::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #f5f5f5;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: none;
+  }
+}
+
+.viewControlsAlt .zoomSlider {
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.zoomValue {
+  min-width: 64px;
+  text-align: right;
+}
+
+.resetView {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: #eaeaea;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  font-family: var(--font-mono);
+  font-size: 13px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.26);
+  }
+}
+
+.viewControlsAlt .resetView {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #1f1f1f;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.16);
+  }
+}
