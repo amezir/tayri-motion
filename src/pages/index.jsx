@@ -21,10 +21,7 @@ export default function Home() {
   useEffect(() => {
     if (!videoRef.current || !contentRef.current || !infoRef.current) return;
 
-    // Restore persisted animation state so it doesn't restart on navigation
     try {
-      // const stored =
-      //   typeof window !== "undefined" && sessionStorage.getItem("homeAnimated");
       if (stored === "true") hasAnimated.current = true;
     } catch (e) {}
 
@@ -103,13 +100,10 @@ export default function Home() {
           },
           "-=0.6"
         );
-        // Persist that the animation has completed so it won't replay on navigation
         tl.eventCallback("onComplete", () => {
           try {
             sessionStorage.setItem("homeAnimated", "true");
-          } catch (e) {
-            // ignore storage errors
-          }
+          } catch (e) {}
         });
       }
     });
