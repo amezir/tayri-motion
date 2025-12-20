@@ -102,6 +102,11 @@
           "id": 20,
           "name": "Corner border style",
           "status": "New option added"
+        },
+        {
+          "id": 21,
+          "name": "Add Zoom controls",
+          "status": "In Progress"
         }
       ],
       "releaseStatus": "COMPLETED"
