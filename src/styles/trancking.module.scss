@@ -302,3 +302,45 @@
   max-width: 380px;
   height: 100%;
 }
+
+.header {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+
+  p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .logoTitle {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    flex-direction: column;
+    font-family: var(--font-serif);
+    font-size: 0.3rem;
+    color: #dde000;
+  }
+  .logo {
+    width: 35px;
+    height: auto;
+  }
+}
+
+.toggleButton {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+
+  &:hover {
+    background-color: transparent;
+    border: 0;
+  }
+}

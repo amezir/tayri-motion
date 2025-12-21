@@ -15,7 +15,7 @@ const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.2;
 
 const BlobTracker = () => {
-  const { isAltTheme } = useTheme();
+  const { isAltTheme, setIsAltTheme } = useTheme();
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -442,7 +442,25 @@ const BlobTracker = () => {
             onChange={handleVideoUpload}
             className={styles.videoInput}
           />
-
+          <div className={styles.header}>
+            <p>made by Amezir Messaoud</p>
+            <Link href="/" className={styles.logoTitle}>
+              <img
+                src="./logo.png"
+                alt="logo"
+                className={styles.logo}
+                draggable="false"
+              />
+              <h1>Tayri Motion</h1>
+            </Link>
+            <button
+              type="button"
+              className={`${styles.toggleButton}`}
+              onClick={() => setIsAltTheme((prev) => !prev)}
+            >
+              {isAltTheme ? "dark" : "light"}
+            </button>
+          </div>
           <div ref={containerRef} className={styles.container}>
             <div
               className={clsx(
