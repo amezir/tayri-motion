@@ -6,6 +6,9 @@ const floodFill = (startX, startY, binaryData, width, height, visited) => {
     minY = startY,
     maxY = startY;
 
+  const maxPixels = 100000;
+  let pixelCount = 0;
+
   while (stack.length > 0) {
     const [x, y] = stack.pop();
     const idx = y * width + x;
@@ -15,11 +18,22 @@ const floodFill = (startX, startY, binaryData, width, height, visited) => {
 
     visited[idx] = 1;
     pixels.push([x, y]);
+    pixelCount++;
 
     minX = Math.min(minX, x);
     maxX = Math.max(maxX, x);
     minY = Math.min(minY, y);
     maxY = Math.max(maxY, y);
+
+    if (pixelCount >= maxPixels) {
+      for (const [sx, sy] of stack) {
+        const sidx = sy * width + sx;
+        if (sidx >= 0 && sidx < visited.length) {
+          visited[sidx] = 1;
+        }
+      }
+      break;
+    }
 
     stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
   }
@@ -31,7 +45,18 @@ export const detectBlobs = (binaryData, width, height, params) => {
   const visited = new Uint8Array(width * height);
   const blobs = [];
 
-  const step = 3;
+  let whitePixelCount = 0;
+  for (let i = 0; i < binaryData.length; i += 8) {
+    if (binaryData[i] === 255) whitePixelCount += 8;
+  }
+  const whitePixelRatio = whitePixelCount / (width * height);
+  
+  let step = 2;
+  if (whitePixelRatio > 0.15) step = 3;
+  if (whitePixelRatio > 0.25) step = 4;
+  if (whitePixelRatio > 0.40) step = 6;
+  if (whitePixelRatio > 0.60) step = 8;
+  if (whitePixelRatio > 0.75) step = 10;
 
   for (let y = 0; y < height; y += step) {
     for (let x = 0; x < width; x += step) {

@@ -127,6 +127,11 @@
           "id": 25,
           "name": "Canvas dimension rework",
           "status": "Fix sizing issues"
+        },
+        {
+          "id": 26,
+          "name": "Optimize blob detection",
+          "status": "Performance improvements"
         }
       ],
       "releaseStatus": "COMPLETED"
