@@ -147,13 +147,14 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
 
     const labelFontFamily = params.blobLabelFontFamily || 'monospace';
     const labelColor = resolveColor(params.blobLabelColor, '#ffffff');
+    const labelSize = typeof params.blobLabelSize === 'number' ? Math.max(params.blobLabelSize, 8) : 14;
 
     const labelMode = params.blobLabelMode || 'coords';
 
     const previousCache = canvas._blobLabelCache || new Map();
     const nextCache = new Map();
 
-    ctx.font = `14px ${labelFontFamily}`;
+    ctx.font = `${labelSize}px ${labelFontFamily}`;
     ctx.textBaseline = 'top';
 
     detectedBlobs.forEach((blob) => {
@@ -235,12 +236,14 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
         }
       }
 
-      ctx.fillStyle = labelColor;
-      ctx.fillText(
-        labelText,
-        blob.x,
-        Math.max(blob.y - 16, 0)
-      );
+      if (params.showBlobLabels !== false) {
+        ctx.fillStyle = labelColor;
+        ctx.fillText(
+          labelText,
+          blob.x,
+          Math.max(blob.y - 16, 0)
+        );
+      }
     });
 
     canvas._blobLabelCache = nextCache;

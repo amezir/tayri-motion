@@ -107,6 +107,11 @@
           "id": 21,
           "name": "Add Zoom controls",
           "status": "In Progress"
+        },
+        {
+          "id": 22,
+          "name": "Add more custom for labels",
+          "status": "Show / Hide options and Sizes"
         }
       ],
       "releaseStatus": "COMPLETED"

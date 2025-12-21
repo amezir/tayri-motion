@@ -226,6 +226,28 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
 
             <h4>Blob Labels</h4>
             <label>
+              <input
+                type="checkbox"
+                checked={p.showBlobLabels !== false}
+                onChange={(e) =>
+                  updateParam("showBlobLabels", e.target.checked)
+                }
+              />
+              Show Labels
+            </label>
+            <label>
+              Label Size: {p.blobLabelSize}
+              <input
+                type="range"
+                min="8"
+                max="32"
+                value={p.blobLabelSize}
+                onChange={(e) =>
+                  updateParam("blobLabelSize", parseInt(e.target.value, 10))
+                }
+              />
+            </label>
+            <label>
               Label Color:
               <input
                 type="color"
