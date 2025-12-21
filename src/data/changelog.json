@@ -112,6 +112,16 @@
           "id": 22,
           "name": "Add more custom for labels",
           "status": "Show / Hide options and Sizes"
+        },
+        {
+          "id": 23,
+          "name": "Improve UX for blob settings",
+          "status": "Reorganize panel"
+        },
+        {
+          "id": 24,
+          "name": "New design for the sound settings",
+          "status": "Completed"
         }
       ],
       "releaseStatus": "COMPLETED"
