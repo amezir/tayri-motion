@@ -22,7 +22,7 @@
 }
 
 .tabBtn {
-  padding: 6px 10px;
+  padding: 10px 10px;
   background: #000000;
   border: 0;
   color: #ffffff;
@@ -34,11 +34,13 @@
   font-size: 13px;
   font-weight: 600;
   width: 100%;
+  border-bottom: 1px solid white;
 }
 
 .active {
   background: #dde000;
   color: #000000;
+  border-bottom: 1px solid #dde000;
 }
 
 .panelBody {
@@ -48,7 +50,7 @@
 }
 
 .panelBody::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 .panelBody::-webkit-scrollbar-track {
@@ -56,7 +58,7 @@
 }
 
 .panelBody::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 10px;
 }
 
@@ -111,9 +113,43 @@
   border-radius: 6px;
 }
 
-.panelBody input[type="checkbox"] {
-  transform: scale(1.05);
-  margin-right: 8px;
+.blobSettings,
+.effectSettings,
+.exportSettings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkboxGroup {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.toggleBtn {
+  padding: 8px 16px;
+  border: 1px solid #ffffff;
+  background: transparent;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+
+  &:hover {
+    border-color: #dde000;
+    color: #dde000;
+    box-shadow: 0 0 8px rgba(221, 224, 0, 0.3);
+  }
+
+  &.active {
+    background: #dde000;
+    color: #000000;
+    border-color: #dde000;
+    box-shadow: 0 0 12px rgba(221, 224, 0, 0.5);
+  }
 }
 
 .exportActions {

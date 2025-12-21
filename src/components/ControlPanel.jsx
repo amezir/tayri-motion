@@ -59,7 +59,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
 
       <div className={styles.panelBody}>
         {activeTab === "Blob" && (
-          <div>
+          <div className={styles.blobSettings}>
             <h4>Blob Detection</h4>
             <label>
               Threshold: {p.threshold}
@@ -97,22 +97,28 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 }
               />
             </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={!!p.showBlobs}
-                onChange={(e) => updateParam("showBlobs", e.target.checked)}
-              />
-              Show Blobs
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={!!p.showOriginal}
-                onChange={(e) => updateParam("showOriginal", e.target.checked)}
-              />
-              Show Original
-            </label>
+            <div className={styles.checkboxGroup}>
+              <button
+                className={clsx(
+                  styles.toggleBtn,
+                  !!p.showBlobs && styles.active
+                )}
+                type="button"
+                onClick={() => updateParam("showBlobs", !p.showBlobs)}
+              >
+                Show Blobs
+              </button>
+              <button
+                className={clsx(
+                  styles.toggleBtn,
+                  !!p.showOriginal && styles.active
+                )}
+                type="button"
+                onClick={() => updateParam("showOriginal", !p.showOriginal)}
+              >
+                Show Original
+              </button>
+            </div>
 
             <h4>Blob Colors</h4>
             <label>
@@ -143,16 +149,18 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 }
               />
             </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={!!p.blobCornerBorder}
-                onChange={(e) =>
-                  updateParam("blobCornerBorder", e.target.checked)
-                }
-              />
+            <button
+              className={clsx(
+                styles.toggleBtn,
+                !!p.blobCornerBorder && styles.active
+              )}
+              type="button"
+              onClick={() =>
+                updateParam("blobCornerBorder", !p.blobCornerBorder)
+              }
+            >
               Border Corners Only
-            </label>
+            </button>
             {p.blobCornerBorder && (
               <label>
                 Corner Length: {p.blobCornerLength}
@@ -225,16 +233,18 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
             </label>
 
             <h4>Blob Labels</h4>
-            <label>
-              <input
-                type="checkbox"
-                checked={p.showBlobLabels !== false}
-                onChange={(e) =>
-                  updateParam("showBlobLabels", e.target.checked)
-                }
-              />
+            <button
+              className={clsx(
+                styles.toggleBtn,
+                p.showBlobLabels !== false && styles.active
+              )}
+              type="button"
+              onClick={() =>
+                updateParam("showBlobLabels", p.showBlobLabels === false)
+              }
+            >
               Show Labels
-            </label>
+            </button>
             <label>
               Label Size: {p.blobLabelSize}
               <input
@@ -292,18 +302,18 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
         )}
 
         {activeTab === "Effect" && (
-          <div>
+          <div className={styles.effectSettings}>
             <h4>Connections (Beta)</h4>
-            <label>
-              <input
-                type="checkbox"
-                checked={!!p.showConnections}
-                onChange={(e) =>
-                  updateParam("showConnections", e.target.checked)
-                }
-              />
+            <button
+              className={clsx(
+                styles.toggleBtn,
+                !!p.showConnections && styles.active
+              )}
+              type="button"
+              onClick={() => updateParam("showConnections", !p.showConnections)}
+            >
               Show Connections
-            </label>
+            </button>
             <label>
               Style:
               <select
@@ -387,7 +397,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
         )}
 
         {activeTab === "Export" && (
-          <div>
+          <div className={styles.exportSettings}>
             <h4>Export Settings</h4>
             <label>
               Video Bitrate (kbps): {p.videoBitrate}
