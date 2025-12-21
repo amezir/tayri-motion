@@ -32,7 +32,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
             )}
             onClick={() => setActiveTab("Blob")}
           >
-            Blob
+            Tracking
           </button>
           <button
             type="button"
