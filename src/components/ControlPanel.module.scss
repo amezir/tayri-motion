@@ -152,6 +152,68 @@
   }
 }
 
+.fillModeGroup {
+  margin-bottom: 10px;
+}
+
+.fillModeLabel {
+  font-size: 13px;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.fillModeOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.optionGroup {
+  margin-bottom: 10px;
+}
+
+.optionGroupLabel {
+  font-size: 13px;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.optionGroupButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.optionBtn {
+  padding: 8px 12px;
+  border: 1px solid #ffffff;
+  background: transparent;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &:hover {
+    border-color: #dde000;
+    color: #dde000;
+    box-shadow: 0 0 8px rgba(221, 224, 0, 0.3);
+  }
+
+  &.active {
+    background: #dde000;
+    color: #000000;
+    border-color: #dde000;
+    box-shadow: 0 0 12px rgba(221, 224, 0, 0.5);
+  }
+}
+
 .exportActions {
   display: flex;
   gap: 8px;

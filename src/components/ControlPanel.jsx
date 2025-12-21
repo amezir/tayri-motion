@@ -180,19 +180,61 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
             )}
 
             <h4>Blob Fill</h4>
-            <label>
-              Fill Mode:
-              <select
-                value={p.blobFillMode}
-                onChange={(e) => updateParam("blobFillMode", e.target.value)}
-              >
-                <option value="none">None</option>
-                <option value="color">Color</option>
-                <option value="blur">Blur</option>
-                <option value="both">Color + Blur</option>
-                <option value="zoom">Zoom</option>
-              </select>
-            </label>
+            <div className={styles.fillModeGroup}>
+              <div className={styles.fillModeLabel}>Fill Mode:</div>
+              <div className={styles.fillModeOptions}>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "none" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "none")}
+                >
+                  None
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "color" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "color")}
+                >
+                  Color
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "blur" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "blur")}
+                >
+                  Blur
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "both" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "both")}
+                >
+                  Color + Blur
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "zoom" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "zoom")}
+                >
+                  Zoom
+                </button>
+              </div>
+            </div>
             <label>
               Blur Amount: {p.blobBlurAmount}
               <input
@@ -265,32 +307,100 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 onChange={(e) => updateParam("blobLabelColor", e.target.value)}
               />
             </label>
-            <label>
-              Font Family:
-              <select
-                value={p.blobLabelFontFamily}
-                onChange={(e) =>
-                  updateParam("blobLabelFontFamily", e.target.value)
-                }
-              >
-                <option value="monospace">Monospace</option>
-                <option value="cursive">Cursive</option>
-                <option value="sans-serif">SansSerif</option>
-                <option value="serif">Serif</option>
-              </select>
-            </label>
-            <label>
-              Label Content:
-              <select
-                value={p.blobLabelMode}
-                onChange={(e) => updateParam("blobLabelMode", e.target.value)}
-              >
-                <option value="coords">Coordinates</option>
-                <option value="randomNumbers">Random Numbers</option>
-                <option value="randomLetters">Random Letters</option>
-                <option value="randomSymbols">Random Symbols</option>
-              </select>
-            </label>
+            <div className={styles.optionGroup}>
+              <div className={styles.optionGroupLabel}>Font Family:</div>
+              <div className={styles.optionGroupButtons}>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobLabelFontFamily === "monospace" && styles.active
+                  )}
+                  type="button"
+                  onClick={() =>
+                    updateParam("blobLabelFontFamily", "monospace")
+                  }
+                >
+                  Monospace
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobLabelFontFamily === "cursive" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobLabelFontFamily", "cursive")}
+                >
+                  Cursive
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobLabelFontFamily === "sans-serif" && styles.active
+                  )}
+                  type="button"
+                  onClick={() =>
+                    updateParam("blobLabelFontFamily", "sans-serif")
+                  }
+                >
+                  SansSerif
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobLabelFontFamily === "serif" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobLabelFontFamily", "serif")}
+                >
+                  Serif
+                </button>
+              </div>
+            </div>
+            <div className={styles.optionGroup}>
+              <div className={styles.optionGroupLabel}>Label Content:</div>
+              <div className={styles.optionGroupButtons}>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobLabelMode === "coords" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobLabelMode", "coords")}
+                >
+                  Coordinates
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobLabelMode === "randomNumbers" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobLabelMode", "randomNumbers")}
+                >
+                  Random Numbers
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobLabelMode === "randomLetters" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobLabelMode", "randomLetters")}
+                >
+                  Random Letters
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobLabelMode === "randomSymbols" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobLabelMode", "randomSymbols")}
+                >
+                  Random Symbols
+                </button>
+              </div>
+            </div>
             <button
               className={styles.importButton}
               type="button"
@@ -314,17 +424,41 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
             >
               Show Connections
             </button>
-            <label>
-              Style:
-              <select
-                value={p.connectionStyle}
-                onChange={(e) => updateParam("connectionStyle", e.target.value)}
-              >
-                <option value="normal">Normal</option>
-                <option value="dashed">Dashed</option>
-                <option value="arrow">Arrow</option>
-              </select>
-            </label>
+            <div className={styles.optionGroup}>
+              <div className={styles.optionGroupLabel}>Style:</div>
+              <div className={styles.optionGroupButtons}>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.connectionStyle === "normal" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("connectionStyle", "normal")}
+                >
+                  Normal
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.connectionStyle === "dashed" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("connectionStyle", "dashed")}
+                >
+                  Dashed
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.connectionStyle === "arrow" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("connectionStyle", "arrow")}
+                >
+                  Arrow
+                </button>
+              </div>
+            </div>
             <label>
               Curvature: {p.connectionCurvature}
               <input
