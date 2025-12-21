@@ -1,5 +1,5 @@
 .pannelContainerInner {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+  background: #000000;
   box-shadow: 0 6px 18px rgba(11, 14, 20, 0.06);
   border-radius: 12px;
   height: 100%;
@@ -23,9 +23,9 @@
 
 .tabBtn {
   padding: 6px 10px;
-  background: transparent;
+  background: #000000;
   border: 0;
-  color: inherit;
+  color: #ffffff;
   font-family: var(--font-mono);
   cursor: pointer;
   transition: background-color 0.15s ease, transform 0.12s ease,
@@ -60,50 +60,47 @@
   border-radius: 10px;
 }
 
-.panelSection {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.controlRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: space-between;
-}
-
-.valueDisplay {
-  min-width: 48px;
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.6);
-}
-
 .panelBody h4 {
   margin: 8px 0;
   padding: 5px;
   font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #ffffff;
-  background-color: #000000;
+  color: #000000;
+  background-color: #ffffff;
 }
 
 .panelBody label {
   display: block;
   margin-bottom: 10px;
   font-size: 13px;
+  color: #ffffff;
+  font-family: var(--font-mono);
 }
 
 .panelBody input[type="range"],
-.panelBody input[type="number"],
 .panelBody select {
   width: 100%;
   margin-top: 6px;
+}
+
+.panelBody input[type="range"] {
+  -webkit-appearance: none;
+  height: 1.5px;
+  border-radius: 4px;
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    border: none;
+  }
 }
 
 .panelBody input[type="color"] {
