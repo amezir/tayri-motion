@@ -20,6 +20,7 @@ const BlobTracker = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const paneRef = useRef(null);
+  const viewportInnerRef = useRef(null);
   const [blobs, setBlobs] = useState([]);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -126,8 +127,10 @@ const BlobTracker = () => {
   );
 
   useEffect(() => {
-    panRef.current = pan;
-  }, [pan]);
+    if (viewportInnerRef.current) {
+      viewportInnerRef.current.style.transform = `translate(${panRef.current.x}px, ${panRef.current.y}px) scale(${zoom})`;
+    }
+  }, [zoom]);
 
   useEffect(() => {
     return () => {
@@ -138,14 +141,15 @@ const BlobTracker = () => {
     };
   }, []);
 
-  const enqueuePanUpdate = useCallback((nextPan) => {
-    panRef.current = nextPan;
-    if (panRafRef.current) return;
-    panRafRef.current = requestAnimationFrame(() => {
-      panRafRef.current = null;
-      setPan(panRef.current);
-    });
-  }, []);
+  const enqueuePanUpdate = useCallback(
+    (nextPan) => {
+      panRef.current = nextPan;
+      if (viewportInnerRef.current) {
+        viewportInnerRef.current.style.transform = `translate(${nextPan.x}px, ${nextPan.y}px) scale(${zoom})`;
+      }
+    },
+    [zoom]
+  );
 
   const handleCancelExport = useCallback(() => {
     if (exportAbortControllerRef.current) {
@@ -207,7 +211,7 @@ const BlobTracker = () => {
   const handlePointerMove = useCallback(
     (e) => {
       if (!panStateRef.current.isPanning || zoom === 1) return;
-      e.preventDefault();
+      e.preventDefault?.();
       const dx = (e.clientX - panStateRef.current.lastX) / zoom;
       const dy = (e.clientY - panStateRef.current.lastY) / zoom;
       panStateRef.current.lastX = e.clientX;
@@ -395,6 +399,19 @@ const BlobTracker = () => {
     };
   }, [handlePointerUp]);
 
+  useEffect(() => {
+    const viewport = containerRef.current?.querySelector(`.${styles.viewport}`);
+    if (!viewport) return;
+
+    const wheelHandler = (e) => handleWheelZoom(e);
+
+    viewport.addEventListener("wheel", wheelHandler, { passive: false });
+
+    return () => {
+      viewport.removeEventListener("wheel", wheelHandler);
+    };
+  }, [handleWheelZoom]);
+
   return (
     <>
       <SEO
@@ -432,16 +449,16 @@ const BlobTracker = () => {
                 styles.viewport,
                 isAltTheme && styles.viewportAlt
               )}
-              onWheel={handleWheelZoom}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerLeave={handlePointerUp}
             >
               <div
+                ref={viewportInnerRef}
                 className={styles.viewportInner}
                 style={{
-                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                  transform: `translate(${panRef.current.x}px, ${panRef.current.y}px) scale(${zoom})`,
                   cursor:
                     zoom !== 1
                       ? panStateRef.current?.isPanning
