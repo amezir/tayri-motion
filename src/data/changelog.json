@@ -122,6 +122,11 @@
           "id": 24,
           "name": "New design for the sound settings",
           "status": "Completed"
+        },
+        {
+          "id": 25,
+          "name": "Canvas dimension rework",
+          "status": "Fix sizing issues"
         }
       ],
       "releaseStatus": "COMPLETED"

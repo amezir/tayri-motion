@@ -284,8 +284,8 @@ const BlobTracker = () => {
           if (canvas) {
             canvas.width = vw;
             canvas.height = vh;
-            canvas.style.width = `1150px`;
-            canvas.style.height = `auto`;
+            canvas.style.width = "";
+            canvas.style.height = "";
           }
           setDuration(video.duration || 0);
           setVideoLoaded(true);
