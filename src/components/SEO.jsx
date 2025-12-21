@@ -1,11 +1,11 @@
 import Head from "next/head";
 
 export default function SEO({
-  title = "Tayri Garden - by Amézir Messaoud",
-  description = "Explore Tayri Garden, an innovative web app by Amézir Messaoud that utilizes blob detection and video processing techniques for dynamic visual experiences.",
-  keywords = "Tayri,Garden,Amézir,Messaoud,Tracking,Blob,Detection,Video,Processing,WebGL,JavaScript,Open Source",
+  title = "Tayri Motion - by Amézir Messaoud",
+  description = "Explore Tayri Motion, an innovative web app by Amézir Messaoud that utilizes blob detection and video processing techniques for dynamic visual experiences.",
+  keywords = "Tayri,Motion,Amézir,Messaoud,Tracking,Blob,Detection,Video,Processing,WebGL,JavaScript,Open Source",
   ogImage = "/og_image.png",
-  ogUrl = "https://tayrigarden.vercel.app",
+  ogUrl = "https://tayrimotion.vercel.app",
   author = "Amézir Messaoud",
   robots = "index, follow",
 }) {

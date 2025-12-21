@@ -132,7 +132,7 @@ export default function Home() {
           <div className={styles.contentHome}>
             <div className={styles.contentBox} ref={contentRef}>
               <div className={styles.topContent}>
-                <p>Copyright © 2025 Tayri Garden</p>
+                <p>Copyright © 2025 Tayri Motion</p>
                 <button
                   type="button"
                   className={`${styles.toggleButton}`}
@@ -143,12 +143,12 @@ export default function Home() {
               </div>
               <div className={styles.centerContent}>
                 <img src="./logo.png" alt="logo" draggable="false" />
-                <h1 className={styles.visuallyHidden}>Tayri Garden</h1>
+                <h1 className={styles.visuallyHidden}>Tayri Motion</h1>
                 <svg
                   className={styles.titleSvg}
                   viewBox="0 0 1000 200"
                   xmlns="http://www.w3.org/2000/svg"
-                  aria-label="Tayri Garden"
+                  aria-label="Tayri Motion"
                   draggable="false"
                   role="heading"
                   aria-level="1"
@@ -161,7 +161,7 @@ export default function Home() {
                     dominantBaseline="middle"
                     textAnchor="middle"
                   >
-                    Tayri Garden
+                    Tayri Motion
                   </text>
                 </svg>
                 <p className={styles.description}>

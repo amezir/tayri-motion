@@ -398,7 +398,7 @@ const BlobTracker = () => {
   return (
     <>
       <SEO
-        title="Blob Tracking - Tayri Garden"
+        title="Blob Tracking - Tayri Motion"
         description="Track and visualize blobs in your videos with ease."
       />
       <section
@@ -407,6 +407,16 @@ const BlobTracker = () => {
           isAltTheme && styles.containerTrackingAlt
         )}
       >
+        <div className={styles.pannelContainer}>
+          <ControlPanel
+            paramsRef={params}
+            onExport={handleExportVideo}
+            onParamsChange={handleParamsChange}
+            onCancel={handleCancelExport}
+            onImport={() => document.getElementById("videoInput")?.click()}
+            blobsLength={blobs.length}
+          />
+        </div>
         <div className={clsx(styles.page, isAltTheme && styles.pageAlt)}>
           <input
             id="videoInput"
@@ -542,16 +552,6 @@ const BlobTracker = () => {
               formatTime={formatTime}
             />
           )}
-        </div>
-        <div className={styles.pannelContainer}>
-          <ControlPanel
-            paramsRef={params}
-            onExport={handleExportVideo}
-            onParamsChange={handleParamsChange}
-            onCancel={handleCancelExport}
-            onImport={() => document.getElementById("videoInput")?.click()}
-            blobsLength={blobs.length}
-          />
         </div>
       </section>
     </>
