@@ -52,34 +52,29 @@ const getRandomLabelForMode = (mode) => {
   }
 };
 
-// Draw corner borders instead of full rectangle border
 const drawCornerBorders = (ctx, x, y, width, height, cornerLength = 20, lineWidth = 2) => {
   const adjustedCornerLength = Math.min(cornerLength, width / 2, height / 2);
   
   ctx.lineWidth = lineWidth;
   
-  // Top-left corner
   ctx.beginPath();
   ctx.moveTo(x, y + adjustedCornerLength);
   ctx.lineTo(x, y);
   ctx.lineTo(x + adjustedCornerLength, y);
   ctx.stroke();
   
-  // Top-right corner
   ctx.beginPath();
   ctx.moveTo(x + width - adjustedCornerLength, y);
   ctx.lineTo(x + width, y);
   ctx.lineTo(x + width, y + adjustedCornerLength);
   ctx.stroke();
   
-  // Bottom-left corner
   ctx.beginPath();
   ctx.moveTo(x, y + height - adjustedCornerLength);
   ctx.lineTo(x, y + height);
   ctx.lineTo(x + adjustedCornerLength, y + height);
   ctx.stroke();
   
-  // Bottom-right corner
   ctx.beginPath();
   ctx.moveTo(x + width - adjustedCornerLength, y + height);
   ctx.lineTo(x + width, y + height);
@@ -195,7 +190,6 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
         ctx.restore();
       }
 
-      // Zoom fill mode
       if (params.blobFillMode === 'zoom' && blurSourceCanvas && blurSourceCtx) {
         ctx.save();
         ctx.beginPath();

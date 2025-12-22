@@ -137,18 +137,22 @@
   cursor: pointer;
   transition: all 0.3s ease;
   flex: 1;
+  position: relative;
 
   &:hover {
     border-color: #dde000;
     color: #dde000;
-    box-shadow: 0 0 8px rgba(221, 224, 0, 0.3);
   }
 
   &.active {
     background: #dde000;
     color: #000000;
     border-color: #dde000;
-    box-shadow: 0 0 12px rgba(221, 224, 0, 0.5);
+
+    &::before {
+      content: "✕ ";
+      font-weight: bold;
+    }
   }
 }
 
@@ -184,6 +188,7 @@
 
 .optionGroupButtons {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   gap: 8px;
 }
@@ -199,6 +204,7 @@
   transition: all 0.3s ease;
   font-weight: 600;
   text-transform: capitalize;
+  position: relative;
 
   &:hover {
     border-color: #dde000;
@@ -211,6 +217,11 @@
     color: #000000;
     border-color: #dde000;
     box-shadow: 0 0 12px rgba(221, 224, 0, 0.5);
+
+    &::before {
+      content: "✕ ";
+      font-weight: bold;
+    }
   }
 }
 

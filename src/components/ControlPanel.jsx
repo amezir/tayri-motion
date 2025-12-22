@@ -182,7 +182,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
             <h4>Blob Fill</h4>
             <div className={styles.fillModeGroup}>
               <div className={styles.fillModeLabel}>Fill Mode:</div>
-              <div className={styles.fillModeOptions}>
+              <div className={styles.optionGroupButtons}>
                 <button
                   className={clsx(
                     styles.optionBtn,
