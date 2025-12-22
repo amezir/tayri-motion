@@ -72,11 +72,14 @@
 }
 
 .panelBody label {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 10px;
   font-size: 13px;
   color: #ffffff;
   font-family: var(--font-mono);
+  gap: 12px;
 }
 
 .panelBody input[type="range"],
@@ -108,9 +111,82 @@
 .panelBody input[type="color"] {
   margin-left: 8px;
   vertical-align: middle;
-  width: 36px;
-  height: 26px;
-  border-radius: 6px;
+  width: 60px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  &::-webkit-color-swatch {
+    border: none;
+  }
+
+  &::-moz-color-swatch {
+    border: none;
+  }
+}
+
+.colorLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-left: 3px solid #ffffff;
+  padding-left: 12px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-left-color: #dde000;
+  }
+
+  span {
+    font-weight: 600;
+    font-size: 13px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input[type="color"] {
+    margin-left: 0;
+    flex-shrink: 0;
+  }
+}
+
+.colorInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hexInput {
+  width: 90px;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .blobSettings,

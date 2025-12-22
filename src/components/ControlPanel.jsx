@@ -121,21 +121,41 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
             </div>
 
             <h4>Blob Colors</h4>
-            <label>
-              Stroke:
-              <input
-                type="color"
-                value={p.strokeStyle}
-                onChange={(e) => updateParam("strokeStyle", e.target.value)}
-              />
+            <label className={styles.colorLabel}>
+              <span>Stroke:</span>
+              <div className={styles.colorInputGroup}>
+                <input
+                  type="text"
+                  className={styles.hexInput}
+                  value={p.strokeStyle}
+                  onChange={(e) => updateParam("strokeStyle", e.target.value)}
+                  placeholder="#000000"
+                  maxLength="7"
+                />
+                <input
+                  type="color"
+                  value={p.strokeStyle}
+                  onChange={(e) => updateParam("strokeStyle", e.target.value)}
+                />
+              </div>
             </label>
-            <label>
-              Fill:
-              <input
-                type="color"
-                value={p.fillStyle}
-                onChange={(e) => updateParam("fillStyle", e.target.value)}
-              />
+            <label className={styles.colorLabel}>
+              <span>Fill:</span>
+              <div className={styles.colorInputGroup}>
+                <input
+                  type="text"
+                  className={styles.hexInput}
+                  value={p.fillStyle}
+                  onChange={(e) => updateParam("fillStyle", e.target.value)}
+                  placeholder="#FFFFFF"
+                  maxLength="7"
+                />
+                <input
+                  type="color"
+                  value={p.fillStyle}
+                  onChange={(e) => updateParam("fillStyle", e.target.value)}
+                />
+              </div>
             </label>
             <label>
               Border Width: {p.blobBorderWidth}
@@ -299,13 +319,27 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 }
               />
             </label>
-            <label>
-              Label Color:
-              <input
-                type="color"
-                value={p.blobLabelColor}
-                onChange={(e) => updateParam("blobLabelColor", e.target.value)}
-              />
+            <label className={styles.colorLabel}>
+              <span>Label Color:</span>
+              <div className={styles.colorInputGroup}>
+                <input
+                  type="text"
+                  className={styles.hexInput}
+                  value={p.blobLabelColor}
+                  onChange={(e) =>
+                    updateParam("blobLabelColor", e.target.value)
+                  }
+                  placeholder="#FFFFFF"
+                  maxLength="7"
+                />
+                <input
+                  type="color"
+                  value={p.blobLabelColor}
+                  onChange={(e) =>
+                    updateParam("blobLabelColor", e.target.value)
+                  }
+                />
+              </div>
             </label>
             <div className={styles.optionGroup}>
               <div className={styles.optionGroupLabel}>Font Family:</div>
@@ -475,13 +509,27 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 }
               />
             </label>
-            <label>
-              Color:
-              <input
-                type="color"
-                value={p.connectionColor}
-                onChange={(e) => updateParam("connectionColor", e.target.value)}
-              />
+            <label className={styles.colorLabel}>
+              <span>Color:</span>
+              <div className={styles.colorInputGroup}>
+                <input
+                  type="text"
+                  className={styles.hexInput}
+                  value={p.connectionColor}
+                  onChange={(e) =>
+                    updateParam("connectionColor", e.target.value)
+                  }
+                  placeholder="#FFFFFF"
+                  maxLength="7"
+                />
+                <input
+                  type="color"
+                  value={p.connectionColor}
+                  onChange={(e) =>
+                    updateParam("connectionColor", e.target.value)
+                  }
+                />
+              </div>
             </label>
             <label>
               Width: {p.connectionWidth}
