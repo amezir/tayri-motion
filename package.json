@@ -1,0 +1,26 @@
+{
+  "name": "blob-tracking",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1",
+    "clsx": "^2.1.1",
+    "gsap": "^3.14.1",
+    "next": "16.0.7",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "three": "^0.181.2",
+    "tweakpane": "^4.0.5"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.0.7",
+    "sass": "^1.95.1"
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "releases": [
+    {
+      "release": "2025.12",
+      "stages": [
+        {
+          "id": 1,
+          "name": "Initialize video pipeline",
+          "status": "OK"
+        },
+        {
+          "id": 2,
+          "name": "Detect blobs in frames",
+          "status": "Stable"
+        },
+        {
+          "id": 3,
+          "name": "Track blobs over time",
+          "status": "Stable"
+        },
+        {
+          "id": 4,
+          "name": "Compute blob metrics",
+          "status": "Size / Count / Color"
+        },
+        {
+          "id": 5,
+          "name": "Blob border configuration",
+          "status": "Border Width option"
+        },
+        {
+          "id": 6,
+          "name": "Blob fill mode system",
+          "status": "None / Color / Blur / Both"
+        },
+        {
+          "id": 7,
+          "name": "Internal blur control",
+          "status": "Blur Amount (px)"
+        },
+        {
+          "id": 8,
+          "name": "Blob fill opacity",
+          "status": "Alpha control"
+        },
+        {
+          "id": 9,
+          "name": "Blob label color",
+          "status": "Custom text color"
+        },
+        {
+          "id": 10,
+          "name": "Blob label font family",
+          "status": "Monospace / Sans-serif"
+        },
+        {
+          "id": 11,
+          "name": "Blob label content modes",
+          "status": "Coords / Randomized"
+        },
+        {
+          "id": 12,
+          "name": "Cached random label values",
+          "status": "Stable per blob"
+        },
+        {
+          "id": 13,
+          "name": "Unified color resolver",
+          "status": "CSS + Tweakpane"
+        },
+        {
+          "id": 14,
+          "name": "Advanced blob fill pipeline",
+          "status": "Clip + Blur + Overlay"
+        },
+        {
+          "id": 15,
+          "name": "Improved label rendering",
+          "status": "Font + Positioning"
+        },
+        {
+          "id": 16,
+          "name": "Add Changelog page",
+          "status": "Completed"
+        },
+        {
+          "id": 17,
+          "name": "Panel styling ",
+          "status": "In Progress"
+        },
+        {
+          "id": 18,
+          "name": "Live editing of blob settings",
+          "status": "Fix"
+        },
+        {
+          "id": 19,
+          "name": "Zoom fill mode",
+          "status": "Completed"
+        },
+        {
+          "id": 20,
+          "name": "Corner border style",
+          "status": "New option added"
+        },
+        {
+          "id": 21,
+          "name": "Add Zoom controls",
+          "status": "In Progress"
+        },
+        {
+          "id": 22,
+          "name": "Add more custom for labels",
+          "status": "Show / Hide options and Sizes"
+        },
+        {
+          "id": 23,
+          "name": "Improve UX for blob settings",
+          "status": "Reorganize panel"
+        },
+        {
+          "id": 24,
+          "name": "New design for the sound settings",
+          "status": "Completed"
+        },
+        {
+          "id": 25,
+          "name": "Canvas dimension rework",
+          "status": "Fix sizing issues"
+        },
+        {
+          "id": 26,
+          "name": "Optimize blob detection",
+          "status": "Performance improvements"
+        }
+      ],
+      "releaseStatus": "COMPLETED"
+    }
+  ]
+}
