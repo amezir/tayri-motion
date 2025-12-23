@@ -243,7 +243,6 @@
     background-color: #000000;
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
     cursor: pointer;
 
     &:disabled {
@@ -265,7 +264,6 @@
   background-color: #ffffff;
   color: #000000;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -298,5 +296,10 @@
   background-color: rgba(255, 68, 68, 0.2);
   color: #ff4444;
   border: 1px solid #ff4444;
-  border-radius: 4px;
+}
+
+.toggleMinimalMode {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #ffffff;
 }

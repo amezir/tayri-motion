@@ -2,7 +2,14 @@ import React, { useState, useCallback } from "react";
 import styles from "./ControlPanel.module.scss";
 import clsx from "clsx";
 
-const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
+const ControlPanel = ({
+  paramsRef,
+  onExport,
+  onImport,
+  onParamsChange,
+  enableExport = true,
+  enableImport = true,
+}) => {
   const [activeTab, setActiveTab] = useState("Blob");
   const [, setRerender] = useState(0);
 
@@ -44,16 +51,18 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
           >
             Effect
           </button>
-          <button
-            type="button"
-            className={clsx(
-              styles.tabBtn,
-              activeTab === "Export" && styles.active
-            )}
-            onClick={() => setActiveTab("Export")}
-          >
-            Export
-          </button>
+          {enableExport && (
+            <button
+              type="button"
+              className={clsx(
+                styles.tabBtn,
+                activeTab === "Export" && styles.active
+              )}
+              onClick={() => setActiveTab("Export")}
+            >
+              Export
+            </button>
+          )}
         </div>
       </div>
 
@@ -351,13 +360,15 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 </button>
               </div>
             </div>
-            <button
-              className={styles.importButton}
-              type="button"
-              onClick={() => onImport()}
-            >
-              Import Video
-            </button>
+            {enableImport && (
+              <button
+                className={styles.importButton}
+                type="button"
+                onClick={() => onImport?.()}
+              >
+                Import Video
+              </button>
+            )}
           </div>
         )}
 
@@ -587,17 +598,19 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 }
               />
             </label>
-            <button
-              className={styles.importButton}
-              type="button"
-              onClick={() => onImport()}
-            >
-              Import Video
-            </button>
+            {enableImport && (
+              <button
+                className={styles.importButton}
+                type="button"
+                onClick={() => onImport?.()}
+              >
+                Import Video
+              </button>
+            )}
           </div>
         )}
 
-        {activeTab === "Export" && (
+        {enableExport && activeTab === "Export" && (
           <div className={styles.exportSettings}>
             <h4>Export Settings</h4>
             <label>
@@ -651,20 +664,22 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
 
             <div className={styles.exportActions}>
               <div className={styles.exportButtons}>
-                <button type="button" onClick={() => onExport("webm")}>
+                <button type="button" onClick={() => onExport?.("webm")}>
                   Export WEBM
                 </button>
-                <button type="button" onClick={() => onExport("mp4")}>
+                <button type="button" onClick={() => onExport?.("mp4")}>
                   Export MP4
                 </button>
               </div>
-              <button
-                className={styles.importButton}
-                type="button"
-                onClick={() => onImport()}
-              >
-                Import Video
-              </button>
+              {enableImport && (
+                <button
+                  className={styles.importButton}
+                  type="button"
+                  onClick={() => onImport?.()}
+                >
+                  Import Video
+                </button>
+              )}
             </div>
           </div>
         )}

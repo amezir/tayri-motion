@@ -6,7 +6,6 @@ import clsx from "clsx";
 import SEO from "@/components/SEO";
 import ControlPanel from "@/components/ControlPanel";
 import { useTheme } from "@/contexts/ThemeContext";
-import ViewControls from "@/components/ViewControls";
 
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 4;
@@ -42,6 +41,7 @@ const LiveBlobTracker = () => {
     threshold: 128,
     minBlobSize: 100,
     maxBlobs: 10,
+    mirror: true,
     showBlobs: true,
     showOriginal: true,
     strokeStyle: "#ff0000",
@@ -69,8 +69,11 @@ const LiveBlobTracker = () => {
   });
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    params.current.mirror = mirrorCamera;
+  }, [mirrorCamera]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     const getCameras = async () => {
       try {
         await navigator.mediaDevices.getUserMedia({ video: true });
@@ -107,7 +110,7 @@ const LiveBlobTracker = () => {
     };
 
     getCameras();
-  }, []);
+  }, [selectedCamera]);
 
   const processFrame = useCallback(() => {
     const video = videoRef.current;
@@ -282,28 +285,6 @@ const LiveBlobTracker = () => {
     return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
   }, []);
 
-  const handleZoomIn = useCallback(() => {
-    setZoom((prev) => clampZoom(prev + ZOOM_STEP));
-  }, [clampZoom]);
-
-  const handleZoomOut = useCallback(() => {
-    setZoom((prev) => clampZoom(prev - ZOOM_STEP));
-  }, [clampZoom]);
-
-  const handleZoomSliderChange = useCallback(
-    (e) => {
-      setZoom(clampZoom(parseFloat(e.target.value)));
-    },
-    [clampZoom]
-  );
-
-  const handleResetView = useCallback(() => {
-    setZoom(1);
-    const origin = { x: 0, y: 0 };
-    panRef.current = origin;
-    setPan(origin);
-  }, []);
-
   const handleWheelZoom = useCallback(
     (e) => {
       if (!cameraActive) return;
@@ -426,6 +407,8 @@ const LiveBlobTracker = () => {
               paramsRef={params}
               onParamsChange={handleParamsChange}
               blobsLength={blobs.length}
+              enableExport={false}
+              enableImport={false}
             />
           </div>
         )}
@@ -467,7 +450,7 @@ const LiveBlobTracker = () => {
                   className={styles.logo}
                   draggable="false"
                 />
-                <h1>Tayri Motion - Live</h1>
+                <h1>Tayri Motion</h1>
               </Link>
               <button
                 type="button"
@@ -475,6 +458,7 @@ const LiveBlobTracker = () => {
                   isAltTheme ? styles.toggleButtonAlt : ""
                 }`}
                 onClick={() => setIsAltTheme((prev) => !prev)}
+                disabled={true}
               >
                 {isAltTheme ? "dark\u00A0" : "light"}
               </button>
@@ -514,69 +498,57 @@ const LiveBlobTracker = () => {
                     transform: mirrorCamera ? "scaleX(-1)" : "none",
                   }}
                 />
-                <canvas
-                  ref={canvasRef}
-                  className={styles.canvas}
-                  style={{
-                    transform: mirrorCamera ? "scaleX(-1)" : "none",
-                  }}
-                />
+                <canvas ref={canvasRef} className={styles.canvas} />
               </div>
             </div>
 
             {!minimalMode && (
-              <div className={styles.cameraControls}>
-                <div className={styles.cameraSelect}>
-                  <label htmlFor="camera-select">Camera:</label>
-                  <select
-                    id="camera-select"
-                    value={selectedCamera}
-                    onChange={handleCameraChange}
-                    disabled={cameraActive}
+              <>
+                <p className={styles.toggleMinimalMode}>
+                  Press "B" to toggle minimal mode
+                </p>
+                <div className={styles.cameraControls}>
+                  <div className={styles.cameraSelect}>
+                    <label htmlFor="camera-select">Camera:</label>
+                    <select
+                      id="camera-select"
+                      value={selectedCamera}
+                      onChange={handleCameraChange}
+                      disabled={cameraActive}
+                    >
+                      {availableCameras.map((camera) => (
+                        <option key={camera.deviceId} value={camera.deviceId}>
+                          {camera.label ||
+                            `Camera ${camera.deviceId.slice(0, 8)}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button
+                    onClick={toggleCamera}
+                    className={clsx(styles.cameraButton, {
+                      [styles.active]: cameraActive,
+                    })}
                   >
-                    {availableCameras.map((camera) => (
-                      <option key={camera.deviceId} value={camera.deviceId}>
-                        {camera.label ||
-                          `Camera ${camera.deviceId.slice(0, 8)}`}
-                      </option>
-                    ))}
-                  </select>
+                    {cameraActive ? "Stop Camera" : "Start Camera"}
+                  </button>
+
+                  <button
+                    onClick={() => setMirrorCamera(!mirrorCamera)}
+                    className={styles.cameraButton}
+                    disabled={!cameraActive}
+                  >
+                    {mirrorCamera ? "Mirror ON" : "Mirror OFF"}
+                  </button>
+
+                  {cameraError && (
+                    <div className={styles.errorMessage}>{cameraError}</div>
+                  )}
                 </div>
-
-                <button
-                  onClick={toggleCamera}
-                  className={clsx(styles.cameraButton, {
-                    [styles.active]: cameraActive,
-                  })}
-                >
-                  {cameraActive ? "Stop Camera" : "Start Camera"}
-                </button>
-
-                <button
-                  onClick={() => setMirrorCamera(!mirrorCamera)}
-                  className={styles.cameraButton}
-                  disabled={!cameraActive}
-                >
-                  {mirrorCamera ? "🪞 Mirror ON" : "🪞 Mirror OFF"}
-                </button>
-
-                {cameraError && (
-                  <div className={styles.errorMessage}>{cameraError}</div>
-                )}
-              </div>
+              </>
             )}
           </div>
-          {!minimalMode && (
-            <ViewControls
-              zoom={zoom}
-              minZoom={MIN_ZOOM}
-              maxZoom={MAX_ZOOM}
-              onZoomIn={handleZoomIn}
-              onZoomOut={handleZoomOut}
-              onZoomChange={handleZoomSliderChange}
-              onReset={handleResetView}
-            />
-          )}
         </div>
       </section>
     </>
