@@ -2,7 +2,7 @@ import "@/styles/globals.scss";
 import { Analytics } from "@vercel/analytics/next";
 import { LoaderProvider } from "@/contexts/LoaderContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import Loader from "@/components/Loader";
+import Loader from "@/components/Loader/Loader";
 
 export default function App({ Component, pageProps }) {
   return (

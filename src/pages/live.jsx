@@ -4,7 +4,7 @@ import { processVideoFrame } from "../utils/videoProcessing";
 import styles from "../styles/live.module.scss";
 import clsx from "clsx";
 import SEO from "@/components/SEO";
-import ControlPanel from "@/components/ControlPanel";
+import ControlPanel from "@/components/ControlPanel/ControlPanel";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const MIN_ZOOM = 0.5;

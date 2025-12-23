@@ -1,5 +1,5 @@
 import { useLoader } from "@/contexts/LoaderContext";
-import styles from "@/styles/loader.module.scss";
+import styles from "./loader.module.scss";
 
 export default function Loader() {
   const { isLoading, progress } = useLoader();

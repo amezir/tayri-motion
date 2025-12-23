@@ -5,10 +5,10 @@ import { exportVideo, formatTime } from "../utils/videoExport";
 import styles from "../styles/trancking.module.scss";
 import clsx from "clsx";
 import SEO from "@/components/SEO";
-import ControlPanel from "@/components/ControlPanel";
+import ControlPanel from "@/components/ControlPanel/ControlPanel";
 import { useTheme } from "@/contexts/ThemeContext";
-import ViewControls from "@/components/ViewControls";
-import VideoControls from "@/components/VideoControls";
+import ViewControls from "@/components/ViewControls/ViewControls";
+import VideoControls from "@/components/VideoControls/VideoControls";
 
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 4;
