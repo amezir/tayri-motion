@@ -308,12 +308,28 @@
   justify-content: space-between;
   padding: 0 20px;
 
-  p {
+  .authorText {
     font-family: var(--font-mono);
     font-size: 11px;
+    color: #ffffff;
   }
+
+  .authorTextAlt {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #000000;
+  }
+
   .authorLink {
     color: #dde000;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .authorLinkAlt {
+    color: #000000;
 
     &:hover {
       text-decoration: underline;
