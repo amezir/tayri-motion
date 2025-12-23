@@ -60,7 +60,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
       <div className={styles.panelBody}>
         {activeTab === "Blob" && (
           <div className={styles.blobSettings}>
-            <h4>Tracking Detection</h4>
+            <h4>Blob Detection</h4>
             <label>
               Threshold: {p.threshold}
               <input
