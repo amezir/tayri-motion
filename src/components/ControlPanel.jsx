@@ -65,6 +65,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Threshold: {p.threshold}
               <input
                 type="range"
+                name="threshold"
                 min="0"
                 max="255"
                 value={p.threshold}
@@ -77,6 +78,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Min Size: {p.minBlobSize}
               <input
                 type="range"
+                name="minBlobSize"
                 min="10"
                 max="1000"
                 value={p.minBlobSize}
@@ -89,6 +91,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Max Blobs: {p.maxBlobs}
               <input
                 type="range"
+                name="maxBlobs"
                 min="1"
                 max="50"
                 value={p.maxBlobs}
@@ -126,6 +129,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               <div className={styles.colorInputGroup}>
                 <input
                   type="text"
+                  name="strokeStyleHex"
                   className={styles.hexInput}
                   value={p.strokeStyle}
                   onChange={(e) => updateParam("strokeStyle", e.target.value)}
@@ -134,6 +138,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 />
                 <input
                   type="color"
+                  name="strokeStylePicker"
                   value={p.strokeStyle}
                   onChange={(e) => updateParam("strokeStyle", e.target.value)}
                 />
@@ -144,6 +149,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               <div className={styles.colorInputGroup}>
                 <input
                   type="text"
+                  name="fillStyleHex"
                   className={styles.hexInput}
                   value={p.fillStyle}
                   onChange={(e) => updateParam("fillStyle", e.target.value)}
@@ -152,6 +158,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 />
                 <input
                   type="color"
+                  name="fillStylePicker"
                   value={p.fillStyle}
                   onChange={(e) => updateParam("fillStyle", e.target.value)}
                 />
@@ -161,6 +168,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Border Width: {p.blobBorderWidth}
               <input
                 type="range"
+                name="blobBorderWidth"
                 min="0"
                 max="20"
                 value={p.blobBorderWidth}
@@ -186,6 +194,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 Corner Length: {p.blobCornerLength}
                 <input
                   type="range"
+                  name="blobCornerLength"
                   min="5"
                   max="50"
                   value={p.blobCornerLength}
@@ -215,6 +224,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Label Size: {p.blobLabelSize}
               <input
                 type="range"
+                name="blobLabelSize"
                 min="8"
                 max="32"
                 value={p.blobLabelSize}
@@ -228,6 +238,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               <div className={styles.colorInputGroup}>
                 <input
                   type="text"
+                  name="blobLabelColorHex"
                   className={styles.hexInput}
                   value={p.blobLabelColor}
                   onChange={(e) =>
@@ -238,6 +249,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 />
                 <input
                   type="color"
+                  name="blobLabelColorPicker"
                   value={p.blobLabelColor}
                   onChange={(e) =>
                     updateParam("blobLabelColor", e.target.value)
@@ -411,6 +423,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Blur Amount: {p.blobBlurAmount}
               <input
                 type="range"
+                name="blobBlurAmount"
                 min="1"
                 max="30"
                 value={p.blobBlurAmount}
@@ -423,6 +436,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Zoom Level: {p.blobZoomLevel}
               <input
                 type="range"
+                name="blobZoomLevel"
                 min="1"
                 max="5"
                 step="0.5"
@@ -436,6 +450,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Fill Opacity: {p.blobFillOpacity}
               <input
                 type="range"
+                name="blobFillOpacity"
                 min="0"
                 max="1"
                 step="0.05"
@@ -495,6 +510,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Curvature: {p.connectionCurvature}
               <input
                 type="range"
+                name="connectionCurvature"
                 min="0"
                 max="200"
                 step="5"
@@ -512,6 +528,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               <div className={styles.colorInputGroup}>
                 <input
                   type="text"
+                  name="connectionColorHex"
                   className={styles.hexInput}
                   value={p.connectionColor}
                   onChange={(e) =>
@@ -522,6 +539,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 />
                 <input
                   type="color"
+                  name="connectionColorPicker"
                   value={p.connectionColor}
                   onChange={(e) =>
                     updateParam("connectionColor", e.target.value)
@@ -533,6 +551,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Width: {p.connectionWidth}
               <input
                 type="range"
+                name="connectionWidth"
                 min="1"
                 max="10"
                 step="0.5"
@@ -546,6 +565,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Dash Length: {p.dashLength}
               <input
                 type="range"
+                name="dashLength"
                 min="1"
                 max="50"
                 value={p.dashLength}
@@ -558,6 +578,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Dash Gap: {p.dashGap}
               <input
                 type="range"
+                name="dashGap"
                 min="1"
                 max="50"
                 value={p.dashGap}
@@ -583,6 +604,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Video Bitrate (kbps): {p.videoBitrate}
               <input
                 type="range"
+                name="videoBitrate"
                 min="1000"
                 max="20000"
                 step="100"
@@ -599,6 +621,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Audio Bitrate (kbps): {p.audioBitrate}
               <input
                 type="range"
+                name="audioBitrate"
                 min="64"
                 max="320"
                 step="8"
@@ -615,6 +638,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
               Export FPS: {p.exportFPS}
               <input
                 type="range"
+                name="exportFPS"
                 min="15"
                 max="60"
                 step="1"

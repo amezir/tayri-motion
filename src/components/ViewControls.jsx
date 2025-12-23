@@ -29,12 +29,15 @@ const ViewControls = ({
       </div>
       <input
         type="range"
+        id="zoom-slider"
+        name="zoom"
         min={minZoom}
         max={maxZoom}
         step={0.05}
         value={zoom}
         onChange={onZoomChange}
         className={styles.zoomSlider}
+        aria-label="Zoom level"
       />
       <div className={styles.zoomValue}>x{zoom.toFixed(2)}</div>
       <button type="button" onClick={onReset} className={styles.resetView}>
