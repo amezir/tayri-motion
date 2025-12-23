@@ -524,7 +524,8 @@ const BlobTracker = () => {
                 )}
               >
                 <div className={styles.infoUse}>
-                  ️<p className={styles.useTitle}>How to use</p>
+                  <img src="./logo.png" alt="logo" draggable="false" />️
+                  <p className={styles.useTitle}>How to use</p>
                   <ul className={styles.useList}>
                     <li>01. Upload file</li>
                     <li>02. Edit</li>
@@ -540,16 +541,6 @@ const BlobTracker = () => {
                 >
                   Import Video
                 </button>
-                <Link
-                  type="button"
-                  href="/"
-                  className={clsx(
-                    styles.leaveButton,
-                    isAltTheme && styles.leaveButtonAlt
-                  )}
-                >
-                  Back to Home
-                </Link>
               </div>
             )}
 
