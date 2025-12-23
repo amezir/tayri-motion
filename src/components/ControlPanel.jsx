@@ -60,7 +60,7 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
       <div className={styles.panelBody}>
         {activeTab === "Blob" && (
           <div className={styles.blobSettings}>
-            <h4>Blob Detection</h4>
+            <h4>Tracking Detection</h4>
             <label>
               Threshold: {p.threshold}
               <input
@@ -198,102 +198,6 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
                 />
               </label>
             )}
-
-            <h4>Blob Fill</h4>
-            <div className={styles.fillModeGroup}>
-              <div className={styles.fillModeLabel}>Fill Mode:</div>
-              <div className={styles.optionGroupButtons}>
-                <button
-                  className={clsx(
-                    styles.optionBtn,
-                    p.blobFillMode === "none" && styles.active
-                  )}
-                  type="button"
-                  onClick={() => updateParam("blobFillMode", "none")}
-                >
-                  None
-                </button>
-                <button
-                  className={clsx(
-                    styles.optionBtn,
-                    p.blobFillMode === "color" && styles.active
-                  )}
-                  type="button"
-                  onClick={() => updateParam("blobFillMode", "color")}
-                >
-                  Color
-                </button>
-                <button
-                  className={clsx(
-                    styles.optionBtn,
-                    p.blobFillMode === "blur" && styles.active
-                  )}
-                  type="button"
-                  onClick={() => updateParam("blobFillMode", "blur")}
-                >
-                  Blur
-                </button>
-                <button
-                  className={clsx(
-                    styles.optionBtn,
-                    p.blobFillMode === "both" && styles.active
-                  )}
-                  type="button"
-                  onClick={() => updateParam("blobFillMode", "both")}
-                >
-                  Color + Blur
-                </button>
-                <button
-                  className={clsx(
-                    styles.optionBtn,
-                    p.blobFillMode === "zoom" && styles.active
-                  )}
-                  type="button"
-                  onClick={() => updateParam("blobFillMode", "zoom")}
-                >
-                  Zoom
-                </button>
-              </div>
-            </div>
-            <label>
-              Blur Amount: {p.blobBlurAmount}
-              <input
-                type="range"
-                min="1"
-                max="30"
-                value={p.blobBlurAmount}
-                onChange={(e) =>
-                  updateParam("blobBlurAmount", parseInt(e.target.value, 10))
-                }
-              />
-            </label>
-            <label>
-              Zoom Level: {p.blobZoomLevel}
-              <input
-                type="range"
-                min="1"
-                max="5"
-                step="0.5"
-                value={p.blobZoomLevel}
-                onChange={(e) =>
-                  updateParam("blobZoomLevel", parseFloat(e.target.value))
-                }
-              />
-            </label>
-            <label>
-              Fill Opacity: {p.blobFillOpacity}
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={p.blobFillOpacity}
-                onChange={(e) =>
-                  updateParam("blobFillOpacity", parseFloat(e.target.value))
-                }
-              />
-            </label>
-
             <h4>Blob Labels</h4>
             <button
               className={clsx(
@@ -447,6 +351,100 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
 
         {activeTab === "Effect" && (
           <div className={styles.effectSettings}>
+            <h4>Blob Fill</h4>
+            <div className={styles.fillModeGroup}>
+              <div className={styles.fillModeLabel}>Fill Mode:</div>
+              <div className={styles.optionGroupButtons}>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "none" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "none")}
+                >
+                  None
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "color" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "color")}
+                >
+                  Color
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "blur" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "blur")}
+                >
+                  Blur
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "both" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "both")}
+                >
+                  Color + Blur
+                </button>
+                <button
+                  className={clsx(
+                    styles.optionBtn,
+                    p.blobFillMode === "zoom" && styles.active
+                  )}
+                  type="button"
+                  onClick={() => updateParam("blobFillMode", "zoom")}
+                >
+                  Zoom
+                </button>
+              </div>
+            </div>
+            <label>
+              Blur Amount: {p.blobBlurAmount}
+              <input
+                type="range"
+                min="1"
+                max="30"
+                value={p.blobBlurAmount}
+                onChange={(e) =>
+                  updateParam("blobBlurAmount", parseInt(e.target.value, 10))
+                }
+              />
+            </label>
+            <label>
+              Zoom Level: {p.blobZoomLevel}
+              <input
+                type="range"
+                min="1"
+                max="5"
+                step="0.5"
+                value={p.blobZoomLevel}
+                onChange={(e) =>
+                  updateParam("blobZoomLevel", parseFloat(e.target.value))
+                }
+              />
+            </label>
+            <label>
+              Fill Opacity: {p.blobFillOpacity}
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={p.blobFillOpacity}
+                onChange={(e) =>
+                  updateParam("blobFillOpacity", parseFloat(e.target.value))
+                }
+              />
+            </label>
             <h4>Connections (Beta)</h4>
             <button
               className={clsx(
@@ -628,12 +626,14 @@ const ControlPanel = ({ paramsRef, onExport, onImport, onParamsChange }) => {
             </label>
 
             <div className={styles.exportActions}>
-              <button type="button" onClick={() => onExport("webm")}>
-                Export WEBM
-              </button>
-              <button type="button" onClick={() => onExport("mp4")}>
-                Export MP4
-              </button>
+              <div className={styles.exportButtons}>
+                <button type="button" onClick={() => onExport("webm")}>
+                  Export WEBM
+                </button>
+                <button type="button" onClick={() => onExport("mp4")}>
+                  Export MP4
+                </button>
+              </div>
               <button
                 className={styles.importButton}
                 type="button"

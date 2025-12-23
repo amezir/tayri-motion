@@ -91,6 +91,7 @@
 
 .panelBody input[type="range"] {
   -webkit-appearance: none;
+  width: 60%;
   height: 1.5px;
   border-radius: 4px;
   background: #ffffff;
@@ -206,7 +207,7 @@
 
 .toggleBtn {
   padding: 8px 16px;
-  border: 1px solid #ffffff;
+  border: 1px solid #ffffff2e;
   background: transparent;
   color: #ffffff;
   font-family: var(--font-mono);
@@ -272,7 +273,7 @@
 
 .optionBtn {
   padding: 8px 12px;
-  border: 1px solid #ffffff;
+  border: 1px solid #ffffff2e;
   background: transparent;
   color: #ffffff;
   font-family: var(--font-mono);
@@ -311,31 +312,33 @@
 .importButton {
   padding: 8px 12px;
   border: none;
-  background: #222222;
-  color: #ffffff;
+  background: #ffffff;
+  color: #000000;
   cursor: pointer;
-  border-radius: 6px;
   font-family: var(--font-mono);
   transition: transform 0.12s ease, background-color 0.12s ease;
   font-weight: 700;
 }
 
-.exportActions button {
-  padding: 8px 12px;
-  border: none;
-  background: #000000;
-  color: #ffffff;
-  cursor: pointer;
-  border-radius: 6px;
-  font-family: var(--font-mono);
-  transition: transform 0.12s ease, background-color 0.12s ease;
-  font-weight: 700;
-}
-
-.exportActions button:nth-child(1) {
-  background: linear-gradient(180deg, #0b0b0b, #222);
-}
-
-.exportActions button:nth-child(2) {
-  background: linear-gradient(180deg, #444, #222);
+.exportActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  .exportButtons {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    justify-content: space-between;
+    button {
+      padding: 8px 12px;
+      width: 100%;
+      border: none;
+      background: #dde000;
+      color: #000000;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      transition: transform 0.12s ease, background-color 0.12s ease;
+      font-weight: 700;
+    }
+  }
 }
