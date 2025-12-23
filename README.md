@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="public/logo.png" alt="Tayri Motion" width="180" />
+</p>
+
 # Tayri Motion
 
 **Next.js** application dedicated to **blob detection, tracking, and video export**
