@@ -12,8 +12,7 @@
 
 .viewControlsAlt {
   background: transparent;
-  color: #1f1f1f;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  color: #000000;
 }
 
 .zoomButtons {
@@ -23,7 +22,7 @@
   button {
     width: 30px;
     height: 30px;
-    border-radius: 4px;
+    // border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     background: rgba(255, 255, 255, 0.04);
     color: #eaeaea;
@@ -38,13 +37,13 @@
 }
 
 .viewControlsAlt .zoomButtons button {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.12);
-  color: #1f1f1f;
+  background: rgb(0, 0, 0);
+  border-color: rgb(0, 0, 0);
+  color: #ffffff;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.16);
+    background: rgb(0, 0, 0);
+    border-color: rgb(0, 0, 0);
   }
 }
 
@@ -61,26 +60,29 @@
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 10px;
+    height: 10px;
     background: #f5f5f5;
-    border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: none;
   }
 
   &::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
+    width: 10px;
+    height: 10px;
     background: #f5f5f5;
-    border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: none;
   }
 }
 
 .viewControlsAlt .zoomSlider {
-  background: rgba(0, 0, 0, 0.14);
+  background: rgb(0, 0, 0);
+
+  &::-webkit-slider-thumb {
+    background: #1f1f1f;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+  }
 }
 
 .zoomValue {
@@ -90,7 +92,6 @@
 
 .resetView {
   padding: 6px 10px;
-  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.04);
   color: #eaeaea;
@@ -106,12 +107,12 @@
 }
 
 .viewControlsAlt .resetView {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.12);
-  color: #1f1f1f;
+  background: rgb(0, 0, 0);
+  border-color: rgb(0, 0, 0);
+  color: #ffffff;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.16);
+    background: rgb(0, 0, 0);
+    border-color: rgb(0, 0, 0);
   }
 }

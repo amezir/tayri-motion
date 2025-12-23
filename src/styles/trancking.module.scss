@@ -312,6 +312,13 @@
     font-family: var(--font-mono);
     font-size: 11px;
   }
+  .authorLink {
+    color: #dde000;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 
   .logoTitle {
     display: flex;
@@ -323,6 +330,11 @@
     font-size: 0.3rem;
     color: #dde000;
   }
+
+  .logoTitleAlt {
+    color: #000000;
+  }
+
   .logo {
     width: 35px;
     height: auto;
@@ -340,4 +352,8 @@
     background-color: transparent;
     border: 0;
   }
+}
+
+.toggleButtonAlt {
+  color: #000000;
 }

@@ -443,8 +443,23 @@ const BlobTracker = () => {
             className={styles.videoInput}
           />
           <div className={styles.header}>
-            <p>made by Amezir Messaoud</p>
-            <Link href="/" className={styles.logoTitle}>
+            <p>
+              made by{" "}
+              <a
+                href="https://amezirmessaoud.fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.authorLink}
+              >
+                Amezir Messaoud
+              </a>
+            </p>
+            <Link
+              href="/"
+              className={`${styles.logoTitle} ${
+                isAltTheme ? styles.logoTitleAlt : ""
+              }`}
+            >
               <img
                 src="./logo.png"
                 alt="logo"
@@ -455,7 +470,9 @@ const BlobTracker = () => {
             </Link>
             <button
               type="button"
-              className={`${styles.toggleButton}`}
+              className={`${styles.toggleButton} ${
+                isAltTheme ? styles.toggleButtonAlt : ""
+              }`}
               onClick={() => setIsAltTheme((prev) => !prev)}
             >
               {isAltTheme ? "dark" : "light"}
