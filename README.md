@@ -22,22 +22,12 @@
 - **Tweakpane** (controls)
 - **ESLint**
 
-## Quick Start
-
-```bash
-npm install
-npm run dev
-```
-
-Open :  
-http://localhost:3000
-
 ## Project Structure
 
 ```
 src/
  ├─ components/      # UI & controls
- ├─ pages/           # Live, Tracking, Changelog
+ ├─ pages/           # Live, Tracking, Changelog, Legal Notice
  ├─ utils/           # Detection, tracking, video export
  ├─ contexts/        # Thème, loader
  └─ styles/          # Sass
