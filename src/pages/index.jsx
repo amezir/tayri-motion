@@ -170,6 +170,9 @@ export default function Home() {
                 </p>
               </div>
               <div className={styles.bottomContent}>
+                <Link className={styles.legalnotice} href="/legal-notice">
+                  Legal Notice
+                </Link>
                 <img src="./codebar.png" alt="codebar logo" draggable="false" />
                 <p>
                   Made by{" "}
@@ -231,7 +234,16 @@ export default function Home() {
                   )}
                   href="/tracking"
                 >
-                  Get Started
+                  Video tracking
+                </Link>
+                <Link
+                  className={clsx(
+                    styles.buttonStart,
+                    isAltTheme && styles.buttonStartAlt
+                  )}
+                  href="/live"
+                >
+                  Live tracking
                 </Link>
               </div>
             </div>

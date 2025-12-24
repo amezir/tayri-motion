@@ -132,6 +132,11 @@
           "id": 26,
           "name": "Optimize blob detection",
           "status": "Performance improvements"
+        },
+        {
+          "id": 27,
+          "name": "Add Live tracking with webcam",
+          "status": "Completed"
         }
       ],
       "releaseStatus": "COMPLETED"
