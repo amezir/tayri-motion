@@ -275,10 +275,9 @@ const BlobTracker = () => {
       if (video) {
         const canvas = canvasRef.current;
         setVideoLoaded(false);
+        setIsPlaying(false);
+        setCurrentTime(0);
         setZoom(1);
-        const origin = { x: 0, y: 0 };
-        panRef.current = origin;
-        setPan(origin);
         video.src = url;
         video.load();
 
@@ -292,30 +291,8 @@ const BlobTracker = () => {
             canvas.style.height = "";
           }
           setDuration(video.duration || 0);
+          video.pause();
           setVideoLoaded(true);
-          try {
-            const playPromise = video.play();
-            if (
-              playPromise !== undefined &&
-              typeof playPromise.then === "function"
-            ) {
-              playPromise
-                .then(() => {
-                  setIsPlaying(true);
-                })
-                .catch((err) => {
-                  try {
-                    video.muted = true;
-                    video
-                      .play()
-                      .then(() => {
-                        setIsPlaying(true);
-                      })
-                      .catch(() => {});
-                  } catch (e) {}
-                });
-            }
-          } catch (e) {}
           video.removeEventListener("loadedmetadata", onLoaded);
         };
 
@@ -337,8 +314,12 @@ const BlobTracker = () => {
     let animationId = null;
 
     const processFrame = () => {
-      if (!video.paused && !video.ended) {
-        processVideoFrame(video, canvas, params.current, setBlobs);
+      if (video && !video.paused && !video.ended) {
+        try {
+          processVideoFrame(video, canvas, params.current, setBlobs);
+        } catch (e) {
+          console.error("Error processing frame:", e);
+        }
         animationId = requestAnimationFrame(processFrame);
       }
     };
@@ -509,8 +490,8 @@ const BlobTracker = () => {
                 <video
                   ref={videoRef}
                   className={styles.video}
-                  loop
                   playsInline
+                  loop
                 />
 
                 <canvas ref={canvasRef} className={styles.canvas} />
@@ -597,6 +578,7 @@ const BlobTracker = () => {
               volume={volume}
               onVolumeChange={handleVolumeChange}
               formatTime={formatTime}
+              videoRef={videoRef}
             />
           )}
         </div>
