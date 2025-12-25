@@ -137,6 +137,16 @@
           "id": 27,
           "name": "Add Live tracking with webcam",
           "status": "Completed"
+        },
+        {
+          "id": 28,
+          "name": "Implement theme dark/light for panel",
+          "status": "Completed"
+        },
+        {
+          "id": 29,
+          "name": "Feat new video controls",
+          "status": "Completed"
         }
       ],
       "releaseStatus": "COMPLETED"
