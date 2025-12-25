@@ -458,7 +458,6 @@ const LiveBlobTracker = () => {
                   isAltTheme ? styles.toggleButtonAlt : ""
                 }`}
                 onClick={() => setIsAltTheme((prev) => !prev)}
-                disabled={true}
               >
                 {isAltTheme ? "dark\u00A0" : "light"}
               </button>
@@ -509,7 +508,12 @@ const LiveBlobTracker = () => {
                 </p>
                 <div className={styles.cameraControls}>
                   <div className={styles.cameraSelect}>
-                    <label htmlFor="camera-select">Camera:</label>
+                    <label
+                      htmlFor="camera-select"
+                      className={isAltTheme ? styles.altTheme : ""}
+                    >
+                      Camera:
+                    </label>
                     <select
                       id="camera-select"
                       value={selectedCamera}

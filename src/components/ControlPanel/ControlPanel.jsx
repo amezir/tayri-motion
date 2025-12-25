@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import styles from "./ControlPanel.module.scss";
 import clsx from "clsx";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const ControlPanel = ({
   paramsRef,
@@ -12,6 +13,7 @@ const ControlPanel = ({
 }) => {
   const [activeTab, setActiveTab] = useState("Blob");
   const [, setRerender] = useState(0);
+  const { isAltTheme } = useTheme();
 
   const updateParam = useCallback(
     (key, value) => {
@@ -28,13 +30,19 @@ const ControlPanel = ({
   const p = paramsRef?.current ?? {};
 
   return (
-    <div className={styles.pannelContainerInner}>
+    <div
+      className={clsx(
+        styles.pannelContainerInner,
+        isAltTheme && styles.pannelContainerInnerAlt
+      )}
+    >
       <div className={styles.panelTop}>
         <div className={styles.tabButtons}>
           <button
             type="button"
             className={clsx(
               styles.tabBtn,
+              isAltTheme && styles.tabBtnAlt,
               activeTab === "Blob" && styles.active
             )}
             onClick={() => setActiveTab("Blob")}
@@ -45,6 +53,7 @@ const ControlPanel = ({
             type="button"
             className={clsx(
               styles.tabBtn,
+              isAltTheme && styles.tabBtnAlt,
               activeTab === "Effect" && styles.active
             )}
             onClick={() => setActiveTab("Effect")}
@@ -56,6 +65,7 @@ const ControlPanel = ({
               type="button"
               className={clsx(
                 styles.tabBtn,
+                isAltTheme && styles.tabBtnAlt,
                 activeTab === "Export" && styles.active
               )}
               onClick={() => setActiveTab("Export")}
@@ -66,11 +76,15 @@ const ControlPanel = ({
         </div>
       </div>
 
-      <div className={styles.panelBody}>
+      <div
+        className={clsx(styles.panelBody, isAltTheme && styles.panelBodyAlt)}
+      >
         {activeTab === "Blob" && (
           <div className={styles.blobSettings}>
-            <h4>Blob Detection</h4>
-            <label>
+            <h4 className={isAltTheme ? styles.altTheme : ""}>
+              Blob Detection
+            </h4>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Threshold: {p.threshold}
               <input
                 type="range"
@@ -81,9 +95,10 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("threshold", parseInt(e.target.value, 10))
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Min Size: {p.minBlobSize}
               <input
                 type="range"
@@ -94,9 +109,10 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("minBlobSize", parseInt(e.target.value, 10) || 0)
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Max Blobs: {p.maxBlobs}
               <input
                 type="range"
@@ -107,12 +123,13 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("maxBlobs", parseInt(e.target.value, 10) || 1)
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
             <div className={styles.checkboxGroup}>
               <button
                 className={clsx(
-                  styles.toggleBtn,
+                  isAltTheme ? styles.toggleBtnAlt : styles.toggleBtn,
                   !!p.showBlobs && styles.active
                 )}
                 type="button"
@@ -122,7 +139,7 @@ const ControlPanel = ({
               </button>
               <button
                 className={clsx(
-                  styles.toggleBtn,
+                  isAltTheme ? styles.toggleBtnAlt : styles.toggleBtn,
                   !!p.showOriginal && styles.active
                 )}
                 type="button"
@@ -132,14 +149,22 @@ const ControlPanel = ({
               </button>
             </div>
 
-            <h4>Blob Colors</h4>
-            <label className={styles.colorLabel}>
+            <h4 className={isAltTheme ? styles.altTheme : ""}>Blob Colors</h4>
+            <label
+              className={clsx(
+                styles.colorLabel,
+                isAltTheme && styles.colorLabelAlt
+              )}
+            >
               <span>Stroke:</span>
               <div className={styles.colorInputGroup}>
                 <input
                   type="text"
                   name="strokeStyleHex"
-                  className={styles.hexInput}
+                  className={clsx(
+                    styles.hexInput,
+                    isAltTheme && styles.hexInputAlt
+                  )}
                   value={p.strokeStyle}
                   onChange={(e) => updateParam("strokeStyle", e.target.value)}
                   placeholder="#000000"
@@ -153,13 +178,21 @@ const ControlPanel = ({
                 />
               </div>
             </label>
-            <label className={styles.colorLabel}>
+            <label
+              className={clsx(
+                styles.colorLabel,
+                isAltTheme && styles.colorLabelAlt
+              )}
+            >
               <span>Fill:</span>
               <div className={styles.colorInputGroup}>
                 <input
                   type="text"
                   name="fillStyleHex"
-                  className={styles.hexInput}
+                  className={clsx(
+                    styles.hexInput,
+                    isAltTheme && styles.hexInputAlt
+                  )}
                   value={p.fillStyle}
                   onChange={(e) => updateParam("fillStyle", e.target.value)}
                   placeholder="#FFFFFF"
@@ -173,7 +206,7 @@ const ControlPanel = ({
                 />
               </div>
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Border Width: {p.blobBorderWidth}
               <input
                 type="range"
@@ -184,11 +217,12 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("blobBorderWidth", parseInt(e.target.value, 10))
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
             <button
               className={clsx(
-                styles.toggleBtn,
+                isAltTheme ? styles.toggleBtnAlt : styles.toggleBtn,
                 !!p.blobCornerBorder && styles.active
               )}
               type="button"
@@ -199,7 +233,7 @@ const ControlPanel = ({
               Border Corners Only
             </button>
             {p.blobCornerBorder && (
-              <label>
+              <label className={isAltTheme ? styles.altTheme : ""}>
                 Corner Length: {p.blobCornerLength}
                 <input
                   type="range"
@@ -213,13 +247,14 @@ const ControlPanel = ({
                       parseInt(e.target.value, 10)
                     )
                   }
+                  className={isAltTheme ? styles.altTheme : ""}
                 />
               </label>
             )}
-            <h4>Blob Labels</h4>
+            <h4 className={isAltTheme ? styles.altTheme : ""}>Blob Labels</h4>
             <button
               className={clsx(
-                styles.toggleBtn,
+                isAltTheme ? styles.toggleBtnAlt : styles.toggleBtn,
                 p.showBlobLabels !== false && styles.active
               )}
               type="button"
@@ -229,7 +264,7 @@ const ControlPanel = ({
             >
               Show Labels
             </button>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Label Size: {p.blobLabelSize}
               <input
                 type="range"
@@ -240,15 +275,24 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("blobLabelSize", parseInt(e.target.value, 10))
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label className={styles.colorLabel}>
+            <label
+              className={clsx(
+                styles.colorLabel,
+                isAltTheme && styles.colorLabelAlt
+              )}
+            >
               <span>Label Color:</span>
               <div className={styles.colorInputGroup}>
                 <input
                   type="text"
                   name="blobLabelColorHex"
-                  className={styles.hexInput}
+                  className={clsx(
+                    styles.hexInput,
+                    isAltTheme && styles.hexInputAlt
+                  )}
                   value={p.blobLabelColor}
                   onChange={(e) =>
                     updateParam("blobLabelColor", e.target.value)
@@ -267,11 +311,19 @@ const ControlPanel = ({
               </div>
             </label>
             <div className={styles.optionGroup}>
-              <div className={styles.optionGroupLabel}>Font Family:</div>
+              <div
+                className={clsx(
+                  styles.optionGroupLabel,
+                  isAltTheme && styles.optionGroupLabelAlt
+                )}
+              >
+                Font Family:
+              </div>
               <div className={styles.optionGroupButtons}>
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobLabelFontFamily === "monospace" && styles.active
                   )}
                   type="button"
@@ -284,6 +336,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobLabelFontFamily === "cursive" && styles.active
                   )}
                   type="button"
@@ -294,6 +347,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobLabelFontFamily === "sans-serif" && styles.active
                   )}
                   type="button"
@@ -306,6 +360,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobLabelFontFamily === "serif" && styles.active
                   )}
                   type="button"
@@ -316,11 +371,19 @@ const ControlPanel = ({
               </div>
             </div>
             <div className={styles.optionGroup}>
-              <div className={styles.optionGroupLabel}>Label Content:</div>
+              <div
+                className={clsx(
+                  styles.optionGroupLabel,
+                  isAltTheme && styles.optionGroupLabelAlt
+                )}
+              >
+                Label Content:
+              </div>
               <div className={styles.optionGroupButtons}>
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobLabelMode === "coords" && styles.active
                   )}
                   type="button"
@@ -331,6 +394,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobLabelMode === "randomNumbers" && styles.active
                   )}
                   type="button"
@@ -341,6 +405,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobLabelMode === "randomLetters" && styles.active
                   )}
                   type="button"
@@ -351,6 +416,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobLabelMode === "randomSymbols" && styles.active
                   )}
                   type="button"
@@ -362,7 +428,10 @@ const ControlPanel = ({
             </div>
             {enableImport && (
               <button
-                className={styles.importButton}
+                className={clsx(
+                  styles.importButton,
+                  isAltTheme && styles.importButtonAlt
+                )}
                 type="button"
                 onClick={() => onImport?.()}
               >
@@ -374,13 +443,21 @@ const ControlPanel = ({
 
         {activeTab === "Effect" && (
           <div className={styles.effectSettings}>
-            <h4>Blob Fill</h4>
+            <h4 className={isAltTheme ? styles.altTheme : ""}>Blob Fill</h4>
             <div className={styles.fillModeGroup}>
-              <div className={styles.fillModeLabel}>Fill Mode:</div>
+              <div
+                className={clsx(
+                  styles.fillModeLabel,
+                  isAltTheme && styles.fillModeLabelAlt
+                )}
+              >
+                Fill Mode:
+              </div>
               <div className={styles.optionGroupButtons}>
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobFillMode === "none" && styles.active
                   )}
                   type="button"
@@ -391,6 +468,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobFillMode === "color" && styles.active
                   )}
                   type="button"
@@ -401,6 +479,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobFillMode === "blur" && styles.active
                   )}
                   type="button"
@@ -411,6 +490,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobFillMode === "both" && styles.active
                   )}
                   type="button"
@@ -421,6 +501,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.blobFillMode === "zoom" && styles.active
                   )}
                   type="button"
@@ -430,7 +511,7 @@ const ControlPanel = ({
                 </button>
               </div>
             </div>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Blur Amount: {p.blobBlurAmount}
               <input
                 type="range"
@@ -441,9 +522,10 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("blobBlurAmount", parseInt(e.target.value, 10))
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Zoom Level: {p.blobZoomLevel}
               <input
                 type="range"
@@ -455,9 +537,10 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("blobZoomLevel", parseFloat(e.target.value))
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Fill Opacity: {p.blobFillOpacity}
               <input
                 type="range"
@@ -469,12 +552,15 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("blobFillOpacity", parseFloat(e.target.value))
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <h4>Connections (Beta)</h4>
+            <h4 className={isAltTheme ? styles.altTheme : ""}>
+              Connections (Beta)
+            </h4>
             <button
               className={clsx(
-                styles.toggleBtn,
+                isAltTheme ? styles.toggleBtnAlt : styles.toggleBtn,
                 !!p.showConnections && styles.active
               )}
               type="button"
@@ -483,11 +569,19 @@ const ControlPanel = ({
               Show Connections
             </button>
             <div className={styles.optionGroup}>
-              <div className={styles.optionGroupLabel}>Style:</div>
+              <div
+                className={clsx(
+                  styles.optionGroupLabel,
+                  isAltTheme && styles.optionGroupLabelAlt
+                )}
+              >
+                Style:
+              </div>
               <div className={styles.optionGroupButtons}>
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.connectionStyle === "normal" && styles.active
                   )}
                   type="button"
@@ -498,6 +592,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.connectionStyle === "dashed" && styles.active
                   )}
                   type="button"
@@ -508,6 +603,7 @@ const ControlPanel = ({
                 <button
                   className={clsx(
                     styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
                     p.connectionStyle === "arrow" && styles.active
                   )}
                   type="button"
@@ -517,7 +613,7 @@ const ControlPanel = ({
                 </button>
               </div>
             </div>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Curvature: {p.connectionCurvature}
               <input
                 type="range"
@@ -532,15 +628,24 @@ const ControlPanel = ({
                     parseInt(e.target.value, 10)
                   )
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label className={styles.colorLabel}>
+            <label
+              className={clsx(
+                styles.colorLabel,
+                isAltTheme && styles.colorLabelAlt
+              )}
+            >
               <span>Color:</span>
               <div className={styles.colorInputGroup}>
                 <input
                   type="text"
                   name="connectionColorHex"
-                  className={styles.hexInput}
+                  className={clsx(
+                    styles.hexInput,
+                    isAltTheme && styles.hexInputAlt
+                  )}
                   value={p.connectionColor}
                   onChange={(e) =>
                     updateParam("connectionColor", e.target.value)
@@ -558,7 +663,7 @@ const ControlPanel = ({
                 />
               </div>
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Width: {p.connectionWidth}
               <input
                 type="range"
@@ -570,9 +675,10 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("connectionWidth", parseFloat(e.target.value))
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Dash Length: {p.dashLength}
               <input
                 type="range"
@@ -583,9 +689,10 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("dashLength", parseInt(e.target.value, 10) || 1)
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Dash Gap: {p.dashGap}
               <input
                 type="range"
@@ -596,11 +703,15 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("dashGap", parseInt(e.target.value, 10) || 1)
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
             {enableImport && (
               <button
-                className={styles.importButton}
+                className={clsx(
+                  styles.importButton,
+                  isAltTheme && styles.importButtonAlt
+                )}
                 type="button"
                 onClick={() => onImport?.()}
               >
@@ -612,8 +723,10 @@ const ControlPanel = ({
 
         {enableExport && activeTab === "Export" && (
           <div className={styles.exportSettings}>
-            <h4>Export Settings</h4>
-            <label>
+            <h4 className={isAltTheme ? styles.altTheme : ""}>
+              Export Settings
+            </h4>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Video Bitrate (kbps): {p.videoBitrate}
               <input
                 type="range"
@@ -628,9 +741,10 @@ const ControlPanel = ({
                     parseInt(e.target.value, 10) || 1000
                   )
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Audio Bitrate (kbps): {p.audioBitrate}
               <input
                 type="range"
@@ -645,9 +759,10 @@ const ControlPanel = ({
                     parseInt(e.target.value, 10) || 128
                   )
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-            <label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
               Export FPS: {p.exportFPS}
               <input
                 type="range"
@@ -659,6 +774,7 @@ const ControlPanel = ({
                 onChange={(e) =>
                   updateParam("exportFPS", parseInt(e.target.value, 10))
                 }
+                className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
 
@@ -673,7 +789,10 @@ const ControlPanel = ({
               </div>
               {enableImport && (
                 <button
-                  className={styles.importButton}
+                  className={clsx(
+                    styles.importButton,
+                    isAltTheme && styles.importButtonAlt
+                  )}
                   type="button"
                   onClick={() => onImport?.()}
                 >
