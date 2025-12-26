@@ -1,3 +1,32 @@
+const isBlobValid = (blob, canvasWidth, canvasHeight) => {
+  if (!blob || 
+      typeof blob.centerX !== 'number' || 
+      typeof blob.centerY !== 'number' ||
+      typeof blob.width !== 'number' || 
+      typeof blob.height !== 'number' ||
+      blob.width <= 0 || 
+      blob.height <= 0 ||
+      isNaN(blob.centerX) || 
+      isNaN(blob.centerY) ||
+      isNaN(blob.width) || 
+      isNaN(blob.height)) {
+    return false;
+  }
+  
+  const blobLeft = blob.x || (blob.centerX - blob.width / 2);
+  const blobRight = (blob.x || (blob.centerX - blob.width / 2)) + blob.width;
+  const blobTop = blob.y || (blob.centerY - blob.height / 2);
+  const blobBottom = (blob.y || (blob.centerY - blob.height / 2)) + blob.height;
+  
+  const margin = 50;
+  const isVisible = blobRight > -margin && 
+                    blobLeft < canvasWidth + margin &&
+                    blobBottom > -margin && 
+                    blobTop < canvasHeight + margin;
+  
+  return isVisible;
+};
+
 export const getEdgeConnectionPoint = (blob1, blob2) => {
   const dx = blob2.centerX - blob1.centerX;
   const dy = blob2.centerY - blob1.centerY;
@@ -105,62 +134,122 @@ export const drawArrow = (ctx, fromX, fromY, toX, toY, curvature) => {
   }
 };
 
-export const drawConnections = (ctx, blobs, params) => {
-  if (blobs.length < 2) return;
+const getDistance = (blob1, blob2) => {
+  const dx = blob2.centerX - blob1.centerX;
+  const dy = blob2.centerY - blob1.centerY;
+  return Math.sqrt(dx * dx + dy * dy);
+};
 
-  ctx.strokeStyle = params.connectionColor;
-  ctx.lineWidth = params.connectionWidth;
+export const drawConnections = (ctx, blobs, params) => {
+  if (!blobs || blobs.length < 2 || !ctx) return;
+
+  const canvasWidth = ctx.canvas.width;
+  const canvasHeight = ctx.canvas.height;
+  
+  ctx.save();
+
+  const validBlobs = blobs.filter(blob => isBlobValid(blob, canvasWidth, canvasHeight));
+  
+  if (validBlobs.length < 2) {
+    ctx.restore();
+    return;
+  }
+
+  ctx.strokeStyle = params.connectionColor || '#ffffff';
+  ctx.lineWidth = params.connectionWidth || 2;
 
   if (params.connectionStyle === 'dashed') {
-    ctx.setLineDash([params.dashLength, params.dashGap]);
+    ctx.setLineDash([params.dashLength || 10, params.dashGap || 5]);
   } else {
     ctx.setLineDash([]);
   }
 
-  const curvature = params.connectionCurvature;
+  const curvature = params.connectionCurvature || 0;
+  
+  const maxConnectionDistance = params.maxConnectionDistance || 300;
+  
+  const drawnConnections = new Set();
 
-  for (let i = 0; i < blobs.length - 1; i++) {
-    const blob1 = blobs[i];
-    const blob2 = blobs[i + 1];
+  for (let i = 0; i < validBlobs.length; i++) {
+    const blob1 = validBlobs[i];
+    
+    for (let j = i + 1; j < validBlobs.length; j++) {
+      const blob2 = validBlobs[j];
+      
+      const distance = getDistance(blob1, blob2);
+      
+      if (distance > 1 && distance <= maxConnectionDistance) {
+        const id1 = `${Math.round(blob1.centerX)},${Math.round(blob1.centerY)}`;
+        const id2 = `${Math.round(blob2.centerX)},${Math.round(blob2.centerY)}`;
+        const connectionKey = id1 < id2 ? `${id1}-${id2}` : `${id2}-${id1}`;
+        
+        if (!drawnConnections.has(connectionKey)) {
+          drawnConnections.add(connectionKey);
+          
+          let fromX, fromY, toX, toY;
 
-    let fromX, fromY, toX, toY;
+          try {
+            if (params.connectionFromEdge) {
+              const points = getEdgeConnectionPoint(blob1, blob2);
+              fromX = points.startX;
+              fromY = points.startY;
+              toX = points.endX;
+              toY = points.endY;
+              
+              if (isNaN(fromX) || isNaN(fromY) || isNaN(toX) || isNaN(toY)) {
+                continue;
+              }
+              
+              const connectionLength = Math.sqrt(
+                (toX - fromX) ** 2 + (toY - fromY) ** 2
+              );
+              if (connectionLength > maxConnectionDistance * 1.5) {
+                continue;
+              }
+            } else {
+              fromX = blob1.centerX;
+              fromY = blob1.centerY;
+              toX = blob2.centerX;
+              toY = blob2.centerY;
+            }
 
-    if (params.connectionFromEdge) {
-      const points = getEdgeConnectionPoint(blob1, blob2);
-      fromX = points.startX;
-      fromY = points.startY;
-      toX = points.endX;
-      toY = points.endY;
-    } else {
-      fromX = blob1.centerX;
-      fromY = blob1.centerY;
-      toX = blob2.centerX;
-      toY = blob2.centerY;
-    }
+            const maxCoord = Math.max(canvasWidth, canvasHeight) * 2;
+            if (Math.abs(fromX) > maxCoord || Math.abs(fromY) > maxCoord ||
+                Math.abs(toX) > maxCoord || Math.abs(toY) > maxCoord) {
+              continue;
+            }
 
-    if (params.connectionStyle === 'arrow') {
-      drawArrow(ctx, fromX, fromY, toX, toY, curvature);
-    } else {
-      if (curvature === 0) {
-        ctx.beginPath();
-        ctx.moveTo(fromX, fromY);
-        ctx.lineTo(toX, toY);
-        ctx.stroke();
-      } else {
-        const midX = (fromX + toX) / 2;
-        const midY = (fromY + toY) / 2;
-        const dx = toX - fromX;
-        const dy = toY - fromY;
-        const controlX = midX - dy * (curvature / 100);
-        const controlY = midY + dx * (curvature / 100);
+            if (params.connectionStyle === 'arrow') {
+              drawArrow(ctx, fromX, fromY, toX, toY, curvature);
+            } else {
+              if (curvature === 0) {
+                ctx.beginPath();
+                ctx.moveTo(fromX, fromY);
+                ctx.lineTo(toX, toY);
+                ctx.stroke();
+              } else {
+                const midX = (fromX + toX) / 2;
+                const midY = (fromY + toY) / 2;
+                const dx = toX - fromX;
+                const dy = toY - fromY;
+                const controlX = midX - dy * (curvature / 100);
+                const controlY = midY + dx * (curvature / 100);
 
-        ctx.beginPath();
-        ctx.moveTo(fromX, fromY);
-        ctx.quadraticCurveTo(controlX, controlY, toX, toY);
-        ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(fromX, fromY);
+                ctx.quadraticCurveTo(controlX, controlY, toX, toY);
+                ctx.stroke();
+              }
+            }
+          } catch (error) {
+            continue;
+          }
+        }
       }
     }
   }
 
   ctx.setLineDash([]);
+  
+  ctx.restore();
 };

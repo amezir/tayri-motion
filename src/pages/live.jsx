@@ -66,6 +66,7 @@ const LiveBlobTracker = () => {
     connectionFromEdge: true,
     dashLength: 10,
     dashGap: 5,
+    maxConnectionDistance: 200,
   });
 
   useEffect(() => {

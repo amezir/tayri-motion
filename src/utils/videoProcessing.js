@@ -86,6 +86,8 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   const shouldMirror = params?.mirror === true;
 
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   if (shouldMirror) {
     ctx.save();
     ctx.translate(canvas.width, 0);

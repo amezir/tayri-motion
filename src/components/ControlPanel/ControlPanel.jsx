@@ -706,6 +706,24 @@ const ControlPanel = ({
                 className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
+            <label className={isAltTheme ? styles.altTheme : ""}>
+              Distance Limit: {p.maxConnectionDistance || 300}
+              <input
+                type="range"
+                name="maxConnectionDistance"
+                min="50"
+                max="1000"
+                step="10"
+                value={p.maxConnectionDistance || 300}
+                onChange={(e) =>
+                  updateParam(
+                    "maxConnectionDistance",
+                    parseInt(e.target.value, 10)
+                  )
+                }
+                className={isAltTheme ? styles.altTheme : ""}
+              />
+            </label>
             {enableImport && (
               <button
                 className={clsx(
