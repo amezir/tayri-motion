@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import styles from "./ControlPanel.module.scss";
 import clsx from "clsx";
 import { useTheme } from "@/contexts/ThemeContext";
+import ResetButton from "./ResetButton";
 
 const ControlPanel = ({
   paramsRef,
@@ -26,7 +27,6 @@ const ControlPanel = ({
     },
     [paramsRef]
   );
-
   const p = paramsRef?.current ?? {};
 
   return (
@@ -148,6 +148,18 @@ const ControlPanel = ({
                 Show Original
               </button>
             </div>
+            <ResetButton
+              keys={[
+                "threshold",
+                "minBlobSize",
+                "maxBlobs",
+                "showBlobs",
+                "showOriginal",
+              ]}
+              paramsRef={paramsRef}
+              updateParam={updateParam}
+              isAltTheme={isAltTheme}
+            />
 
             <h4 className={isAltTheme ? styles.altTheme : ""}>Blob Colors</h4>
             <label
@@ -251,6 +263,18 @@ const ControlPanel = ({
                 />
               </label>
             )}
+            <ResetButton
+              keys={[
+                "strokeStyle",
+                "fillStyle",
+                "blobBorderWidth",
+                "blobCornerBorder",
+                "blobCornerLength",
+              ]}
+              paramsRef={paramsRef}
+              updateParam={updateParam}
+              isAltTheme={isAltTheme}
+            />
             <h4 className={isAltTheme ? styles.altTheme : ""}>Blob Labels</h4>
             <button
               className={clsx(
@@ -426,6 +450,18 @@ const ControlPanel = ({
                 </button>
               </div>
             </div>
+            <ResetButton
+              keys={[
+                "showBlobLabels",
+                "blobLabelSize",
+                "blobLabelColor",
+                "blobLabelFontFamily",
+                "blobLabelMode",
+              ]}
+              paramsRef={paramsRef}
+              updateParam={updateParam}
+              isAltTheme={isAltTheme}
+            />
             {enableImport && (
               <button
                 className={clsx(
@@ -555,6 +591,17 @@ const ControlPanel = ({
                 className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
+            <ResetButton
+              keys={[
+                "blobFillMode",
+                "blobBlurAmount",
+                "blobZoomLevel",
+                "blobFillOpacity",
+              ]}
+              paramsRef={paramsRef}
+              updateParam={updateParam}
+              isAltTheme={isAltTheme}
+            />
             <h4 className={isAltTheme ? styles.altTheme : ""}>
               Connections (Beta)
             </h4>
@@ -724,6 +771,21 @@ const ControlPanel = ({
                 className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
+            <ResetButton
+              keys={[
+                "showConnections",
+                "connectionStyle",
+                "connectionCurvature",
+                "connectionColor",
+                "connectionWidth",
+                "dashLength",
+                "dashGap",
+                "maxConnectionDistance",
+              ]}
+              paramsRef={paramsRef}
+              updateParam={updateParam}
+              isAltTheme={isAltTheme}
+            />
             {enableImport && (
               <button
                 className={clsx(
@@ -795,7 +857,12 @@ const ControlPanel = ({
                 className={isAltTheme ? styles.altTheme : ""}
               />
             </label>
-
+            <ResetButton
+              keys={["videoBitrate", "audioBitrate", "exportFPS"]}
+              paramsRef={paramsRef}
+              updateParam={updateParam}
+              isAltTheme={isAltTheme}
+            />
             <div className={styles.exportActions}>
               <div className={styles.exportButtons}>
                 <button type="button" onClick={() => onExport?.("webm")}>
