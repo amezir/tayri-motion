@@ -18,7 +18,7 @@ const ResetButton = ({ keys, paramsRef, updateParam, isAltTheme }) => {
       onClick={() => reset(getDefaults(keys))}
       className={clsx(styles.resetButton, isAltTheme && styles.resetButtonAlt)}
     >
-      Reset Settings
+      Reset to Default
     </button>
   );
 };
