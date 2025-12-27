@@ -4,6 +4,11 @@
       "release": "2025.12",
       "stages": [
         {
+          "id": 0,
+          "name": "Release 2025.12",
+          "status": "Started"
+        },
+        {
           "id": 1,
           "name": "Initialize video pipeline",
           "status": "OK"
@@ -147,6 +152,11 @@
           "id": 29,
           "name": "Feat new video controls",
           "status": "Completed"
+        },
+        {
+          "id": 30,
+          "name": "Reset settings to default values",
+          "status": "Reset button added"
         }
       ],
       "releaseStatus": "COMPLETED"
