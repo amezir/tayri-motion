@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import styles from "./ControlPanel.module.scss";
+import styles from "./ControlPanel/ControlPanel.module.scss";
 import useParamsDefaults from "@/hooks/useParamsDefaults";
 
 const ResetButton = ({ keys, paramsRef, updateParam, isAltTheme }) => {
