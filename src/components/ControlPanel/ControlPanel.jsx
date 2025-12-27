@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import styles from "./ControlPanel.module.scss";
 import clsx from "clsx";
 import { useTheme } from "@/contexts/ThemeContext";
-import ResetButton from "./ResetButton";
+import ResetButton from "../ResetButton";
 
 const ControlPanel = ({
   paramsRef,
