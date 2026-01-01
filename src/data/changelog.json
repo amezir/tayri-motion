@@ -157,6 +157,16 @@
           "id": 30,
           "name": "Reset settings to default values",
           "status": "Reset button added"
+        },
+        {
+          "id": 31,
+          "name": "Release 2025.12",
+          "status": "Completed"
+        },
+        {
+          "id": 32,
+          "name": "Release 2026.01",
+          "status": "Started"
         }
       ],
       "releaseStatus": "COMPLETED"
