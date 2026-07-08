@@ -32,6 +32,9 @@ const ControlPanel = ({
   profileStorageKey = "tayri-motion-profiles",
   syncToken = 0,
   activeSegmentLabel = null,
+  recordMode = false,
+  isRecording = false,
+  onToggleRecord,
 }) => {
   const [activeTab, setActiveTab] = useState("Blob");
   const [, setRerender] = useState(0);
@@ -872,7 +875,42 @@ const ControlPanel = ({
           </div>
         )}
 
-        {enableExport && activeTab === "Export" && (
+        {enableExport && recordMode && activeTab === "Export" && (
+          <div className={styles.exportSettings}>
+            <h4 className={isAltTheme ? styles.altTheme : ""}>Record</h4>
+            <p
+              className={clsx(
+                styles.profilesHint,
+                isAltTheme && styles.profilesHintAlt
+              )}
+            >
+              Capture the 3D scene and the tracking overlay to an MP4 video.
+            </p>
+            <button
+              type="button"
+              className={clsx(
+                styles.recordBtn,
+                isRecording && styles.recordBtnActive
+              )}
+              onClick={() => onToggleRecord?.()}
+            >
+              <span className={styles.recordDot} />
+              {isRecording ? "Stop recording" : "Record MP4"}
+            </button>
+            <button
+              className={clsx(
+                styles.importButton,
+                isAltTheme && styles.importButtonAlt
+              )}
+              type="button"
+              onClick={() => onImport?.()}
+            >
+              Import 3D Model
+            </button>
+          </div>
+        )}
+
+        {enableExport && !recordMode && activeTab === "Export" && (
           <div className={styles.exportSettings}>
             <h4 className={isAltTheme ? styles.altTheme : ""}>
               Export Quality

@@ -109,6 +109,7 @@
 
 .panelBody input[type="range"] {
   -webkit-appearance: none;
+  appearance: none;
   width: 60%;
   height: 1.5px;
   border-radius: 4px;
@@ -643,4 +644,52 @@
   flex-direction: column;
   gap: 8px;
   margin-top: 4px;
+}
+
+/* ---- 3D scene recording button ---- */
+.recordBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: none;
+  background: #dde000;
+  color: #000000;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  transition: transform 0.12s ease, background-color 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  .recordDot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ff3b3b;
+    display: inline-block;
+  }
+}
+
+.recordBtnActive {
+  background: #ff3b3b;
+  color: #ffffff;
+
+  .recordDot {
+    background: #ffffff;
+    animation: recordPulse 1s ease-in-out infinite;
+  }
+}
+
+@keyframes recordPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }

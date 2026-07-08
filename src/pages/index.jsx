@@ -245,6 +245,15 @@ export default function Home() {
                 >
                   Live tracking
                 </Link>
+                <Link
+                  className={clsx(
+                    styles.buttonStart,
+                    isAltTheme && styles.buttonStartAlt
+                  )}
+                  href="/tracking-3d"
+                >
+                  3D tracking
+                </Link>
               </div>
             </div>
           </div>

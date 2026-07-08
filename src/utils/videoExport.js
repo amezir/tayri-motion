@@ -76,6 +76,7 @@ export const exportVideo = async (
     onComplete = () => {},
     onCanceled = () => {},
     onError = () => {},
+    onFrameSink = () => {},
   } = callbacks;
 
   let audioContext = null;
@@ -87,10 +88,49 @@ export const exportVideo = async (
   try {
     onStatus('Capturing video...');
 
-    const fps = params.exportFPS;
-    const videoStream = canvas.captureStream(fps);
-    const videoTrack = videoStream.getVideoTracks()[0];
-    
+    const fps = params.exportFPS || 30;
+
+    // Prefer manual frame capture: captureStream(0) records a frame only when
+    // requestFrame() is called. Driving that from the render loop (right after
+    // each fresh canvas draw) keeps the recording in sync with what is actually
+    // drawn, which removes the judder caused by the browser sampling the canvas
+    // on its own fixed clock while blob detection is heavy.
+    let videoStream = null;
+    let videoTrack = null;
+    let manualCapture = false;
+    try {
+      videoStream = canvas.captureStream(0);
+      videoTrack = videoStream.getVideoTracks()[0];
+      manualCapture = typeof videoTrack?.requestFrame === "function";
+    } catch (e) {
+      videoStream = null;
+    }
+    if (!videoStream || !videoTrack || !manualCapture) {
+      videoStream = canvas.captureStream(fps);
+      videoTrack = videoStream.getVideoTracks()[0];
+      manualCapture = false;
+    }
+
+    // Throttled frame pusher shared by the render loop and the progress loop
+    // so the output never exceeds the requested fps and we never emit a frame
+    // twice in the same interval.
+    const frameInterval = 1000 / fps;
+    let lastFrameAt = -Infinity;
+    const now = () =>
+      typeof performance !== "undefined" ? performance.now() : Date.now();
+    const pushFrame = () => {
+      if (!manualCapture || !videoTrack) return;
+      const t = now();
+      if (t - lastFrameAt >= frameInterval - 1.5) {
+        lastFrameAt = t;
+        try {
+          videoTrack.requestFrame();
+        } catch (e) {}
+      }
+    };
+    // Let the caller feed fresh frames from its render loop.
+    onFrameSink(manualCapture ? pushFrame : null);
+
     audioEntry = getAudioContextForVideo(video);
     ({ audioContext, sourceNode } = audioEntry);
     ensureOutputConnection(audioEntry);
@@ -193,10 +233,16 @@ export const exportVideo = async (
       throw err;
     });
     mediaRecorder.start();
+    pushFrame(); // capture an initial frame so recording never starts empty
 
     const startTime = Date.now();
 
     const updateProgress = () => {
+      // Fallback frame source: keeps frames flowing even if the caller's
+      // render loop stalls. Throttling makes this a no-op when the render loop
+      // already pushed a frame this interval.
+      pushFrame();
+
       const currentTime = video.currentTime;
       const progress = (currentTime / duration) * 100;
       onProgress(progress);
@@ -224,6 +270,7 @@ export const exportVideo = async (
 
     const recordedChunks = await recordingPromise;
     removeAbortListener();
+    onFrameSink(null);
 
     if (canceled) {
       try {
@@ -280,6 +327,9 @@ export const exportVideo = async (
   } catch (error) {
     console.error('Erreur lors de l\'export:', error);
     onError(error);
+    try {
+      onFrameSink(null);
+    } catch (e) {}
     try {
       removeAbortListener?.();
     } catch (e) {}

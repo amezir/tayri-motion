@@ -39,7 +39,10 @@
       "Bash(curl -s http://localhost:3000/tracking)",
       "Bash(curl -s http://localhost:3000/)",
       "Bash(lsof -nP -iTCP:3000 -sTCP:LISTEN)",
-      "Bash(python3 -c \"import json; d=json.load\\(open\\('src/data/changelog.json'\\)\\); print\\('JSON valid. Releases:', [r['release'] for r in d['releases']]\\); print\\('2026.01 stages:', len\\(d['releases'][0]['stages']\\)\\)\")"
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('src/data/changelog.json'\\)\\); print\\('JSON valid. Releases:', [r['release'] for r in d['releases']]\\); print\\('2026.01 stages:', len\\(d['releases'][0]['stages']\\)\\)\")",
+      "Bash(git log *)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('src/data/changelog.json'\\)\\); print\\('JSON OK — 2026.01 stages:', len\\(d['releases'][0]['stages']\\)\\)\")",
+      "Bash(python3 -c \"import json; json.load\\(open\\('src/data/changelog.json'\\)\\); print\\('changelog JSON OK'\\)\")"
     ]
   }
 }

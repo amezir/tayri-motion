@@ -51,6 +51,8 @@ const BlobTracker = () => {
   const segmentsRef = useRef([]);
   const activeSegmentIdRef = useRef(null);
   const segmentParamsRef = useRef(new Map()); // id -> params snapshot
+  // Set during export: pushes each freshly drawn frame to the recorder.
+  const captureFrameRef = useRef(null);
 
   useEffect(() => {
     segmentsRef.current = segments;
@@ -119,18 +121,24 @@ const BlobTracker = () => {
           onProgress: setExportProgress,
           onStatus: setExportStatus,
           onTimeRemaining: setExportTimeRemaining,
+          onFrameSink: (fn) => {
+            captureFrameRef.current = fn;
+          },
           onCanceled: () => {
             setExportStatus("Export canceled");
             setExporting(false);
             exportAbortControllerRef.current = null;
             setExportProgress(0);
+            captureFrameRef.current = null;
           },
           onComplete: () => {
             exportAbortControllerRef.current = null;
+            captureFrameRef.current = null;
             setTimeout(() => setExporting(false), 2000);
           },
           onError: (error) => {
             exportAbortControllerRef.current = null;
+            captureFrameRef.current = null;
             alert(
               "Error while exporting the video: " +
                 (error?.message || String(error))
@@ -488,6 +496,9 @@ const BlobTracker = () => {
             video.currentTime
           );
           processVideoFrame(video, canvas, frameParams, setBlobs, active);
+          // During export, hand the just-drawn frame to the recorder so the
+          // capture stays in sync with what is actually rendered.
+          captureFrameRef.current?.();
         } catch (e) {
           console.error("Error processing frame:", e);
         }

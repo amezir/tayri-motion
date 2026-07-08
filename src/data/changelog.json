@@ -37,6 +37,16 @@
           "id": 6,
           "name": "Timeline segment feedback",
           "status": "Visual tracked / selected bands"
+        },
+        {
+          "id": 7,
+          "name": "Smoother MP4 / WebM export",
+          "status": "Frame-synced capture"
+        },
+        {
+          "id": 8,
+          "name": "3D model tracking",
+          "status": "Three.js · GLB / GLTF / OBJ / STL / FBX"
         }
       ],
       "releaseStatus": "IN PROGRESS"
