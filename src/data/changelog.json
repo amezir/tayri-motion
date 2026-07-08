@@ -1,6 +1,47 @@
 {
   "releases": [
     {
+      "release": "2026.01",
+      "stages": [
+        {
+          "id": 0,
+          "name": "Release 2026.01 Happy New Year!",
+          "status": "Started"
+        },
+        {
+          "id": 1,
+          "name": "Fix blob connection logic",
+          "status": "Stable, glitch-free edges"
+        },
+        {
+          "id": 2,
+          "name": "Simplify video export UI",
+          "status": "Low / Medium / High + Custom"
+        },
+        {
+          "id": 3,
+          "name": "Settings profiles",
+          "status": "Save / Load / Default"
+        },
+        {
+          "id": 4,
+          "name": "Tracking on timeline selection",
+          "status": "Range-only tracking"
+        },
+        {
+          "id": 5,
+          "name": "Editable tracked segments",
+          "status": "Per-segment settings + re-track"
+        },
+        {
+          "id": 6,
+          "name": "Timeline segment feedback",
+          "status": "Visual tracked / selected bands"
+        }
+      ],
+      "releaseStatus": "IN PROGRESS"
+    },
+    {
       "release": "2025.12",
       "stages": [
         {
@@ -162,11 +203,6 @@
           "id": 31,
           "name": "Release 2025.12",
           "status": "Completed"
-        },
-        {
-          "id": 32,
-          "name": "Release 2026.01 Happy New Year!",
-          "status": "Started"
         }
       ],
       "releaseStatus": "COMPLETED"

@@ -190,14 +190,44 @@ const VideoControls = ({
   onVolumeChange,
   formatTime,
   videoRef,
+  selection = null,
+  onSelectionChange,
+  onClearSelection,
+  onTrackSelection,
+  segments = [],
+  activeSegmentId = null,
+  onSelectSegment,
+  onSegmentResize,
+  onDeleteSegment,
+  onRetrackSegment,
 }) => {
   const lastNonZeroVolumeRef = React.useRef(0.7);
   const timelineRef = React.useRef(null);
+  const segmentTrackRef = React.useRef(null);
   const wasPlayingRef = React.useRef(false);
   const [isScrubbing, setIsScrubbing] = React.useState(false);
   const [hoverState, setHoverState] = React.useState(null);
+  const [isSegDragging, setIsSegDragging] = React.useState(false);
+  const segDragRef = React.useRef(null);
   const { previews, isGenerating } = useFramePreviews(videoRef, duration);
   const { isAltTheme } = useTheme();
+
+  const segmentsEnabled = typeof onSelectionChange === "function";
+
+  const pct = React.useCallback(
+    (time) => (duration ? clamp((time / duration) * 100, 0, 100) : 0),
+    [duration]
+  );
+
+  const timeFromSegmentX = React.useCallback(
+    (clientX) => {
+      const rect = segmentTrackRef.current?.getBoundingClientRect();
+      if (!rect || !duration) return 0;
+      const ratio = clamp((clientX - rect.left) / rect.width, 0, 1);
+      return ratio * duration;
+    },
+    [duration]
+  );
 
   React.useEffect(() => {
     if (volume > 0) {
@@ -296,6 +326,114 @@ const VideoControls = ({
     return { ...closest, time: hoverState.time };
   }, [hoverState, previews]);
 
+  // ---- Selection / segment interactions on the segment track (#8, #9) ----
+  const handleSegPointerDown = React.useCallback(
+    (e) => {
+      if (!segmentsEnabled || !duration) return;
+      const rect = segmentTrackRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const t = timeFromSegmentX(e.clientX);
+      const edge = (12 / rect.width) * duration; // ~12px grab zone
+
+      const activeSeg = segments.find((s) => s.id === activeSegmentId);
+      if (activeSeg) {
+        if (Math.abs(t - activeSeg.start) <= edge) {
+          segDragRef.current = { mode: "seg-start", id: activeSeg.id };
+          setIsSegDragging(true);
+          return;
+        }
+        if (Math.abs(t - activeSeg.end) <= edge) {
+          segDragRef.current = { mode: "seg-end", id: activeSeg.id };
+          setIsSegDragging(true);
+          return;
+        }
+      }
+
+      if (selection) {
+        if (Math.abs(t - selection.start) <= edge) {
+          segDragRef.current = { mode: "sel", fixed: selection.end };
+          setIsSegDragging(true);
+          return;
+        }
+        if (Math.abs(t - selection.end) <= edge) {
+          segDragRef.current = { mode: "sel", fixed: selection.start };
+          setIsSegDragging(true);
+          return;
+        }
+      }
+
+      const hit = segments.find((s) => t >= s.start && t <= s.end);
+      if (hit) {
+        onSelectSegment?.(hit.id);
+        return;
+      }
+
+      onSelectionChange?.({ start: t, end: t });
+      segDragRef.current = { mode: "sel", fixed: t, isNew: true, moved: false };
+      setIsSegDragging(true);
+    },
+    [
+      segmentsEnabled,
+      duration,
+      timeFromSegmentX,
+      segments,
+      activeSegmentId,
+      selection,
+      onSelectSegment,
+      onSelectionChange,
+    ]
+  );
+
+  React.useEffect(() => {
+    if (!isSegDragging) return undefined;
+
+    const handleMove = (e) => {
+      const drag = segDragRef.current;
+      if (!drag) return;
+      const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+      const t = timeFromSegmentX(clientX);
+      if (drag.mode === "sel") {
+        drag.moved = true;
+        onSelectionChange?.({ start: drag.fixed, end: t });
+      } else if (drag.mode === "seg-start") {
+        onSegmentResize?.(drag.id, { edge: "start", time: t });
+      } else if (drag.mode === "seg-end") {
+        onSegmentResize?.(drag.id, { edge: "end", time: t });
+      }
+    };
+
+    const handleUp = () => {
+      const drag = segDragRef.current;
+      if (drag?.mode === "sel" && drag.isNew && !drag.moved) {
+        onClearSelection?.();
+      }
+      segDragRef.current = null;
+      setIsSegDragging(false);
+    };
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+    window.addEventListener("touchmove", handleMove, { passive: false });
+    window.addEventListener("touchend", handleUp);
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+      window.removeEventListener("touchmove", handleMove);
+      window.removeEventListener("touchend", handleUp);
+    };
+  }, [
+    isSegDragging,
+    timeFromSegmentX,
+    onSelectionChange,
+    onSegmentResize,
+    onClearSelection,
+  ]);
+
+  const activeSegment = segments.find((s) => s.id === activeSegmentId) || null;
+  const activeSegmentIndex = segments.findIndex((s) => s.id === activeSegmentId);
+  const selectionValid =
+    selection && Math.abs(selection.end - selection.start) >= 0.2;
+
   return (
     <div className={styles.videoControls}>
       <div className={styles.topBar}>
@@ -379,6 +517,33 @@ const VideoControls = ({
             )}
           </div>
 
+          {segmentsEnabled && (
+            <div className={styles.segmentMarkers}>
+              {segments.map((s) => (
+                <div
+                  key={s.id}
+                  className={clsx(
+                    styles.segmentMarker,
+                    s.id === activeSegmentId && styles.segmentMarkerActive
+                  )}
+                  style={{
+                    left: `${pct(s.start)}%`,
+                    width: `${pct(s.end) - pct(s.start)}%`,
+                  }}
+                />
+              ))}
+              {selectionValid && (
+                <div
+                  className={styles.selectionMarker}
+                  style={{
+                    left: `${pct(selection.start)}%`,
+                    width: `${pct(selection.end) - pct(selection.start)}%`,
+                  }}
+                />
+              )}
+            </div>
+          )}
+
           <div className={styles.progressTrack}>
             <div
               className={styles.progressFill}
@@ -413,6 +578,162 @@ const VideoControls = ({
           )}
         </div>
       </div>
+
+      {segmentsEnabled && (
+        <div className={styles.segmentSection}>
+          <div className={styles.segmentToolbar}>
+            <span
+              className={clsx(
+                styles.segmentHint,
+                isAltTheme && styles.segmentHintAlt
+              )}
+            >
+              {activeSegment
+                ? `Segment ${activeSegmentIndex + 1} · ${formatTime(
+                    activeSegment.start
+                  )}–${formatTime(activeSegment.end)}`
+                : selectionValid
+                ? `Selection · ${formatTime(selection.start)}–${formatTime(
+                    selection.end
+                  )}`
+                : "Drag on the bar to select a range · click a segment to edit"}
+            </span>
+
+            <div className={styles.segmentToolbarActions}>
+              {activeSegment ? (
+                <>
+                  <button
+                    type="button"
+                    className={clsx(
+                      styles.segmentBtn,
+                      isAltTheme && styles.segmentBtnAlt
+                    )}
+                    onClick={() => onRetrackSegment?.(activeSegment.id)}
+                  >
+                    Re-track
+                  </button>
+                  <button
+                    type="button"
+                    className={clsx(
+                      styles.segmentBtn,
+                      styles.segmentBtnDanger
+                    )}
+                    onClick={() => onDeleteSegment?.(activeSegment.id)}
+                  >
+                    Delete
+                  </button>
+                  <button
+                    type="button"
+                    className={clsx(
+                      styles.segmentBtn,
+                      isAltTheme && styles.segmentBtnAlt
+                    )}
+                    onClick={() => onSelectSegment?.(activeSegment.id)}
+                  >
+                    Done
+                  </button>
+                </>
+              ) : selectionValid ? (
+                <>
+                  <button
+                    type="button"
+                    className={styles.segmentBtnPrimary}
+                    onClick={() => onTrackSelection?.()}
+                  >
+                    Track selection
+                  </button>
+                  <button
+                    type="button"
+                    className={clsx(
+                      styles.segmentBtn,
+                      isAltTheme && styles.segmentBtnAlt
+                    )}
+                    onClick={() => onClearSelection?.()}
+                  >
+                    Clear
+                  </button>
+                </>
+              ) : (
+                <span
+                  className={clsx(
+                    styles.segmentCount,
+                    isAltTheme && styles.segmentCountAlt
+                  )}
+                >
+                  {segments.length}{" "}
+                  {segments.length === 1 ? "segment" : "segments"}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div
+            className={clsx(
+              styles.segmentTrack,
+              isAltTheme && styles.segmentTrackAlt
+            )}
+            ref={segmentTrackRef}
+            onPointerDown={handleSegPointerDown}
+          >
+            {segments.length === 0 && !selectionValid && (
+              <span className={styles.segmentTrackEmpty}>
+                whole video tracked · drag here to limit tracking to a range
+              </span>
+            )}
+
+            {segments.map((s, i) => {
+              const isActive = s.id === activeSegmentId;
+              return (
+                <div
+                  key={s.id}
+                  className={clsx(
+                    styles.segmentBand,
+                    isActive && styles.segmentBandActive
+                  )}
+                  style={{
+                    left: `${pct(s.start)}%`,
+                    width: `${Math.max(pct(s.end) - pct(s.start), 0.5)}%`,
+                  }}
+                >
+                  <span className={styles.segmentBandLabel}>{i + 1}</span>
+                  {isActive && (
+                    <>
+                      <span
+                        className={clsx(styles.segHandle, styles.segHandleStart)}
+                      />
+                      <span
+                        className={clsx(styles.segHandle, styles.segHandleEnd)}
+                      />
+                    </>
+                  )}
+                </div>
+              );
+            })}
+
+            {selection && (
+              <div
+                className={styles.selectionBand}
+                style={{
+                  left: `${pct(Math.min(selection.start, selection.end))}%`,
+                  width: `${Math.max(
+                    pct(Math.max(selection.start, selection.end)) -
+                      pct(Math.min(selection.start, selection.end)),
+                    0.5
+                  )}%`,
+                }}
+              >
+                <span className={clsx(styles.selHandle, styles.selHandleStart)} />
+                <span className={clsx(styles.selHandle, styles.selHandleEnd)} />
+              </div>
+            )}
+
+            <div
+              className={styles.segPlayhead}
+              style={{ left: `${progress}%` }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

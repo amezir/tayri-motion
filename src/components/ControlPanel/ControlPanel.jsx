@@ -1,8 +1,25 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import styles from "./ControlPanel.module.scss";
 import clsx from "clsx";
 import { useTheme } from "@/contexts/ThemeContext";
 import ResetButton from "../ResetButton";
+import ProfilesPanel from "./ProfilesPanel";
+
+const EXPORT_PRESETS = {
+  low: { label: "Low", videoBitrate: 2500, audioBitrate: 96, exportFPS: 24 },
+  medium: {
+    label: "Medium",
+    videoBitrate: 5000,
+    audioBitrate: 128,
+    exportFPS: 30,
+  },
+  high: {
+    label: "High",
+    videoBitrate: 12000,
+    audioBitrate: 256,
+    exportFPS: 60,
+  },
+};
 
 const ControlPanel = ({
   paramsRef,
@@ -11,10 +28,26 @@ const ControlPanel = ({
   onParamsChange,
   enableExport = true,
   enableImport = true,
+  enableProfiles = false,
+  profileStorageKey = "tayri-motion-profiles",
+  syncToken = 0,
+  activeSegmentLabel = null,
 }) => {
   const [activeTab, setActiveTab] = useState("Blob");
   const [, setRerender] = useState(0);
   const { isAltTheme } = useTheme();
+
+  // Snapshot the initial params once so the "Default" profile always reflects
+  // the app defaults, independent of later edits.
+  const [defaults] = useState(() =>
+    paramsRef?.current ? JSON.parse(JSON.stringify(paramsRef.current)) : {}
+  );
+
+  // The parent can mutate paramsRef directly (e.g. loading a tracked segment's
+  // settings). Bumping syncToken forces the panel to reflect the new values.
+  useEffect(() => {
+    setRerender((n) => n + 1);
+  }, [syncToken]);
 
   const updateParam = useCallback(
     (key, value) => {
@@ -28,6 +61,20 @@ const ControlPanel = ({
     [paramsRef]
   );
   const p = paramsRef?.current ?? {};
+  const exportPreset = p.exportPreset || "medium";
+
+  const applyExportPreset = useCallback(
+    (presetKey) => {
+      updateParam("exportPreset", presetKey);
+      const preset = EXPORT_PRESETS[presetKey];
+      if (preset) {
+        updateParam("videoBitrate", preset.videoBitrate);
+        updateParam("audioBitrate", preset.audioBitrate);
+        updateParam("exportFPS", preset.exportFPS);
+      }
+    },
+    [updateParam]
+  );
 
   return (
     <div
@@ -73,8 +120,32 @@ const ControlPanel = ({
               Export
             </button>
           )}
+          {enableProfiles && (
+            <button
+              type="button"
+              className={clsx(
+                styles.tabBtn,
+                isAltTheme && styles.tabBtnAlt,
+                activeTab === "Profiles" && styles.active
+              )}
+              onClick={() => setActiveTab("Profiles")}
+            >
+              Profiles
+            </button>
+          )}
         </div>
       </div>
+
+      {activeSegmentLabel && activeTab !== "Profiles" && activeTab !== "Export" && (
+        <div
+          className={clsx(
+            styles.segmentBanner,
+            isAltTheme && styles.segmentBannerAlt
+          )}
+        >
+          Editing {activeSegmentLabel}
+        </div>
+      )}
 
       <div
         className={clsx(styles.panelBody, isAltTheme && styles.panelBodyAlt)}
@@ -804,65 +875,112 @@ const ControlPanel = ({
         {enableExport && activeTab === "Export" && (
           <div className={styles.exportSettings}>
             <h4 className={isAltTheme ? styles.altTheme : ""}>
-              Export Settings
+              Export Quality
             </h4>
-            <label className={isAltTheme ? styles.altTheme : ""}>
-              Video Bitrate (kbps): {p.videoBitrate}
-              <input
-                type="range"
-                name="videoBitrate"
-                min="1000"
-                max="20000"
-                step="100"
-                value={p.videoBitrate}
-                onChange={(e) =>
-                  updateParam(
-                    "videoBitrate",
-                    parseInt(e.target.value, 10) || 1000
-                  )
-                }
-                className={isAltTheme ? styles.altTheme : ""}
-              />
-            </label>
-            <label className={isAltTheme ? styles.altTheme : ""}>
-              Audio Bitrate (kbps): {p.audioBitrate}
-              <input
-                type="range"
-                name="audioBitrate"
-                min="64"
-                max="320"
-                step="8"
-                value={p.audioBitrate}
-                onChange={(e) =>
-                  updateParam(
-                    "audioBitrate",
-                    parseInt(e.target.value, 10) || 128
-                  )
-                }
-                className={isAltTheme ? styles.altTheme : ""}
-              />
-            </label>
-            <label className={isAltTheme ? styles.altTheme : ""}>
-              Export FPS: {p.exportFPS}
-              <input
-                type="range"
-                name="exportFPS"
-                min="15"
-                max="60"
-                step="1"
-                value={p.exportFPS}
-                onChange={(e) =>
-                  updateParam("exportFPS", parseInt(e.target.value, 10))
-                }
-                className={isAltTheme ? styles.altTheme : ""}
-              />
-            </label>
-            <ResetButton
-              keys={["videoBitrate", "audioBitrate", "exportFPS"]}
-              paramsRef={paramsRef}
-              updateParam={updateParam}
-              isAltTheme={isAltTheme}
-            />
+            <div className={styles.optionGroup}>
+              <div
+                className={clsx(
+                  styles.optionGroupLabel,
+                  isAltTheme && styles.optionGroupLabelAlt
+                )}
+              >
+                Preset:
+              </div>
+              <div className={styles.presetButtons}>
+                {Object.entries(EXPORT_PRESETS).map(([key, preset]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    className={clsx(
+                      styles.optionBtn,
+                      isAltTheme && styles.optionBtnAlt,
+                      exportPreset === key && styles.active
+                    )}
+                    onClick={() => applyExportPreset(key)}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className={clsx(
+                    styles.optionBtn,
+                    isAltTheme && styles.optionBtnAlt,
+                    exportPreset === "custom" && styles.active
+                  )}
+                  onClick={() => updateParam("exportPreset", "custom")}
+                >
+                  Custom
+                </button>
+              </div>
+            </div>
+
+            {exportPreset !== "custom" ? (
+              <div
+                className={clsx(
+                  styles.presetSummary,
+                  isAltTheme && styles.presetSummaryAlt
+                )}
+              >
+                <span>{p.videoBitrate} kbps video</span>
+                <span>{p.audioBitrate} kbps audio</span>
+                <span>{p.exportFPS} fps</span>
+              </div>
+            ) : (
+              <>
+                <label className={isAltTheme ? styles.altTheme : ""}>
+                  Video Bitrate (kbps): {p.videoBitrate}
+                  <input
+                    type="range"
+                    name="videoBitrate"
+                    min="1000"
+                    max="20000"
+                    step="100"
+                    value={p.videoBitrate}
+                    onChange={(e) =>
+                      updateParam(
+                        "videoBitrate",
+                        parseInt(e.target.value, 10) || 1000
+                      )
+                    }
+                    className={isAltTheme ? styles.altTheme : ""}
+                  />
+                </label>
+                <label className={isAltTheme ? styles.altTheme : ""}>
+                  Audio Bitrate (kbps): {p.audioBitrate}
+                  <input
+                    type="range"
+                    name="audioBitrate"
+                    min="64"
+                    max="320"
+                    step="8"
+                    value={p.audioBitrate}
+                    onChange={(e) =>
+                      updateParam(
+                        "audioBitrate",
+                        parseInt(e.target.value, 10) || 128
+                      )
+                    }
+                    className={isAltTheme ? styles.altTheme : ""}
+                  />
+                </label>
+                <label className={isAltTheme ? styles.altTheme : ""}>
+                  Export FPS: {p.exportFPS}
+                  <input
+                    type="range"
+                    name="exportFPS"
+                    min="15"
+                    max="60"
+                    step="1"
+                    value={p.exportFPS}
+                    onChange={(e) =>
+                      updateParam("exportFPS", parseInt(e.target.value, 10))
+                    }
+                    className={isAltTheme ? styles.altTheme : ""}
+                  />
+                </label>
+              </>
+            )}
             <div className={styles.exportActions}>
               <div className={styles.exportButtons}>
                 <button type="button" onClick={() => onExport?.("webm")}>
@@ -886,6 +1004,16 @@ const ControlPanel = ({
               )}
             </div>
           </div>
+        )}
+
+        {enableProfiles && activeTab === "Profiles" && (
+          <ProfilesPanel
+            paramsRef={paramsRef}
+            updateParam={updateParam}
+            defaults={defaults}
+            storageKey={profileStorageKey}
+            isAltTheme={isAltTheme}
+          />
         )}
       </div>
     </div>

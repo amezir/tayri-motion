@@ -42,6 +42,23 @@ const BlobTracker = () => {
     lastY: 0,
   });
 
+  // ---- Timeline tracking selection & segments (#8, #9, #10) ----
+  const [selection, setSelection] = useState(null); // { start, end } | null
+  const [segments, setSegments] = useState([]); // [{ id, start, end }]
+  const [activeSegmentId, setActiveSegmentId] = useState(null);
+  const [paramsSyncToken, setParamsSyncToken] = useState(0);
+
+  const segmentsRef = useRef([]);
+  const activeSegmentIdRef = useRef(null);
+  const segmentParamsRef = useRef(new Map()); // id -> params snapshot
+
+  useEffect(() => {
+    segmentsRef.current = segments;
+  }, [segments]);
+  useEffect(() => {
+    activeSegmentIdRef.current = activeSegmentId;
+  }, [activeSegmentId]);
+
   const params = useRef({
     threshold: 128,
     minBlobSize: 100,
@@ -65,6 +82,7 @@ const BlobTracker = () => {
     videoBitrate: 5000,
     audioBitrate: 128,
     exportFPS: 30,
+    exportPreset: "medium",
     showConnections: false,
     connectionStyle: "normal",
     connectionCurvature: 0,
@@ -234,15 +252,164 @@ const BlobTracker = () => {
     }
   }, []);
 
-  const handleParamsChange = useCallback(() => {
+  // Decide whether tracking runs at a given time and with which settings.
+  // - No segments defined -> track the whole video (params.current).
+  // - Inside a segment -> track with that segment's own settings. The segment
+  //   being edited uses the live params so changes preview instantly.
+  // - Outside every segment -> passthrough (no overlay), so "no changes occur
+  //   outside the selection" (#8).
+  const getTrackingForTime = useCallback((time) => {
+    const segs = segmentsRef.current;
+    if (!segs || segs.length === 0) {
+      return { active: true, params: params.current };
+    }
+    const seg = segs.find((s) => time >= s.start && time <= s.end);
+    if (!seg) {
+      return { active: false, params: params.current };
+    }
+    if (seg.id === activeSegmentIdRef.current) {
+      return { active: true, params: params.current };
+    }
+    const snapshot = segmentParamsRef.current.get(seg.id);
+    return { active: true, params: snapshot || params.current };
+  }, []);
+
+  const reprocessCurrentFrame = useCallback(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (video && canvas) {
-      try {
-        processVideoFrame(video, canvas, params.current, setBlobs);
-      } catch (e) {}
+    if (!video || !canvas) return;
+    try {
+      const { active, params: frameParams } = getTrackingForTime(
+        video.currentTime
+      );
+      processVideoFrame(video, canvas, frameParams, setBlobs, active);
+    } catch (e) {}
+  }, [getTrackingForTime]);
+
+  const handleParamsChange = useCallback(
+    (key, value) => {
+      const activeId = activeSegmentIdRef.current;
+      if (
+        activeId &&
+        key !== undefined &&
+        segmentParamsRef.current.has(activeId)
+      ) {
+        segmentParamsRef.current.get(activeId)[key] = value;
+      }
+      reprocessCurrentFrame();
+    },
+    [reprocessCurrentFrame]
+  );
+
+  const snapshotParams = useCallback(
+    () => JSON.parse(JSON.stringify(params.current)),
+    []
+  );
+
+  const MIN_SEGMENT = 0.2; // seconds
+
+  const handleSelectionChange = useCallback((next) => {
+    if (!next) {
+      setSelection(null);
+      return;
+    }
+    const start = Math.max(0, Math.min(next.start, next.end));
+    const end = Math.max(next.start, next.end);
+    setSelection({ start, end });
+  }, []);
+
+  const handleClearSelection = useCallback(() => setSelection(null), []);
+
+  // Commit the current selection into a tracked segment (#8). The new segment
+  // captures the current settings so it can later be edited independently.
+  const handleTrackSelection = useCallback(() => {
+    if (!selection) return;
+    const start = Math.max(0, Math.min(selection.start, selection.end));
+    const end = Math.min(duration || selection.end, Math.max(selection.start, selection.end));
+    if (end - start < MIN_SEGMENT) {
+      setSelection(null);
+      return;
+    }
+    const id = `seg-${Date.now()}`;
+    segmentParamsRef.current.set(id, snapshotParams());
+    setSegments((prev) =>
+      [...prev, { id, start, end }].sort((a, b) => a.start - b.start)
+    );
+    setSelection(null);
+    setActiveSegmentId(id);
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = start;
+    }
+  }, [selection, duration, snapshotParams]);
+
+  const loadSegmentParams = useCallback((id) => {
+    const snapshot = segmentParamsRef.current.get(id);
+    if (snapshot && params.current) {
+      Object.entries(snapshot).forEach(([k, v]) => {
+        params.current[k] = v;
+      });
+      setParamsSyncToken((n) => n + 1);
     }
   }, []);
+
+  const handleSelectSegment = useCallback(
+    (id) => {
+      if (id === activeSegmentIdRef.current) {
+        setActiveSegmentId(null);
+        return;
+      }
+      loadSegmentParams(id);
+      setActiveSegmentId(id);
+      const seg = segmentsRef.current.find((s) => s.id === id);
+      const video = videoRef.current;
+      if (seg && video) {
+        video.currentTime = Math.min(seg.end - 0.01, seg.start + 0.01);
+      }
+    },
+    [loadSegmentParams]
+  );
+
+  const handleSegmentResize = useCallback(
+    (id, { edge, time }) => {
+      setSegments((prev) =>
+        prev
+          .map((s) => {
+            if (s.id !== id) return s;
+            if (edge === "start") {
+              return { ...s, start: Math.max(0, Math.min(time, s.end - MIN_SEGMENT)) };
+            }
+            return {
+              ...s,
+              end: Math.min(duration || time, Math.max(time, s.start + MIN_SEGMENT)),
+            };
+          })
+          .sort((a, b) => a.start - b.start)
+      );
+    },
+    [duration]
+  );
+
+  const handleDeleteSegment = useCallback((id) => {
+    segmentParamsRef.current.delete(id);
+    setSegments((prev) => prev.filter((s) => s.id !== id));
+    setActiveSegmentId((current) => (current === id ? null : current));
+  }, []);
+
+  // Re-apply the current settings to an existing segment (#9 re-tracking).
+  const handleRetrackSegment = useCallback(
+    (id) => {
+      segmentParamsRef.current.set(id, snapshotParams());
+      reprocessCurrentFrame();
+    },
+    [snapshotParams, reprocessCurrentFrame]
+  );
+
+  const activeSegmentLabel = React.useMemo(() => {
+    if (!activeSegmentId) return null;
+    const index = segments.findIndex((s) => s.id === activeSegmentId);
+    return index >= 0 ? `Segment ${index + 1}` : null;
+  }, [activeSegmentId, segments]);
 
   const handlePlay = useCallback(() => {
     videoRef.current?.play();
@@ -317,7 +484,10 @@ const BlobTracker = () => {
     const processFrame = () => {
       if (video && !video.paused && !video.ended) {
         try {
-          processVideoFrame(video, canvas, params.current, setBlobs);
+          const { active, params: frameParams } = getTrackingForTime(
+            video.currentTime
+          );
+          processVideoFrame(video, canvas, frameParams, setBlobs, active);
         } catch (e) {
           console.error("Error processing frame:", e);
         }
@@ -333,7 +503,10 @@ const BlobTracker = () => {
     const handlePauseEvent = () => {
       setIsPlaying(false);
       try {
-        processVideoFrame(video, canvas, params.current, setBlobs);
+        const { active, params: frameParams } = getTrackingForTime(
+          video.currentTime
+        );
+        processVideoFrame(video, canvas, frameParams, setBlobs, active);
       } catch (e) {}
       if (animationId) {
         cancelAnimationFrame(animationId);
@@ -349,10 +522,17 @@ const BlobTracker = () => {
       setDuration(video.duration);
     };
 
+    const handleSeeked = () => {
+      if (video.paused) {
+        reprocessCurrentFrame();
+      }
+    };
+
     video.addEventListener("play", handlePlayEvent);
     video.addEventListener("pause", handlePauseEvent);
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("durationchange", handleDurationChange);
+    video.addEventListener("seeked", handleSeeked);
 
     if (!video.paused) {
       processFrame();
@@ -366,8 +546,17 @@ const BlobTracker = () => {
       video.removeEventListener("pause", handlePauseEvent);
       video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("durationchange", handleDurationChange);
+      video.removeEventListener("seeked", handleSeeked);
     };
-  }, [videoLoaded]);
+  }, [videoLoaded, getTrackingForTime, reprocessCurrentFrame]);
+
+  // Keep the paused frame in sync when segments or their settings change.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && video.paused) {
+      reprocessCurrentFrame();
+    }
+  }, [segments, activeSegmentId, paramsSyncToken, reprocessCurrentFrame]);
 
   useEffect(() => {
     const stopPan = () => handlePointerUp();
@@ -414,6 +603,10 @@ const BlobTracker = () => {
             onCancel={handleCancelExport}
             onImport={() => document.getElementById("videoInput")?.click()}
             blobsLength={blobs.length}
+            enableProfiles
+            profileStorageKey="tayri-motion-profiles-tracking"
+            syncToken={paramsSyncToken}
+            activeSegmentLabel={activeSegmentLabel}
           />
         </div>
         <div className={clsx(styles.page, isAltTheme && styles.pageAlt)}>
@@ -580,6 +773,16 @@ const BlobTracker = () => {
               onVolumeChange={handleVolumeChange}
               formatTime={formatTime}
               videoRef={videoRef}
+              selection={selection}
+              onSelectionChange={handleSelectionChange}
+              onClearSelection={handleClearSelection}
+              onTrackSelection={handleTrackSelection}
+              segments={segments}
+              activeSegmentId={activeSegmentId}
+              onSelectSegment={handleSelectSegment}
+              onSegmentResize={handleSegmentResize}
+              onDeleteSegment={handleDeleteSegment}
+              onRetrackSegment={handleRetrackSegment}
             />
           )}
         </div>

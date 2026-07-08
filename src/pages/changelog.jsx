@@ -43,7 +43,9 @@ export default function Changelog() {
                       isAltTheme && styles.releaseVersionAlt
                     )}
                   >
-                    [last version - {release.release}]
+                    {index === 0
+                      ? `[last version - ${release.release}]`
+                      : `[${release.release}]`}
                   </span>
                 </div>
 

@@ -13,10 +13,10 @@ const isBlobValid = (blob, canvasWidth, canvasHeight) => {
     return false;
   }
   
-  const blobLeft = blob.x || (blob.centerX - blob.width / 2);
-  const blobRight = (blob.x || (blob.centerX - blob.width / 2)) + blob.width;
-  const blobTop = blob.y || (blob.centerY - blob.height / 2);
-  const blobBottom = (blob.y || (blob.centerY - blob.height / 2)) + blob.height;
+  const blobLeft = blob.x ?? (blob.centerX - blob.width / 2);
+  const blobRight = blobLeft + blob.width;
+  const blobTop = blob.y ?? (blob.centerY - blob.height / 2);
+  const blobBottom = blobTop + blob.height;
   
   const margin = 50;
   const isVisible = blobRight > -margin && 
@@ -27,55 +27,47 @@ const isBlobValid = (blob, canvasWidth, canvasHeight) => {
   return isVisible;
 };
 
+// Point where a ray leaving the blob center at `angle` crosses the blob's
+// bounding rectangle. Using a ray/rectangle intersection keeps the result
+// stable for every direction (the previous tan()-based version blew up to
+// Infinity whenever the connection was near-vertical, which produced the
+// glitchy connections reported in the tracker).
+const getEdgePoint = (blob, angle) => {
+  const halfWidth = blob.width / 2;
+  const halfHeight = blob.height / 2;
+
+  if (halfWidth <= 0 || halfHeight <= 0) {
+    return { x: blob.centerX, y: blob.centerY };
+  }
+
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+
+  const tX = cos !== 0 ? halfWidth / Math.abs(cos) : Infinity;
+  const tY = sin !== 0 ? halfHeight / Math.abs(sin) : Infinity;
+  const t = Math.min(tX, tY);
+
+  return {
+    x: blob.centerX + cos * t,
+    y: blob.centerY + sin * t,
+  };
+};
+
 export const getEdgeConnectionPoint = (blob1, blob2) => {
-  const dx = blob2.centerX - blob1.centerX;
-  const dy = blob2.centerY - blob1.centerY;
-  const angle = Math.atan2(dy, dx);
-  
-  const halfWidth1 = blob1.width / 2;
-  const halfHeight1 = blob1.height / 2;
-  
-  let startX, startY;
-  const absAngle = Math.abs(angle);
-  const cornerAngle = Math.atan2(halfHeight1, halfWidth1);
-  
-  if (absAngle < cornerAngle) {
-    startX = blob1.centerX + halfWidth1;
-    startY = blob1.centerY + halfWidth1 * Math.tan(angle);
-  } else if (absAngle > Math.PI - cornerAngle) {
-    startX = blob1.centerX - halfWidth1;
-    startY = blob1.centerY - halfWidth1 * Math.tan(angle);
-  } else if (angle > 0) {
-    startY = blob1.centerY + halfHeight1;
-    startX = blob1.centerX + halfHeight1 / Math.tan(angle);
-  } else {
-    startY = blob1.centerY - halfHeight1;
-    startX = blob1.centerX - halfHeight1 / Math.tan(angle);
-  }
-  
-  const halfWidth2 = blob2.width / 2;
-  const halfHeight2 = blob2.height / 2;
-  const reverseAngle = angle + Math.PI;
-  
-  let endX, endY;
-  const absReverseAngle = Math.abs(reverseAngle);
-  const cornerAngle2 = Math.atan2(halfHeight2, halfWidth2);
-  
-  if (absReverseAngle < cornerAngle2) {
-    endX = blob2.centerX + halfWidth2;
-    endY = blob2.centerY + halfWidth2 * Math.tan(reverseAngle);
-  } else if (absReverseAngle > Math.PI - cornerAngle2) {
-    endX = blob2.centerX - halfWidth2;
-    endY = blob2.centerY - halfWidth2 * Math.tan(reverseAngle);
-  } else if (reverseAngle > 0) {
-    endY = blob2.centerY + halfHeight2;
-    endX = blob2.centerX + halfHeight2 / Math.tan(reverseAngle);
-  } else {
-    endY = blob2.centerY - halfHeight2;
-    endX = blob2.centerX - halfHeight2 / Math.tan(reverseAngle);
-  }
-  
-  return { startX, startY, endX, endY };
+  const angle = Math.atan2(
+    blob2.centerY - blob1.centerY,
+    blob2.centerX - blob1.centerX
+  );
+
+  const start = getEdgePoint(blob1, angle);
+  const end = getEdgePoint(blob2, angle + Math.PI);
+
+  return {
+    startX: start.x,
+    startY: start.y,
+    endX: end.x,
+    endY: end.y,
+  };
 };
 
 export const drawArrow = (ctx, fromX, fromY, toX, toY, curvature) => {

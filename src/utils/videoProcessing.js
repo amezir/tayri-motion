@@ -82,7 +82,10 @@ const drawCornerBorders = (ctx, x, y, width, height, cornerLength = 20, lineWidt
   ctx.stroke();
 };
 
-export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
+// Draws the current video frame to the canvas without any blob detection or
+// overlay. Used for timeline regions that are outside a tracked segment so
+// "no changes occur outside the selection" (#8).
+export const drawPlainFrame = (video, canvas, params) => {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   const shouldMirror = params?.mirror === true;
 
@@ -97,7 +100,36 @@ export const processVideoFrame = (video, canvas, params, onBlobsDetected) => {
   } else {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   }
-  
+};
+
+export const processVideoFrame = (
+  video,
+  canvas,
+  params,
+  onBlobsDetected,
+  trackingActive = true
+) => {
+  if (trackingActive === false) {
+    drawPlainFrame(video, canvas, params);
+    onBlobsDetected([]);
+    return;
+  }
+
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const shouldMirror = params?.mirror === true;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (shouldMirror) {
+    ctx.save();
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.restore();
+  } else {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  }
+
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const data = imageData.data;
 
